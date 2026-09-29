@@ -35,11 +35,8 @@ function showState(me){
   forms.hidden=true;
   state.innerHTML=`<div class="access-state success"><div class="state-icon ok">✓</div><h3>${SSS.esc(roleLabel(me.role))} access approved</h3><p>Signed in as <strong>${SSS.esc(me.email)}</strong>.</p><button class="btn btn-primary auth-main-btn" id="continueBtn">Open dashboard</button></div>`;
   $("continueBtn").onclick=()=>location.href=SSS.routeForRole(me.role);
-  const qs=new URLSearchParams(location.search);
-  const requested=qs.get("next");
-  const allowedNext=new Set(["hr.html","admin.html","executive.html"]);
-  const next=allowedNext.has(requested)?requested:SSS.routeForRole(me.role);
-  setTimeout(()=>{location.href=next;},400);
+  // Do not auto-redirect. Keeping navigation user-initiated prevents
+  // login ↔ dashboard redirect loops when a session/role check fails.
 }
 
 async function refreshState(){
