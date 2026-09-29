@@ -410,7 +410,7 @@
           <option value="light">Light</option>
           <option value="dark">Dark</option>
         </select>
-        <button class="secondary-button" id="registerButton" type="button">ลงทะเบียน</button>
+        <button class="secondary-button" id="registerButton" type="button">Management</button>
       </div>
     </div>
   </header>
@@ -1143,7 +1143,7 @@
       if (data) await submitAttendance(true, data);
     });
 
-    $("registerButton").addEventListener("click", openRegister);
+    $("registerButton").addEventListener("click", () => { window.location.href = "login.html"; });
     $("registerCancel").addEventListener("click", closeRegister);
     $("regCameraToggle").addEventListener("click", () => startCamera(true));
     $("regCapture").addEventListener("click", () => retakeOrCapture(true));

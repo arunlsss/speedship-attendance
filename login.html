@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://attendanceapi-wl5ots23eq-as.a.run.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; script-src 'self' https://www.gstatic.com; img-src 'self' data:; frame-src 'self';">
+  <title>Speedship Management Access</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="auth-shell">
+  <section class="auth-brand-panel">
+    <div class="auth-brand-inner">
+      <div class="brand"><div class="brand-mark">SSS</div><div><div class="brand-title">Speedship Attendance</div><div class="brand-sub">People & Operations Intelligence</div></div></div>
+      <div class="auth-hero-copy">
+        <div class="eyebrow">MANAGEMENT ACCESS</div>
+        <h1>One secure login.<br>Role-based access.</h1>
+        <p>HR, Admin and C-Level accounts use individual credentials. New accounts cannot choose their own permissions. A Super Admin must approve and assign every role.</p>
+      </div>
+      <div class="auth-security-list">
+        <div><span>01</span><strong>Individual sign-in</strong><small>No shared dashboard password</small></div>
+        <div><span>02</span><strong>Approval required</strong><small>Registration does not grant dashboard access</small></div>
+        <div><span>03</span><strong>Server-enforced roles</strong><small>Permissions are checked on every protected API request</small></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="auth-form-panel">
+    <div class="auth-card">
+      <div class="auth-topline"><div><div class="eyebrow">SECURE PORTAL</div><h2>Management Dashboard</h2></div><button class="btn btn-ghost" id="themeBtn">Theme · <span data-theme-label>Auto</span></button></div>
+      <p class="muted small auth-intro">สำหรับ HR, Admin และ C-Level เท่านั้น ระบบจะเปิดหน้าที่ตรงกับสิทธิ์ที่ Super Admin กำหนด</p>
+
+      <div id="authState"></div>
+
+      <div id="authForms">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="signin">Sign in</button>
+          <button class="auth-tab" data-tab="register">Register access</button>
+        </div>
+
+        <form id="signinForm" class="auth-form active" autocomplete="on">
+          <div class="field"><label class="field-label">Work email</label><input id="loginEmail" type="email" autocomplete="username" placeholder="name@speedshipsolution.com" required></div>
+          <div class="field"><label class="field-label">Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required></div>
+          <button class="btn btn-primary auth-main-btn" id="loginBtn" type="submit">Sign in</button>
+          <button class="text-btn" id="forgotBtn" type="button">Forgot password?</button>
+        </form>
+
+        <form id="registerForm" class="auth-form" autocomplete="on">
+          <div class="field"><label class="field-label">Full name</label><input id="regName" autocomplete="name" placeholder="ชื่อ-นามสกุล" required></div>
+          <div class="grid-2">
+            <div class="field"><label class="field-label">Job title</label><input id="regJobTitle" placeholder="e.g. HR Manager"></div>
+            <div class="field"><label class="field-label">Employee ID</label><input id="regEmployeeId" placeholder="Optional"></div>
+          </div>
+          <div class="field"><label class="field-label">Work email</label><input id="regEmail" type="email" autocomplete="email" placeholder="name@speedshipsolution.com" required></div>
+          <div class="grid-2">
+            <div class="field"><label class="field-label">Password</label><input id="regPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+            <div class="field"><label class="field-label">Confirm</label><input id="regConfirm" type="password" autocomplete="new-password" minlength="8" required></div>
+          </div>
+          <div class="notice-box"><strong>Registration ≠ access</strong><span>Your account remains Pending until a Super Admin assigns HR, Admin, C-Level or Super Admin access.</span></div>
+          <button class="btn btn-primary auth-main-btn" id="registerBtn" type="submit">Create access request</button>
+        </form>
+      </div>
+
+      <div class="auth-footer"><a href="index.html">← Attendance</a><button class="text-btn" id="setupToggle" type="button">First Super Admin setup</button></div>
+      <div id="setupBox" class="setup-box" hidden>
+        <div class="eyebrow">ONE-TIME INITIALIZATION</div>
+        <strong>Initialize the first Super Admin</strong>
+        <p class="small muted">Sign in with the verified account that should become the first Super Admin, then enter the bootstrap key. This stops working after the first active Super Admin exists.</p>
+        <div class="field"><label class="field-label">Bootstrap key</label><input id="bootstrapKey" type="password" autocomplete="off"></div>
+        <button class="btn btn-soft" id="bootstrapBtn" type="button">Initialize Super Admin</button>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="toast-wrap"></div>
+<script src="assets/firebase-config.js"></script>
+<script src="assets/common.js"></script>
+<script type="module" src="assets/auth.js"></script>
+<script type="module">
+const $ = id => document.getElementById(id);
+const forms = $("authForms");
+const state = $("authState");
+
+$("themeBtn").onclick = () => SSS.cycleTheme();
+document.querySelectorAll(".auth-tab").forEach(btn => btn.onclick = () => {
+  document.querySelectorAll(".auth-tab").forEach(x => x.classList.toggle("active", x === btn));
+  document.querySelectorAll(".auth-form").forEach(x => x.classList.toggle("active", x.id === `${btn.dataset.tab}Form`));
+});
+
+function roleLabel(role){ return ({hr:"HR",admin:"Admin",executive:"C-Level",super_admin:"Super Admin"})[role] || role || "Pending"; }
+function showState(me){
+  if (!me) { state.innerHTML=""; forms.hidden=false; return; }
+  if (!me.emailVerified) {
+    forms.hidden=true;
+    state.innerHTML=`<div class="access-state"><div class="state-icon">@</div><h3>Verify your work email</h3><p>We sent a verification link to <strong>${SSS.esc(me.email)}</strong>. Verify it before dashboard access can be approved.</p><div class="state-actions"><button class="btn btn-primary" id="resendVerify">Resend verification</button><button class="btn btn-ghost" id="stateLogout">Sign out</button></div></div>`;
+    $("resendVerify").onclick=async()=>{try{await SSSAuth.resendVerification();SSS.toast("Verification email sent","success");}catch(e){SSS.toast(e.message,"error");}};
+    $("stateLogout").onclick=async()=>{await SSSAuth.logout();location.reload();};
+    return;
+  }
+  if (me.status === "unregistered") { forms.hidden=false; return; }
+  if (me.status !== "active" || !me.role) {
+    forms.hidden=true;
+    state.innerHTML=`<div class="access-state"><div class="state-icon pending">…</div><h3>Access request pending</h3><p><strong>${SSS.esc(me.email)}</strong> is registered, but no dashboard role has been approved yet.</p><div class="approval-path"><span>Registered</span><i></i><span class="current">Super Admin review</span><i></i><span>Role assigned</span></div><div class="state-actions"><button class="btn btn-soft" id="checkAgain">Check again</button><button class="btn btn-ghost" id="stateLogout">Sign out</button></div></div>`;
+    $("checkAgain").onclick=()=>location.reload();
+    $("stateLogout").onclick=async()=>{await SSSAuth.logout();location.reload();};
+    return;
+  }
+  forms.hidden=true;
+  state.innerHTML=`<div class="access-state success"><div class="state-icon ok">✓</div><h3>${SSS.esc(roleLabel(me.role))} access approved</h3><p>Signed in as <strong>${SSS.esc(me.email)}</strong>.</p><button class="btn btn-primary auth-main-btn" id="continueBtn">Open dashboard</button></div>`;
+  $("continueBtn").onclick=()=>location.href=SSS.routeForRole(me.role);
+  const qs=new URLSearchParams(location.search), next=qs.get("next");
+  setTimeout(()=>{location.href=next || SSS.routeForRole(me.role);},400);
+}
+
+async function refreshState(){
+  const user=await SSSAuth.ready();
+  if(!user){showState(null);return;}
+  try{showState(await SSS.request("dashboardMe",{method:"POST",dashboard:true,body:{}}));}
+  catch(e){SSS.toast(e.message,"error");showState(null);}
+}
+
+$("signinForm").onsubmit=async e=>{
+  e.preventDefault(); const btn=$("loginBtn"); btn.disabled=true; btn.textContent="Signing in…";
+  try{await SSSAuth.login($("loginEmail").value.trim(),$("loginPassword").value);await refreshState();}
+  catch(err){SSS.toast(String(err.message||err).replace(/^Firebase:\s*/i,""),"error");}
+  finally{btn.disabled=false;btn.textContent="Sign in";}
+};
+
+$("registerForm").onsubmit=async e=>{
+  e.preventDefault();
+  const email=$("regEmail").value.trim().toLowerCase(), pass=$("regPassword").value, confirm=$("regConfirm").value;
+  if(!email.endsWith("@speedshipsolution.com")){SSS.toast("Use your @speedshipsolution.com work email","error");return;}
+  if(pass!==confirm){SSS.toast("Passwords do not match","error");return;}
+  const btn=$("registerBtn");btn.disabled=true;btn.textContent="Creating request…";
+  try{
+    await SSSAuth.register({email,password:pass,displayName:$("regName").value.trim()});
+    await SSS.request("registerDashboardAccount",{method:"POST",dashboard:true,body:{displayName:$("regName").value.trim(),jobTitle:$("regJobTitle").value.trim(),employeeId:$("regEmployeeId").value.trim()}});
+    SSS.toast("Access request created. Verify your email next.","success");
+    await refreshState();
+  }catch(err){SSS.toast(String(err.message||err).replace(/^Firebase:\s*/i,""),"error");}
+  finally{btn.disabled=false;btn.textContent="Create access request";}
+};
+
+$("forgotBtn").onclick=async()=>{
+  const email=$("loginEmail").value.trim(); if(!email){SSS.toast("Enter your work email first","error");return;}
+  try{await SSSAuth.resetPassword(email);SSS.toast("Password reset email sent","success");}catch(e){SSS.toast(e.message,"error");}
+};
+
+$("setupToggle").onclick=()=>{$("setupBox").hidden=!$("setupBox").hidden;};
+$("bootstrapBtn").onclick=async()=>{
+  const key=$("bootstrapKey").value.trim();if(!key){SSS.toast("Enter the bootstrap key","error");return;}
+  try{const r=await SSS.request("bootstrapSuperAdmin",{method:"POST",dashboard:true,body:{bootstrapKey:key}});SSS.toast("Super Admin initialized","success");location.href=SSS.routeForRole(r.role);}catch(e){SSS.toast(e.message,"error");}
+};
+
+await refreshState();
+</script>
+</body>
+</html>
