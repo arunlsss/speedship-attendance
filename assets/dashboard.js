@@ -48,7 +48,7 @@
       return await SSS.request(action, { ...options, dashboard:true });
     } catch (error) {
       if (error.status !== 401) throw error;
-      await SSSAuth.idToken(true);
+      await window.SSSAuth.idToken(true);
       return SSS.request(action, { ...options, dashboard:true });
     }
   }
