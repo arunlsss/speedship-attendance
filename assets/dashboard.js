@@ -1,3 +1,4 @@
+import "./auth.js";
 (async () => {
   const page = document.body.dataset.dashboardPage;
   const allowed = page === "admin" ? ["admin","super_admin"] : page === "hr" ? ["hr","admin","super_admin"] : ["executive","admin","super_admin"];
