@@ -12,8 +12,33 @@ import {
   updateProfile
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-const config = window.SSS_FIREBASE_CONFIG || {};
-const configured = Boolean(config.apiKey && !String(config.apiKey).startsWith("PASTE_") && config.appId && !String(config.appId).startsWith("PASTE_"));
+async function loadFirebaseConfig() {
+  const url = new URL(window.SSS.API_URL);
+  url.searchParams.set("action", "firebaseConfig");
+  const response = await fetch(url, { method: "GET", cache: "no-store" });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || payload.ok !== true || !payload.data) {
+    throw new Error(payload.error || "Firebase configuration is unavailable");
+  }
+  return payload.data;
+}
+
+let config = {};
+let configError = null;
+try {
+  config = await loadFirebaseConfig();
+} catch (error) {
+  configError = error;
+  console.error("Firebase configuration failed to load", error);
+}
+
+const configured = Boolean(
+  config.apiKey &&
+  config.authDomain &&
+  config.projectId &&
+  config.appId
+);
+
 let auth = null;
 let readyResolve;
 const readyPromise = new Promise(resolve => { readyResolve = resolve; });
@@ -21,11 +46,18 @@ const readyPromise = new Promise(resolve => { readyResolve = resolve; });
 if (configured) {
   const app = initializeApp(config);
   auth = getAuth(app);
-  setPersistence(auth, browserSessionPersistence).catch(console.warn);
+  await setPersistence(auth, browserSessionPersistence).catch(error => {
+    console.warn("Firebase Auth persistence setup failed", error);
+  });
   onAuthStateChanged(auth, user => readyResolve(user));
 } else {
-  console.error("Firebase Auth is not configured. Fill assets/firebase-config.js first.");
   readyResolve(null);
+}
+
+function ensureConfigured() {
+  if (!configured) {
+    throw new Error(configError?.message || "Firebase Auth is not configured yet");
+  }
 }
 
 async function ready() {
@@ -40,7 +72,7 @@ async function idToken(forceRefresh = false) {
 }
 
 async function register({ email, password, displayName }) {
-  if (!configured) throw new Error("Firebase Auth is not configured yet");
+  ensureConfigured();
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   if (displayName) await updateProfile(credential.user, { displayName });
   await sendEmailVerification(credential.user);
@@ -48,7 +80,7 @@ async function register({ email, password, displayName }) {
 }
 
 async function login(email, password) {
-  if (!configured) throw new Error("Firebase Auth is not configured yet");
+  ensureConfigured();
   const credential = await signInWithEmailAndPassword(auth, email, password);
   return credential.user;
 }
@@ -64,7 +96,7 @@ async function resendVerification() {
 }
 
 async function resetPassword(email) {
-  if (!configured) throw new Error("Firebase Auth is not configured yet");
+  ensureConfigured();
   await sendPasswordResetEmail(auth, email);
 }
 

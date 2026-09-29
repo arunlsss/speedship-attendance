@@ -1,7 +1,6 @@
 (() => {
   const API_URL = "https://attendanceapi-wl5ots23eq-as.a.run.app/";
   const THEME_KEY = "sss_theme";
-  const DEVICE_KEY = "sss_device_token_v3";
   let dashboardUser = null;
 
   function applyTheme(pref = localStorage.getItem(THEME_KEY) || "auto") {
@@ -24,12 +23,8 @@
     if ((localStorage.getItem(THEME_KEY) || "auto") === "auto") applyTheme("auto");
   });
 
-  async function request(action, { method = "GET", body = null, device = false, dashboard = false, query = {} } = {}) {
+  async function request(action, { method = "GET", body = null, dashboard = false, query = {} } = {}) {
     const headers = {};
-    if (device) {
-      const token = localStorage.getItem(DEVICE_KEY) || "";
-      if (token) headers["X-Device-Token"] = token;
-    }
     if (dashboard) {
       const token = await window.SSSAuth?.idToken();
       if (token) headers.Authorization = `Bearer ${token}`;
@@ -85,9 +80,16 @@
   }
   function initials(name, nick = "") { return String(nick || name || "?").trim().slice(0, 2).toUpperCase(); }
 
-  function setDeviceToken(token) { localStorage.setItem(DEVICE_KEY, token); }
-  function clearDeviceToken() { localStorage.removeItem(DEVICE_KEY); }
-  function hasDeviceToken() { return Boolean(localStorage.getItem(DEVICE_KEY)); }
+  function safeExternalUrl(value) {
+    if (!value) return "";
+    try {
+      const u = new URL(String(value), location.origin);
+      return u.protocol === "https:" ? u.href : "";
+    } catch {
+      return "";
+    }
+  }
+
 
   function routeForRole(role) {
     if (role === "hr") return "hr.html";
@@ -137,9 +139,8 @@
   applyTheme();
 
   window.SSS = {
-    API_URL, THEME_KEY, DEVICE_KEY,
-    applyTheme, cycleTheme, request, toast, esc, pct, fmtDateTime, fmtDate, initials,
-    setDeviceToken, clearDeviceToken, hasDeviceToken,
+    API_URL, THEME_KEY,
+    applyTheme, cycleTheme, request, toast, esc, pct, fmtDateTime, fmtDate, initials, safeExternalUrl,
     routeForRole, loadDashboardUser, requireDashboard, logoutDashboard,
     dashboardUser: () => dashboardUser
   };

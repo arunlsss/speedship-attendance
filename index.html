@@ -386,7 +386,22 @@
       .submit-wrap { bottom: max(10px, env(safe-area-inset-bottom)); }
       .toast-stack { right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100vw - 20px); }
     }
-  </style>
+  
+/* V6 interaction polish */
+button, .panel, .employee-button, .ready-item, .status-chip, select, input, textarea {
+  transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, border-color .18s ease, background-color .18s ease, color .18s ease, opacity .18s ease;
+}
+@media (hover:hover) {
+  button:not(:disabled):hover { transform:translateY(-2px); }
+  button:not(:disabled):active { transform:translateY(0) scale(.985); }
+  .panel:hover { transform:translateY(-2px); box-shadow:0 18px 48px rgba(0,0,0,.12); }
+  .employee-button:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,.12); }
+  .ready-item:hover { transform:translateY(-1px); border-color:var(--border-strong); }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; scroll-behavior:auto!important; }
+}
+</style>
 </head>
 <body>
 <div class="app-shell">
@@ -533,52 +548,6 @@
   </div>
 </div>
 
-<div class="modal-backdrop" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
-  <div class="modal">
-    <h2 id="registerTitle">ลงทะเบียนพนักงานใหม่</h2>
-    <p>ข้อมูลจะเข้าระบบในสถานะ Active และประเภท 99.Wait เพื่อให้ฝ่ายดูแลตรวจสอบภายหลัง</p>
-    <div class="register-grid">
-      <div class="field full">
-        <label class="field-label" for="regFullname">ชื่อ-นามสกุล</label>
-        <input id="regFullname" autocomplete="name">
-      </div>
-      <div class="field">
-        <label class="field-label" for="regNick">ชื่อเล่น</label>
-        <input id="regNick">
-      </div>
-      <div class="field">
-        <label class="field-label" for="regPhone">เบอร์โทร</label>
-        <input id="regPhone" inputmode="tel" autocomplete="tel">
-      </div>
-      <div class="field full">
-        <label class="field-label" for="regBank">บัญชีธนาคาร</label>
-        <input id="regBank" autocomplete="off">
-      </div>
-      <div class="field full">
-        <label class="field-label">สาขาที่ลงทะเบียน</label>
-        <div class="hint" id="regLocationText">เลือกสถานที่ในหน้าหลักก่อน</div>
-      </div>
-      <div class="field full">
-        <label class="field-label">รูปถ่ายหน้าตรง</label>
-        <div class="camera-frame mini-camera">
-          <video id="regVideo" playsinline autoplay muted></video>
-          <img id="regSnapshot" class="snapshot" alt="Registration photo">
-          <canvas id="regCanvas"></canvas>
-          <div class="camera-placeholder" id="regPlaceholder"><div><div class="camera-icon"></div><strong>เปิดกล้อง</strong></div></div>
-        </div>
-        <div class="camera-actions">
-          <button class="secondary-button" type="button" id="regCameraToggle">เปิดกล้อง</button>
-          <button class="secondary-button" type="button" id="regCapture" disabled>ถ่ายรูป</button>
-        </div>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="ghost-button" type="button" id="registerCancel">ยกเลิก</button>
-      <button class="primary-small" type="button" id="registerSubmit">ลงทะเบียน</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 <div class="upload-center" id="uploadCenter"></div>
 
@@ -600,8 +569,6 @@
     logType: "IN",
     photoDataUrl: null,
     stream: null,
-    regStream: null,
-    regPhotoDataUrl: null,
     submitting: false,
     pendingDuplicate: null,
     gps: null
@@ -738,7 +705,6 @@
     else localStorage.removeItem(CONFIG.LOCATION_KEY);
 
     if (state.selectedEmployee && !employeeMatchesLocation(state.selectedEmployee)) clearSelectedEmployee();
-    $("regLocationText").textContent = state.selectedLocation ? state.selectedLocation.name : "เลือกสถานที่ในหน้าหลักก่อน";
     renderEmployees();
     updateReadiness();
   }
@@ -808,10 +774,9 @@
     updateSubmitButton();
   }
 
-  async function startCamera(registration = false) {
-    const currentStream = registration ? state.regStream : state.stream;
-    if (currentStream) {
-      stopCamera(registration);
+  async function startCamera() {
+    if (state.stream) {
+      stopCamera();
       return;
     }
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -819,40 +784,43 @@
       return;
     }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } },
-        audio: false
-      });
-      const video = registration ? $("regVideo") : $("video");
-      if (registration) state.regStream = stream; else state.stream = stream;
-      video.srcObject = stream;
-      video.style.display = "block";
-      (registration ? $("regPlaceholder") : $("cameraPlaceholder")).style.display = "none";
-      if (!registration) $("cameraLive").classList.add("show");
-      (registration ? $("regCapture") : $("captureButton")).disabled = false;
-      (registration ? $("regCameraToggle") : $("cameraToggle")).textContent = "ปิดกล้อง";
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "user" }, width: { ideal: 1280 }, height: { ideal: 960 } },
+          audio: false
+        });
+      } catch (firstError) {
+        if (firstError?.name !== "NotFoundError" && firstError?.name !== "OverconstrainedError") throw firstError;
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      }
+      state.stream = stream;
+      $("video").srcObject = stream;
+      $("video").style.display = "block";
+      $("cameraPlaceholder").style.display = "none";
+      $("cameraLive").classList.add("show");
+      $("captureButton").disabled = false;
+      $("cameraToggle").textContent = "ปิดกล้อง";
     } catch (error) {
       toast("เปิดกล้องไม่ได้", error.message, "error");
     }
   }
 
-  function stopCamera(registration = false) {
-    const stream = registration ? state.regStream : state.stream;
-    if (stream) stream.getTracks().forEach(track => track.stop());
-    if (registration) state.regStream = null; else state.stream = null;
-    const video = registration ? $("regVideo") : $("video");
-    video.srcObject = null;
-    video.style.display = "none";
-    (registration ? $("regPlaceholder") : $("cameraPlaceholder")).style.display = "grid";
-    if (!registration) $("cameraLive").classList.remove("show");
-    (registration ? $("regCapture") : $("captureButton")).disabled = true;
-    (registration ? $("regCameraToggle") : $("cameraToggle")).textContent = "เปิดกล้อง";
+  function stopCamera() {
+    if (state.stream) state.stream.getTracks().forEach(track => track.stop());
+    state.stream = null;
+    $("video").srcObject = null;
+    $("video").style.display = "none";
+    $("cameraPlaceholder").style.display = "grid";
+    $("cameraLive").classList.remove("show");
+    $("captureButton").disabled = true;
+    $("cameraToggle").textContent = "เปิดกล้อง";
   }
 
-  function capturePhoto(registration = false) {
-    const video = registration ? $("regVideo") : $("video");
-    const canvas = registration ? $("regCanvas") : $("canvas");
-    const snapshot = registration ? $("regSnapshot") : $("snapshot");
+  function capturePhoto() {
+    const video = $("video");
+    const canvas = $("canvas");
+    const snapshot = $("snapshot");
     if (!video.videoWidth || !video.videoHeight) return;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -865,31 +833,24 @@
     snapshot.src = dataUrl;
     snapshot.style.display = "block";
     video.style.display = "none";
-    if (registration) state.regPhotoDataUrl = dataUrl; else state.photoDataUrl = dataUrl;
-    (registration ? $("regCapture") : $("captureButton")).textContent = "ถ่ายใหม่";
-    if (!registration) {
-      $("cameraLive").classList.remove("show");
-      updateReadiness();
-      updateSubmitButton();
-    }
+    state.photoDataUrl = dataUrl;
+    $("captureButton").textContent = "ถ่ายใหม่";
+    $("cameraLive").classList.remove("show");
+    updateReadiness();
+    updateSubmitButton();
   }
 
-  function retakeOrCapture(registration = false) {
-    const hasPhoto = registration ? state.regPhotoDataUrl : state.photoDataUrl;
-    if (!hasPhoto) return capturePhoto(registration);
-    if (registration) state.regPhotoDataUrl = null; else state.photoDataUrl = null;
-    const snapshot = registration ? $("regSnapshot") : $("snapshot");
-    const video = registration ? $("regVideo") : $("video");
-    snapshot.style.display = "none";
-    if ((registration ? state.regStream : state.stream)) {
-      video.style.display = "block";
-      if (!registration) $("cameraLive").classList.add("show");
+  function retakeOrCapture() {
+    if (!state.photoDataUrl) return capturePhoto();
+    state.photoDataUrl = null;
+    $("snapshot").style.display = "none";
+    if (state.stream) {
+      $("video").style.display = "block";
+      $("cameraLive").classList.add("show");
     }
-    (registration ? $("regCapture") : $("captureButton")).textContent = "ถ่ายรูป";
-    if (!registration) {
-      updateReadiness();
-      updateSubmitButton();
-    }
+    $("captureButton").textContent = "ถ่ายรูป";
+    updateReadiness();
+    updateSubmitButton();
   }
 
   function compressImage(dataUrl, maxW, maxH, quality) {
@@ -909,13 +870,19 @@
     });
   }
 
+  function randomWriteToken() {
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+  }
+
   function base64Part(dataUrl) {
     return String(dataUrl).split(",").pop();
   }
 
-  async function uploadPhoto(dataUrl, filename) {
+  async function uploadPhoto(dataUrl, filename, logId, writeToken) {
     const compressed = await compressImage(dataUrl, CONFIG.PHOTO_MAX_W, CONFIG.PHOTO_MAX_H, CONFIG.PHOTO_QUALITY);
-    return apiPost({ action: "uploadPhoto", imageBase64: base64Part(compressed), filename });
+    return apiPost({ action: "uploadPhoto", logId, writeToken, imageBase64: base64Part(compressed), filename });
   }
 
   async function getGps() {
@@ -982,6 +949,7 @@
     const locationSnapshot = preserved?.location || { ...state.selectedLocation };
     const logTypeSnapshot = preserved?.logType || state.logType;
     const noteSnapshot = preserved?.note ?? $("note").value.trim();
+    const writeToken = preserved?.writeToken || randomWriteToken();
 
     try {
       const gpsPromise = getGps().catch(() => state.gps || { lat: "", lng: "", accuracy: null });
@@ -997,11 +965,12 @@
         lng: "",
         photoUrl: "",
         note: noteSnapshot,
+        writeToken,
         forceWrite
       });
 
       if (result.isDup && !forceWrite) {
-        state.pendingDuplicate = { now, logId, photoSnapshot, employee: employeeSnapshot, location: locationSnapshot, logType: logTypeSnapshot, note: noteSnapshot };
+        state.pendingDuplicate = { now, logId, photoSnapshot, employee: employeeSnapshot, location: locationSnapshot, logType: logTypeSnapshot, note: noteSnapshot, writeToken };
         $("duplicateMessage").innerHTML = `<strong>${escapeHtml(employeeSnapshot.name)}</strong> มีการลงชื่อ${logTypeSnapshot === "IN" ? "เข้างาน" : "ออกงาน"}ที่ <strong>${escapeHtml(locationSnapshot.name)}</strong> วันนี้แล้ว ต้องการบันทึกซ้ำหรือไม่`;
         $("duplicateModal").classList.add("open");
         return;
@@ -1016,7 +985,7 @@
 
       Promise.all([
         gpsPromise,
-        uploadPhoto(photoSnapshot, `${logId}_${employeeSnapshot.id}.jpg`)
+        uploadPhoto(photoSnapshot, `${logId}_${employeeSnapshot.id}.jpg`, logId, writeToken)
       ])
         .then(([gps, photo]) => {
           if (gps?.lat) state.gps = gps;
@@ -1024,6 +993,7 @@
           return apiPost({
             action: "updateLogPhoto",
             logId,
+            writeToken,
             photoUrl: photo.viewUrl,
             storagePath: photo.storagePath,
             lat: gps?.lat ?? "",
@@ -1060,64 +1030,6 @@
     updateSubmitButton();
   }
 
-  function openRegister() {
-    $("registerModal").classList.add("open");
-    $("regLocationText").textContent = state.selectedLocation ? state.selectedLocation.name : "เลือกสถานที่ในหน้าหลักก่อน";
-  }
-
-  function closeRegister() {
-    stopCamera(true);
-    state.regPhotoDataUrl = null;
-    $("regSnapshot").style.display = "none";
-    $("regCapture").textContent = "ถ่ายรูป";
-    ["regFullname","regNick","regPhone","regBank"].forEach(id => $(id).value = "");
-    $("registerModal").classList.remove("open");
-  }
-
-  function generateEmployeeId() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let out = "";
-    for (let i = 0; i < 8; i++) out += chars[Math.floor(Math.random() * chars.length)];
-    return out;
-  }
-
-  async function submitRegistration() {
-    const fullname = $("regFullname").value.trim();
-    const nick = $("regNick").value.trim();
-    const phone = $("regPhone").value.trim();
-    const bank = $("regBank").value.trim();
-    if (!state.selectedLocation) return toast("กรุณาเลือกสาขาก่อน", "ปิดหน้าต่างนี้และเลือกสถานที่ในหน้าหลัก", "error");
-    if (!fullname || !nick || !phone || !bank || !state.regPhotoDataUrl) return toast("ข้อมูลยังไม่ครบ", "กรอกข้อมูลและถ่ายรูปให้ครบ", "error");
-
-    const button = $("registerSubmit");
-    button.disabled = true;
-    button.textContent = "กำลังลงทะเบียน...";
-    try {
-      const empId = generateEmployeeId();
-      const photo = await uploadPhoto(state.regPhotoDataUrl, `REG_${empId}.jpg`);
-      await apiPost({
-        action: "registerEmp",
-        empId,
-        fullname,
-        nick,
-        phone,
-        bank,
-        assignedLoc: state.selectedLocation.name,
-        photoUrl: photo.viewUrl,
-        timestamp: thaiClientDateTime(new Date())
-      });
-      toast("ลงทะเบียนสำเร็จ", `${fullname} · ${empId}`, "success");
-      closeRegister();
-      state.employees = await apiGet("getEmployees");
-      renderEmployees();
-    } catch (error) {
-      toast("ลงทะเบียนไม่สำเร็จ", error.message, "error");
-    } finally {
-      button.disabled = false;
-      button.textContent = "ลงทะเบียน";
-    }
-  }
-
   function bindEvents() {
     $("themeMode").addEventListener("change", e => setThemePreference(e.target.value));
     $("locationSelect").addEventListener("change", e => setLocation(e.target.value));
@@ -1125,8 +1037,8 @@
     $("changeEmployee").addEventListener("click", clearSelectedEmployee);
     $("inButton").addEventListener("click", () => setLogType("IN"));
     $("outButton").addEventListener("click", () => setLogType("OUT"));
-    $("cameraToggle").addEventListener("click", () => startCamera(false));
-    $("captureButton").addEventListener("click", () => retakeOrCapture(false));
+    $("cameraToggle").addEventListener("click", startCamera);
+    $("captureButton").addEventListener("click", retakeOrCapture);
     $("submitButton").addEventListener("click", () => submitAttendance(false));
 
     $("duplicateCancel").addEventListener("click", () => {
@@ -1144,22 +1056,15 @@
     });
 
     $("registerButton").addEventListener("click", () => { window.location.href = "login.html"; });
-    $("registerCancel").addEventListener("click", closeRegister);
-    $("regCameraToggle").addEventListener("click", () => startCamera(true));
-    $("regCapture").addEventListener("click", () => retakeOrCapture(true));
-    $("registerSubmit").addEventListener("click", submitRegistration);
 
-    ["duplicateModal","registerModal"].forEach(id => $(id).addEventListener("click", event => {
-      if (event.target === $(id)) {
-        if (id === "registerModal") closeRegister();
-        else {
-          state.pendingDuplicate = null;
-          state.submitting = false;
-          $(id).classList.remove("open");
-          updateSubmitButton();
-        }
+    $("duplicateModal").addEventListener("click", event => {
+      if (event.target === $("duplicateModal")) {
+        state.pendingDuplicate = null;
+        state.submitting = false;
+        $("duplicateModal").classList.remove("open");
+        updateSubmitButton();
       }
-    }));
+    });
   }
 
   async function init() {

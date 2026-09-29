@@ -34,8 +34,11 @@ function showState(me){
   forms.hidden=true;
   state.innerHTML=`<div class="access-state success"><div class="state-icon ok">✓</div><h3>${SSS.esc(roleLabel(me.role))} access approved</h3><p>Signed in as <strong>${SSS.esc(me.email)}</strong>.</p><button class="btn btn-primary auth-main-btn" id="continueBtn">Open dashboard</button></div>`;
   $("continueBtn").onclick=()=>location.href=SSS.routeForRole(me.role);
-  const qs=new URLSearchParams(location.search), next=qs.get("next");
-  setTimeout(()=>{location.href=next || SSS.routeForRole(me.role);},400);
+  const qs=new URLSearchParams(location.search);
+  const requested=qs.get("next");
+  const allowedNext=new Set(["hr.html","admin.html","executive.html"]);
+  const next=allowedNext.has(requested)?requested:SSS.routeForRole(me.role);
+  setTimeout(()=>{location.href=next;},400);
 }
 
 async function refreshState(){
@@ -99,7 +102,10 @@ $("forgotBtn").onclick=async()=>{
   }
 };
 
-$("setupToggle").onclick=()=>{
+$("setupToggle").onclick=async()=>{
+  const user=await SSSAuth.ready();
+  if(!user){SSS.toast("Sign in with your verified work account first","error");return;}
+  if(!user.emailVerified){SSS.toast("Verify your work email first","error");return;}
   $("setupBox").hidden=!$("setupBox").hidden;
 };
 
