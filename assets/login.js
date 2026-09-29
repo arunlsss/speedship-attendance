@@ -1,3 +1,4 @@
+import "./auth.js";
 const $ = id => document.getElementById(id);
 const forms = $("authForms");
 const state = $("authState");
