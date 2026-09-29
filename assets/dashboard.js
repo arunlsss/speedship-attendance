@@ -271,7 +271,7 @@
   function closeDrawer(){ $("drawerBackdrop").classList.remove("open"); $("drawer").classList.remove("open"); }
 
   async function loadPhoto(storagePath,target){
-    try{const el=$(target);el.innerHTML=`<div class="muted small">Loading private photo…</div>`;const r=await SSS.request("getPrivatePhoto",{method:"POST",dashboard:true,body:{storagePath}});el.innerHTML=`<img alt="Private employee photo" src="data:${SSS.esc(r.mime)};base64,${r.base64}" style="max-width:220px;width:100%;border-radius:14px;border:1px solid var(--border)">`;}
+    try{const el=$(target);el.innerHTML=`<div class="muted small">Loading private photo…</div>`;const r=await SSS.request("getPrivatePhoto",{method:"POST",dashboard:true,body:{storagePath}});const mime=["image/jpeg","image/png","image/webp"].includes(r.mime)?r.mime:"image/jpeg";el.innerHTML=`<img alt="Private employee photo" src="data:${mime};base64,${r.base64}" style="max-width:220px;width:100%;border-radius:14px;border:1px solid var(--border)">`;}
     catch(e){SSS.toast(e.message,"error");}
   }
 
@@ -315,7 +315,7 @@
 
   function exportCSV(){
     const rows=[["Employee_ID","Status","Type","Name","Nick","Assigned_Locations","Observed_Days","On_Time_Rate","Complete_Rate","Last_Activity"],...filteredEmployees().map(e=>[e.id,e.status,e.type,e.name,e.nick,(e.assignedLocs||[]).join(" | "),e.metrics.observedDays,e.metrics.punctualityRate??"",e.metrics.completionRate??"",e.metrics.lastActivity||""])];
-    const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n"); const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`speedship-attendance-${data.period.from}-${data.period.to}.csv`; a.click(); URL.revokeObjectURL(a.href);
+    const safeCell=v=>{const raw=String(v??"");const guarded=/^[=+\-@]/.test(raw)?"\'"+raw:raw;return `"${guarded.replace(/"/g,'""')}"`;};const csv=rows.map(r=>r.map(safeCell).join(",")).join("\n"); const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`speedship-attendance-${data.period.from}-${data.period.to}.csv`; a.click(); URL.revokeObjectURL(a.href);
   }
 
   load();
