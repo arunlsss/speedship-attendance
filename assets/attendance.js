@@ -42,9 +42,10 @@ const CONFIG = {
   }
 
   function avatarMarkup(emp) {
-    const photoUrl = safeLegacyPhotoUrl(emp.profilePhotoUrl);
+    const directUrl = safeLegacyPhotoUrl(emp.profilePhotoUrl);
+    const proxyUrl = CONFIG.API_URL + "?action=getEmployeeAvatar&empId=" + encodeURIComponent(emp.id);
+    const photoUrl = directUrl || proxyUrl;
     const fallback = `<span class="avatar-fallback">${escapeHtml(initials(emp))}</span>`;
-    if (!photoUrl) return `<span class="avatar">${fallback}</span>`;
     return `<span class="avatar">${fallback}<img class="avatar-photo" src="${escapeHtml(photoUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
   }
 
