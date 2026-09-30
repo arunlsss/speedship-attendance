@@ -281,7 +281,22 @@
     .submit-button:disabled { opacity: .38; cursor: not-allowed; box-shadow: none; }
     .submit-button:not(:disabled):hover { transform: translateY(-1px); filter: brightness(1.04); }
 
-    .theme-select { width: auto; min-width: 112px; padding: 9px 30px 9px 10px; font-size: 12px; background-color: var(--surface); }
+    .theme-switch {
+      display: inline-flex; align-items: center; gap: 2px;
+      padding: 3px; border: 1px solid var(--border);
+      background: var(--surface); border-radius: 12px;
+    }
+    .theme-icon-btn {
+      width: 34px; height: 34px; border: 0; border-radius: 9px;
+      display: grid; place-items: center; padding: 0;
+      background: transparent; color: var(--text-2); cursor: pointer;
+    }
+    .theme-icon-btn:hover { background: var(--surface-2); color: var(--text); }
+    .theme-icon-btn.active { background: var(--text); color: var(--surface); box-shadow: var(--shadow); }
+    .theme-icon-btn svg {
+      width: 18px; height: 18px; fill: none; stroke: currentColor;
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
 
     .modal-backdrop {
       position: fixed; inset: 0; z-index: 100;
@@ -370,7 +385,9 @@
       .brand-title { font-size: 14px; }
       .brand-sub { font-size: 10px; }
       .clock-box { display: none; }
-      .theme-select { min-width: 94px; }
+      .theme-switch { flex: 0 0 auto; }
+      .theme-icon-btn { width: 32px; height: 32px; }
+      .theme-icon-btn svg { width: 17px; height: 17px; }
       .secondary-button { padding: 0 10px; }
       main { padding: 18px 12px 32px; }
       .intro { margin-bottom: 13px; }
