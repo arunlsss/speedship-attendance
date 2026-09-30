@@ -272,12 +272,13 @@ import "./auth.js";
     $("drawerTitle").textContent=`${e.name} (${e.nick||"—"})`;
     const sensitive=role==="hr"||role==="admin"||role==="super_admin";
     const daily=sensitive?(e.daily||[]).slice().reverse().slice(0,20):[];
+    const legacyProfileUrl=sensitive?SSS.safeExternalUrl(e.profilePhotoUrl):"";
     $("drawerBody").innerHTML=`<div class="info-grid">
       ${info("Employee ID",e.id)}${info("Status",e.status)}${info("Type",e.type)}${info("Location",(e.assignedLocs||[]).join(", ")||"—")}
       ${info("Observed days",e.metrics.observedDays)}${info("On-time rate",SSS.pct(e.metrics.punctualityRate))}${info("Complete IN/OUT",SSS.pct(e.metrics.completionRate))}${info("Last activity",SSS.fmtDateTime(e.metrics.lastActivity))}
       ${sensitive?info("Phone",e.phone||"—")+info("Bank",e.bank||"—")+info("Salary",e.salary==null?"—":Number(e.salary).toLocaleString("th-TH"))+info("Incentive",e.incentive==null?"—":Number(e.incentive).toLocaleString("th-TH")):""}
     </div>
-    ${sensitive&&e.profileStoragePath?`<button class="btn btn-soft" id="loadProfilePhoto" style="margin-top:12px">View private profile photo</button><div id="photoPreview" style="margin-top:10px"></div>`:sensitive&&e.profilePhotoUrl?`<a class="btn btn-soft" href="${SSS.esc(e.profilePhotoUrl)}" target="_blank" rel="noreferrer" style="margin-top:12px">Open legacy profile photo</a>`:""}
+    ${sensitive&&e.profileStoragePath?`<button class="btn btn-soft" id="loadProfilePhoto" style="margin-top:12px">View private profile photo</button><div id="photoPreview" style="margin-top:10px"></div>`:legacyProfileUrl?`<a class="btn btn-soft" href="${SSS.esc(legacyProfileUrl)}" target="_blank" rel="noreferrer noopener" style="margin-top:12px">Open legacy profile photo</a>`:""}
     ${sensitive?`<div class="card-title" style="margin-top:18px;margin-bottom:8px">Recent attendance days</div>${dailyTable(daily)}`:"<div class='card-sub' style='margin-top:14px'>C-Level access intentionally excludes personal contact, bank and salary fields.</div>"}`;
     $("drawerBackdrop").classList.add("open"); $("drawer").classList.add("open");
     const photoBtn=$("loadProfilePhoto"); if(photoBtn) photoBtn.onclick=()=>loadPhoto(e.profileStoragePath,"photoPreview");
