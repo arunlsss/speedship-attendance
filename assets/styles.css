@@ -3,10 +3,10 @@
 @font-face{font-family:"Euclid Circular A";src:url("./fonts/Euclid Circular A Medium.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
 @font-face{font-family:"Euclid Circular A";src:url("./fonts/Euclid Circular A SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
 @font-face{font-family:"Euclid Circular A";src:url("./fonts/Euclid Circular A Bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}
-@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Lt.ttf") format("truetype");font-weight:300;font-style:normal;font-display:swap}
-@font-face{font-family:"DB Ozone X";src:url("./fonts/DB-Ozone-X-v3.2-1.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Med.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Bd.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Lt.ttf") format("truetype");font-weight:300;font-style:normal;font-display:swap;size-adjust:125%}
+@font-face{font-family:"DB Ozone X";src:url("./fonts/DB-Ozone-X-v3.2-1.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap;size-adjust:125%}
+@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Med.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap;size-adjust:125%}
+@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Bd.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap;size-adjust:125%}
 
 :root {
   color-scheme: light;
@@ -401,4 +401,63 @@ textarea{min-height:76px;resize:vertical}input::placeholder,textarea::placeholde
 }
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+}
+
+
+/* Management dashboard readability pass */
+.dash-layout{grid-template-columns:240px minmax(0,1fr);font-size:14px}
+.sidebar{padding:20px 16px}
+.sidebar .brand{padding:3px 7px 22px}
+.sidebar .brand-title{font-size:16px}
+.sidebar .brand-sub{font-size:12px}
+.nav{gap:6px}
+.nav a{padding:12px 12px;font-size:14px;border-radius:11px}
+.sidebar-footer .small{font-size:12.5px;line-height:1.55}
+.dash-topbar{padding:15px 26px}
+.dash-topbar strong{font-size:16px}
+.dash-topbar .small{font-size:12.5px}
+.dash-content{padding:28px;width:min(1600px,100%)}
+.dashboard-page-head{margin-bottom:20px}
+.dashboard-page-head p{font-size:14px}
+.dash-layout .card{padding:22px}
+.dash-layout .card-head{margin-bottom:16px}
+.dash-layout .eyebrow{font-size:10.5px}
+.dash-layout .card-title{font-size:17px;margin-top:4px}
+.dash-layout .card-sub{font-size:13px;line-height:1.6}
+.kpi{padding:19px}
+.kpi-label{font-size:11.5px}
+.kpi-value{font-size:30px;margin-top:6px}
+.kpi-sub{font-size:12px;margin-top:5px;line-height:1.45}
+.toolbar{gap:12px}
+.toolbar-group{gap:9px}
+.toolbar select,.toolbar input{min-width:160px;min-height:40px;padding:9px 12px;font-size:13px}
+.table th,.table td{padding:13px 14px;font-size:13.5px;line-height:1.45}
+.table th{font-size:10.5px;letter-spacing:.07em}
+.badge{padding:5px 9px;font-size:11px}
+.dash-layout .small{font-size:13px}
+.info-box{padding:12px}
+.info-label{font-size:10.5px}
+.info-value{font-size:14px;line-height:1.45}
+.summary-label{font-size:13.5px}
+.summary-sub{font-size:12px}
+.coverage-number span{font-size:13px}
+.coverage-foot{font-size:12px}
+.bar-tooltip{font-size:12px}
+.chart-foot{font-size:11px}
+.branch-row-top strong{font-size:14px}
+.exception-person strong{font-size:14px}
+.exception-person span{font-size:12px}
+.exception-metrics span{font-size:11px;padding:5px 8px}
+.reliability-row strong{font-size:13px}
+.reliability-row span{font-size:12px}
+.empty-state strong{font-size:14px}
+.empty-state span{font-size:12px}
+.drawer{width:min(600px,100%)}
+.drawer-head{padding:20px}
+.drawer-body{padding:20px}
+
+@media(max-width:980px){
+  .dash-layout{grid-template-columns:1fr}
+  .dash-topbar{padding:12px 16px}
+  .dash-content{padding:16px}
 }
