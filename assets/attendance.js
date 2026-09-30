@@ -85,7 +85,11 @@ const CONFIG = {
       : pref;
     document.documentElement.dataset.theme = resolved;
     document.documentElement.style.colorScheme = resolved;
-    $("themeMode").value = pref;
+    document.querySelectorAll("[data-theme-pref]").forEach(button => {
+      const active = button.dataset.themePref === pref;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
   }
 
   const systemThemeMedia = matchMedia("(prefers-color-scheme: dark)");
@@ -499,7 +503,9 @@ const CONFIG = {
   }
 
   function bindEvents() {
-    $("themeMode").addEventListener("change", e => setThemePreference(e.target.value));
+    document.querySelectorAll("[data-theme-pref]").forEach(button => {
+      button.addEventListener("click", () => setThemePreference(button.dataset.themePref));
+    });
     $("locationSelect").addEventListener("change", e => setLocation(e.target.value));
     $("employeeSearch").addEventListener("input", renderEmployees);
     $("changeEmployee").addEventListener("click", clearSelectedEmployee);
