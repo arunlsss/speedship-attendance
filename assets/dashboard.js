@@ -154,7 +154,7 @@ import "./auth.js";
       <div class="card attendance-card"><div class="card-head"><div><div class="eyebrow">FOLLOW-UP</div><div class="card-title">Attendance exception summary</div><div class="card-sub">Operational attendance exceptions only. This is not an employee performance score.</div></div></div>${renderExceptions(false)}</div>
       <div class="card attendance-card"><div class="card-head"><div><div class="eyebrow">PERIOD SUMMARY</div><div class="card-title">Attendance reliability</div></div></div>${renderReliability()}</div>
     </section>
-    <section class="card attendance-card" style="margin-top:14px"><div class="card-head"><div><div class="eyebrow">EMPLOYEE ATTENDANCE RECORDS</div><div class="card-title">Attendance summary by employee</div><div class="card-sub">Read-only attendance metrics. Personal, bank and salary information are excluded from C-Level access.</div></div></div><div id="employeeTable">${renderEmployeeTable(false)}</div></section>`;
+    <section class="card attendance-card" style="margin-top:14px"><div class="card-head"><div><div class="eyebrow">EMPLOYEE ATTENDANCE RECORDS</div><div class="card-title">Attendance summary by employee</div><div class="card-sub">Read-only attendance metrics. Salary and incentive are available to C-Level; phone, bank and private profile data remain excluded.</div></div></div><div id="employeeTable">${renderEmployeeTable(false)}</div></section>`;
   }
 
   function renderPending(){
@@ -270,16 +270,18 @@ import "./auth.js";
   function openEmployee(id){
     const e=data.employees.find(x=>x.id===id); if(!e)return;
     $("drawerTitle").textContent=`${e.name} (${e.nick||"—"})`;
-    const sensitive=role==="hr"||role==="admin"||role==="super_admin";
-    const daily=sensitive?(e.daily||[]).slice().reverse().slice(0,20):[];
-    const legacyProfileUrl=sensitive?SSS.safeExternalUrl(e.profilePhotoUrl):"";
+    const canViewPrivate=role==="hr"||role==="admin"||role==="super_admin";
+    const canViewCompensation=role==="hr"||role==="executive";
+    const daily=canViewPrivate?(e.daily||[]).slice().reverse().slice(0,20):[];
+    const legacyProfileUrl=canViewPrivate?SSS.safeExternalUrl(e.profilePhotoUrl):"";
     $("drawerBody").innerHTML=`<div class="info-grid">
       ${info("Employee ID",e.id)}${info("Status",e.status)}${info("Type",e.type)}${info("Location",(e.assignedLocs||[]).join(", ")||"—")}
       ${info("Observed days",e.metrics.observedDays)}${info("On-time rate",SSS.pct(e.metrics.punctualityRate))}${info("Complete IN/OUT",SSS.pct(e.metrics.completionRate))}${info("Last activity",SSS.fmtDateTime(e.metrics.lastActivity))}
-      ${sensitive?info("Phone",e.phone||"—")+info("Bank",e.bank||"—")+info("Salary",e.salary==null?"—":Number(e.salary).toLocaleString("th-TH"))+info("Incentive",e.incentive==null?"—":Number(e.incentive).toLocaleString("th-TH")):""}
+      ${canViewPrivate?info("Phone",e.phone||"—")+info("Bank",e.bank||"—"):""}
+      ${canViewCompensation?info("Salary",e.salary==null?"—":Number(e.salary).toLocaleString("th-TH"))+info("Incentive",e.incentive==null?"—":Number(e.incentive).toLocaleString("th-TH")):""}
     </div>
-    ${sensitive&&e.profileStoragePath?`<button class="btn btn-soft" id="loadProfilePhoto" style="margin-top:12px">View private profile photo</button><div id="photoPreview" style="margin-top:10px"></div>`:legacyProfileUrl?`<a class="btn btn-soft" href="${SSS.esc(legacyProfileUrl)}" target="_blank" rel="noreferrer noopener" style="margin-top:12px">Open legacy profile photo</a>`:""}
-    ${sensitive?`<div class="card-title" style="margin-top:18px;margin-bottom:8px">Recent attendance days</div>${dailyTable(daily)}`:"<div class='card-sub' style='margin-top:14px'>C-Level access intentionally excludes personal contact, bank and salary fields.</div>"}`;
+    ${canViewPrivate&&e.profileStoragePath?`<button class="btn btn-soft" id="loadProfilePhoto" style="margin-top:12px">View private profile photo</button><div id="photoPreview" style="margin-top:10px"></div>`:legacyProfileUrl?`<a class="btn btn-soft" href="${SSS.esc(legacyProfileUrl)}" target="_blank" rel="noreferrer noopener" style="margin-top:12px">Open legacy profile photo</a>`:""}
+    ${canViewPrivate?`<div class="card-title" style="margin-top:18px;margin-bottom:8px">Recent attendance days</div>${dailyTable(daily)}`:"<div class='card-sub' style='margin-top:14px'>C-Level access excludes phone, bank account, private profile photo and detailed attendance-day records.</div>"}`;
     $("drawerBackdrop").classList.add("open"); $("drawer").classList.add("open");
     const photoBtn=$("loadProfilePhoto"); if(photoBtn) photoBtn.onclick=()=>loadPhoto(e.profileStoragePath,"photoPreview");
   }
@@ -305,17 +307,24 @@ import "./auth.js";
 
   function openAddEmployee(){
     const locOpts=(data.locations||[]).map(l=>`<option value="${SSS.esc(l.name)}">${SSS.esc(l.name)}</option>`).join("");
-    $("actionModalContent").innerHTML=`<div class="eyebrow">HR / ADMIN</div><h2>Add employee</h2><p>Normal employees do not create accounts. This creates the employee master record used by the V2 attendance page.</p><div class="grid-2"><div class="field"><label class="field-label">Full name</label><input id="newEmpName"></div><div class="field"><label class="field-label">Nickname</label><input id="newEmpNick"></div><div class="field"><label class="field-label">Employee ID <span class="muted">(optional)</span></label><input id="newEmpId" placeholder="Auto-generate if blank"></div><div class="field"><label class="field-label">Employee type</label><select id="newEmpType"><option value="01.Full-Time_OF">01.Full-Time_OF</option><option value="02.Full-Time_WH">02.Full-Time_WH</option><option value="03.Daily" selected>03.Daily</option><option value="04.Weekly">04.Weekly</option><option value="05.Job">05.Job</option><option value="06.Intern">06.Intern</option></select></div><div class="field"><label class="field-label">Assigned location</label><select id="newEmpLoc">${locOpts}</select></div><div class="field"><label class="field-label">Status</label><select id="newEmpStatus"><option>Active</option><option>Inactive</option></select></div><div class="field"><label class="field-label">Phone</label><input id="newEmpPhone" inputmode="tel"></div><div class="field"><label class="field-label">Bank account</label><input id="newEmpBank"></div><div class="field"><label class="field-label">Salary</label><input id="newEmpSalary" inputmode="decimal"></div><div class="field"><label class="field-label">Incentive</label><input id="newEmpIncentive" inputmode="decimal"></div></div><div class="modal-actions"><button class="btn btn-ghost" id="newEmpCancel">Cancel</button><button class="btn btn-primary" id="newEmpCreate">Create employee</button></div>`;
+    const canEditCompensation=role==="hr";
+    const compensationFields=canEditCompensation?`<div class="field"><label class="field-label">Salary</label><input id="newEmpSalary" inputmode="decimal"></div><div class="field"><label class="field-label">Incentive</label><input id="newEmpIncentive" inputmode="decimal"></div>`:"";
+    $("actionModalContent").innerHTML=`<div class="eyebrow">HR / ADMIN</div><h2>Add employee</h2><p>Normal employees do not create accounts. This creates the employee master record used by the V2 attendance page.</p><div class="grid-2"><div class="field"><label class="field-label">Full name</label><input id="newEmpName"></div><div class="field"><label class="field-label">Nickname</label><input id="newEmpNick"></div><div class="field"><label class="field-label">Employee ID <span class="muted">(optional)</span></label><input id="newEmpId" placeholder="Auto-generate if blank"></div><div class="field"><label class="field-label">Employee type</label><select id="newEmpType"><option value="01.Full-Time_OF">01.Full-Time_OF</option><option value="02.Full-Time_WH">02.Full-Time_WH</option><option value="03.Daily" selected>03.Daily</option><option value="04.Weekly">04.Weekly</option><option value="05.Job">05.Job</option><option value="06.Intern">06.Intern</option></select></div><div class="field"><label class="field-label">Assigned location</label><select id="newEmpLoc">${locOpts}</select></div><div class="field"><label class="field-label">Status</label><select id="newEmpStatus"><option>Active</option><option>Inactive</option></select></div><div class="field"><label class="field-label">Phone</label><input id="newEmpPhone" inputmode="tel"></div><div class="field"><label class="field-label">Bank account</label><input id="newEmpBank"></div>${compensationFields}</div><div class="modal-actions"><button class="btn btn-ghost" id="newEmpCancel">Cancel</button><button class="btn btn-primary" id="newEmpCreate">Create employee</button></div>`;
     $("actionModal").classList.add("open");
     $("newEmpCancel").onclick=()=>$("actionModal").classList.remove("open");
     $("newEmpCreate").onclick=async()=>{
       const btn=$("newEmpCreate"); btn.disabled=true; btn.textContent="Creating…";
       try{
-        const r=await SSS.request("createEmployee",{method:"POST",dashboard:true,body:{
+        const body={
           empId:$("newEmpId").value.trim(), fullname:$("newEmpName").value.trim(), nick:$("newEmpNick").value.trim(),
           type:$("newEmpType").value, assignedLocs:[$("newEmpLoc").value], status:$("newEmpStatus").value,
-          phone:$("newEmpPhone").value.trim(), bank:$("newEmpBank").value.trim(), salary:$("newEmpSalary").value.trim(), incentive:$("newEmpIncentive").value.trim()
-        }});
+          phone:$("newEmpPhone").value.trim(), bank:$("newEmpBank").value.trim()
+        };
+        if(canEditCompensation){
+          body.salary=$("newEmpSalary").value.trim();
+          body.incentive=$("newEmpIncentive").value.trim();
+        }
+        const r=await SSS.request("createEmployee",{method:"POST",dashboard:true,body});
         SSS.toast(`Employee ${r.empId} created`,"success"); $("actionModal").classList.remove("open"); await load();
       }catch(e){SSS.toast(e.message,"error");}
       finally{btn.disabled=false;btn.textContent="Create employee";}
