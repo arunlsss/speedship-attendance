@@ -31,6 +31,23 @@ const CONFIG = {
     return s.slice(0, 2).toUpperCase();
   }
 
+  function safeLegacyPhotoUrl(value) {
+    if (!value) return "";
+    try {
+      const url = new URL(String(value));
+      return url.protocol === "https:" ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+
+  function avatarMarkup(emp) {
+    const photoUrl = safeLegacyPhotoUrl(emp.profilePhotoUrl);
+    const fallback = `<span class="avatar-fallback">${escapeHtml(initials(emp))}</span>`;
+    if (!photoUrl) return `<span class="avatar">${fallback}</span>`;
+    return `<span class="avatar">${fallback}<img class="avatar-photo" src="${escapeHtml(photoUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
+  }
+
   function unwrap(payload) {
     if (!payload || payload.ok !== true) throw new Error(payload?.error || "Server error");
     return payload.data;
@@ -183,12 +200,16 @@ const CONFIG = {
     }
     list.innerHTML = rows.map(emp => `
       <button type="button" class="employee-button ${state.selectedEmployee?.id === emp.id ? "selected" : ""}" data-emp-id="${escapeHtml(emp.id)}">
-        <span class="avatar">${escapeHtml(initials(emp))}</span>
+        ${avatarMarkup(emp)}
         <span class="employee-meta">
           <span class="employee-name">${escapeHtml(emp.name)}</span>
           <span class="employee-sub">${escapeHtml(emp.nick || "-")} · ${escapeHtml(emp.id)}${emp.type ? ` · ${escapeHtml(emp.type)}` : ""}</span>
         </span>
       </button>`).join("");
+    list.querySelectorAll(".avatar-photo").forEach(img => {
+      img.addEventListener("load", () => img.classList.add("loaded"));
+      img.addEventListener("error", () => img.remove());
+    });
     list.querySelectorAll("[data-emp-id]").forEach(btn => btn.addEventListener("click", () => selectEmployee(btn.dataset.empId)));
   }
 
