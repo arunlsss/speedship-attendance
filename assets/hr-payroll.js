@@ -6,6 +6,8 @@ import "./auth.js";
 
   let payrollData = null;
   let selectedMonth = "";
+  let selectedBranch = "all";
+  let employeeQuery = "";
   let observer = null;
 
   function esc(value) {
@@ -92,10 +94,31 @@ import "./auth.js";
     return { cls: "complete", label: "Complete" };
   }
 
-  function activeEmployees() {
-    return (payrollData && payrollData.employees || []).filter(emp =>
-      String(emp.status || "").toLowerCase() === "active"
-    );
+  function availableBranches() {
+    const branches = new Set();
+    (payrollData && payrollData.locations || []).forEach(loc => {
+      const name = String(loc && (loc.name || loc.locationName || loc.id) || "").trim();
+      if (name) branches.add(name);
+    });
+    (payrollData && payrollData.employees || []).forEach(emp => {
+      (emp.assignedLocs || []).forEach(name => {
+        const value = String(name || "").trim();
+        if (value) branches.add(value);
+      });
+    });
+    return Array.from(branches).sort((a, b) => a.localeCompare(b, "th"));
+  }
+
+  function filteredEmployees() {
+    const query = employeeQuery.trim().toLowerCase();
+    return (payrollData && payrollData.employees || []).filter(emp => {
+      if (String(emp.status || "").toLowerCase() !== "active") return false;
+      const locations = (emp.assignedLocs || []).map(x => String(x || ""));
+      const branchOK = selectedBranch === "all" || locations.some(x => x === selectedBranch);
+      const haystack = [emp.name, emp.nick, emp.id, emp.type, ...locations].join(" ").toLowerCase();
+      const searchOK = !query || haystack.includes(query);
+      return branchOK && searchOK;
+    });
   }
 
   function buildCalendar() {
@@ -118,7 +141,7 @@ import "./auth.js";
       '<th class="payroll-summary-head">Span h</th>';
 
     let body = "";
-    activeEmployees().forEach(emp => {
+    filteredEmployees().forEach(emp => {
       const map = new Map(
         (emp.daily || [])
           .filter(day => String(day.dateKey || "").startsWith(selectedMonth))
@@ -167,7 +190,7 @@ import "./auth.js";
     });
 
     if (!body) {
-      body = '<tr><td colspan="' + (dates.length + 6) + '" class="payroll-empty">No active employees.</td></tr>';
+      body = '<tr><td colspan="' + (dates.length + 6) + '" class="payroll-empty">No employees match this branch or search.</td></tr>';
     }
 
     return '<div class="payroll-calendar-wrap"><table class="payroll-calendar"><thead><tr>' +
@@ -184,6 +207,12 @@ import "./auth.js";
       esc(monthLabel(key)) + '</option>'
     ).join("");
 
+    const branchOptions = ['<option value="all">All branches</option>']
+      .concat(availableBranches().map(name =>
+        '<option value="' + esc(name) + '"' + (name === selectedBranch ? ' selected' : '') + '>' +
+        esc(name) + '</option>'
+      )).join("");
+
     const section = document.createElement("section");
     section.id = "hrPayrollSection";
     section.className = "card attendance-card payroll-card";
@@ -193,7 +222,9 @@ import "./auth.js";
         '<div class="card-title">Monthly IN / OUT Calendar</div>' +
         '<div class="card-sub">Daily first IN and last OUT for every active employee. No record is not automatically treated as absence.</div></div>' +
         '<div class="payroll-actions">' +
-          '<select id="payrollMonthSelect">' + options + '</select>' +
+          '<select id="payrollMonthSelect" aria-label="Payroll month">' + options + '</select>' +
+          '<select id="payrollBranchSelect" aria-label="Branch">' + branchOptions + '</select>' +
+          '<input id="payrollEmployeeSearch" type="search" placeholder="Search employee" aria-label="Search employee" value="' + esc(employeeQuery) + '">' +
           '<button class="btn btn-soft" id="payrollExportBtn" type="button">Export payroll CSV</button>' +
         '</div>' +
       '</div>' +
@@ -205,10 +236,24 @@ import "./auth.js";
       '</div>' +
       '<div id="payrollCalendarHost">' + buildCalendar() + '</div>';
 
-    section.querySelector("#payrollMonthSelect").addEventListener("change", event => {
-      selectedMonth = event.target.value;
+    const refreshCalendar = () => {
       section.querySelector("#payrollCalendarHost").innerHTML = buildCalendar();
       bindEmployeeClicks(section);
+    };
+
+    section.querySelector("#payrollMonthSelect").addEventListener("change", event => {
+      selectedMonth = event.target.value;
+      refreshCalendar();
+    });
+
+    section.querySelector("#payrollBranchSelect").addEventListener("change", event => {
+      selectedBranch = event.target.value;
+      refreshCalendar();
+    });
+
+    section.querySelector("#payrollEmployeeSearch").addEventListener("input", event => {
+      employeeQuery = event.target.value;
+      refreshCalendar();
     });
 
     section.querySelector("#payrollExportBtn").addEventListener("click", exportCSV);
@@ -258,7 +303,7 @@ import "./auth.js";
       "First_IN", "Last_OUT", "Attendance_Status", "Minutes_Late", "Recorded_Span_Hours"
     ]];
 
-    activeEmployees().forEach(emp => {
+    filteredEmployees().forEach(emp => {
       const map = new Map(
         (emp.daily || [])
           .filter(day => String(day.dateKey || "").startsWith(selectedMonth))
