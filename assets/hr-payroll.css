@@ -3,6 +3,10 @@
 .payroll-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .payroll-actions select,.payroll-actions input{width:auto;min-width:170px;min-height:42px}
 .payroll-actions input{min-width:220px;padding:9px 12px}
+.payroll-date-pair{display:flex;align-items:center;gap:7px}
+.payroll-date-pair[hidden],#payrollMonthControl[hidden]{display:none!important}
+.payroll-date-pair input{min-width:145px;width:145px}
+.payroll-date-pair span{font-size:12px;color:var(--text-2)}
 .payroll-legend{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:16px 0 12px;color:var(--text-2);font-size:12px}
 .payroll-legend span{display:inline-flex;align-items:center;gap:6px}
 .payroll-dot{width:9px;height:9px;border-radius:50%;display:inline-block;border:1px solid var(--border)}
@@ -48,5 +52,7 @@
   .payroll-head{display:grid}
   .payroll-actions{width:100%}
   .payroll-actions select,.payroll-actions input,.payroll-actions .btn{flex:1;min-width:0}
+  .payroll-date-pair{width:100%}
+  .payroll-date-pair input{min-width:0;width:auto}
   .payroll-employee-head,.payroll-employee{min-width:190px}
 }
