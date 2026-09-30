@@ -6,8 +6,12 @@ import "./auth.js";
 
   let payrollData = null;
   let selectedMonth = "";
+  let selectedDatePreset = "month";
+  let customDateFrom = "";
+  let customDateTo = "";
   let selectedBranch = "all";
   let selectedEmployeeStatus = "active";
+  let selectedEmployeeType = "all";
   let employeeQuery = "";
   let observer = null;
 
@@ -15,15 +19,50 @@ import "./auth.js";
     return SSS.esc(value == null ? "" : value);
   }
 
-  function bangkokMonthKey() {
+  function bangkokDateKey() {
     const parts = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Bangkok",
       year: "numeric",
-      month: "2-digit"
+      month: "2-digit",
+      day: "2-digit"
     }).formatToParts(new Date());
     const year = parts.find(p => p.type === "year").value;
     const month = parts.find(p => p.type === "month").value;
-    return year + "-" + month;
+    const day = parts.find(p => p.type === "day").value;
+    return year + "-" + month + "-" + day;
+  }
+
+  function bangkokMonthKey() {
+    return bangkokDateKey().slice(0, 7);
+  }
+
+  function shiftDateKey(dateKey, deltaDays) {
+    const date = new Date(dateKey + "T00:00:00Z");
+    date.setUTCDate(date.getUTCDate() + deltaDays);
+    return date.toISOString().slice(0, 10);
+  }
+
+  function dateRange(fromKey, toKey) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fromKey || "") || !/^\d{4}-\d{2}-\d{2}$/.test(toKey || "")) return [];
+    if (fromKey > toKey) return [];
+    const dates = [];
+    let cursor = fromKey;
+    while (cursor <= toKey && dates.length < 92) {
+      dates.push(cursor);
+      cursor = shiftDateKey(cursor, 1);
+    }
+    return dates;
+  }
+
+  function selectedDates() {
+    const today = bangkokDateKey();
+    if (selectedDatePreset === "today") return [today];
+    if (selectedDatePreset === "yesterday") return [shiftDateKey(today, -1)];
+    if (selectedDatePreset === "7") return dateRange(shiftDateKey(today, -6), today);
+    if (selectedDatePreset === "30") return dateRange(shiftDateKey(today, -29), today);
+    if (selectedDatePreset === "60") return dateRange(shiftDateKey(today, -59), today);
+    if (selectedDatePreset === "custom") return dateRange(customDateFrom, customDateTo);
+    return monthDates(selectedMonth);
   }
 
   function monthLabel(key) {
@@ -110,12 +149,23 @@ import "./auth.js";
     return Array.from(branches).sort((a, b) => a.localeCompare(b, "th"));
   }
 
+  function availableEmployeeTypes() {
+    return Array.from(new Set(
+      (payrollData && payrollData.employees || [])
+        .map(emp => String(emp.type || "").trim())
+        .filter(Boolean)
+    )).sort((a, b) => a.localeCompare(b, "en"));
+  }
+
   function filteredEmployees() {
     const query = employeeQuery.trim().toLowerCase();
     return (payrollData && payrollData.employees || []).filter(emp => {
       const status = String(emp.status || "").toLowerCase();
       const statusOK = selectedEmployeeStatus === "all" || status === selectedEmployeeStatus;
       if (!statusOK) return false;
+      const type = String(emp.type || "").trim();
+      const typeOK = selectedEmployeeType === "all" || type === selectedEmployeeType;
+      if (!typeOK) return false;
       const locations = (emp.assignedLocs || []).map(x => String(x || ""));
       const branchOK = selectedBranch === "all" || locations.some(x => x === selectedBranch);
       const haystack = [emp.name, emp.nick, emp.id, emp.type, ...locations].join(" ").toLowerCase();
@@ -125,9 +175,9 @@ import "./auth.js";
   }
 
   function buildCalendar() {
-    const dates = monthDates(selectedMonth);
+    const dates = selectedDates();
     if (!dates.length) {
-      return '<div class="payroll-empty">No attendance month available.</div>';
+      return '<div class="payroll-empty">Select a valid attendance date range.</div>';
     }
 
     let head = '<th class="payroll-sticky payroll-employee-head">Employee</th>';
@@ -146,9 +196,7 @@ import "./auth.js";
     let body = "";
     filteredEmployees().forEach(emp => {
       const map = new Map(
-        (emp.daily || [])
-          .filter(day => String(day.dateKey || "").startsWith(selectedMonth))
-          .map(day => [day.dateKey, day])
+        (emp.daily || []).map(day => [day.dateKey, day])
       );
 
       let recorded = 0;
@@ -193,7 +241,7 @@ import "./auth.js";
     });
 
     if (!body) {
-      body = '<tr><td colspan="' + (dates.length + 6) + '" class="payroll-empty">No employees match this status, branch or search.</td></tr>';
+      body = '<tr><td colspan="' + (dates.length + 6) + '" class="payroll-empty">No employees match this status, type, branch or search.</td></tr>';
     }
 
     return '<div class="payroll-calendar-wrap"><table class="payroll-calendar"><thead><tr>' +
@@ -216,6 +264,19 @@ import "./auth.js";
         esc(name) + '</option>'
       )).join("");
 
+    const typeOptions = ['<option value="all">All employee types</option>']
+      .concat(availableEmployeeTypes().map(type =>
+        '<option value="' + esc(type) + '"' + (type === selectedEmployeeType ? ' selected' : '') + '>' +
+        esc(type) + '</option>'
+      )).join("");
+
+    const minDate = payrollData && payrollData.period && payrollData.period.from || shiftDateKey(bangkokDateKey(), -89);
+    const maxDate = payrollData && payrollData.period && payrollData.period.to || bangkokDateKey();
+    if (!customDateTo) customDateTo = maxDate;
+    if (!customDateFrom) customDateFrom = shiftDateKey(maxDate, -6);
+    if (customDateFrom < minDate) customDateFrom = minDate;
+    if (customDateTo > maxDate) customDateTo = maxDate;
+
     const section = document.createElement("section");
     section.id = "hrPayrollSection";
     section.className = "card attendance-card payroll-card";
@@ -225,13 +286,28 @@ import "./auth.js";
         '<div class="card-title">Monthly IN / OUT Calendar</div>' +
         '<div class="card-sub">Daily first IN and last OUT by employee status. No record is not automatically treated as absence.</div></div>' +
         '<div class="payroll-actions">' +
-          '<select id="payrollMonthSelect" aria-label="Payroll month">' + options + '</select>' +
+          '<select id="payrollDatePreset" aria-label="Date range">' +
+            '<option value="month"' + (selectedDatePreset === "month" ? " selected" : "") + '>Monthly</option>' +
+            '<option value="custom"' + (selectedDatePreset === "custom" ? " selected" : "") + '>Date to Date</option>' +
+            '<option value="yesterday"' + (selectedDatePreset === "yesterday" ? " selected" : "") + '>Yesterday</option>' +
+            '<option value="today"' + (selectedDatePreset === "today" ? " selected" : "") + '>Today</option>' +
+            '<option value="7"' + (selectedDatePreset === "7" ? " selected" : "") + '>7 Days</option>' +
+            '<option value="30"' + (selectedDatePreset === "30" ? " selected" : "") + '>30 Days</option>' +
+            '<option value="60"' + (selectedDatePreset === "60" ? " selected" : "") + '>60 Days</option>' +
+          '</select>' +
+          '<span id="payrollMonthControl"' + (selectedDatePreset === "month" ? "" : " hidden") + '><select id="payrollMonthSelect" aria-label="Payroll month">' + options + '</select></span>' +
+          '<span id="payrollCustomDates" class="payroll-date-pair"' + (selectedDatePreset === "custom" ? "" : " hidden") + '>' +
+            '<input id="payrollDateFrom" type="date" aria-label="From date" min="' + esc(minDate) + '" max="' + esc(maxDate) + '" value="' + esc(customDateFrom) + '">' +
+            '<span>to</span>' +
+            '<input id="payrollDateTo" type="date" aria-label="To date" min="' + esc(minDate) + '" max="' + esc(maxDate) + '" value="' + esc(customDateTo) + '">' +
+          '</span>' +
           '<select id="payrollBranchSelect" aria-label="Branch">' + branchOptions + '</select>' +
           '<select id="payrollStatusSelect" aria-label="Employee status">' +
             '<option value="active"' + (selectedEmployeeStatus === "active" ? " selected" : "") + '>Active employees</option>' +
             '<option value="inactive"' + (selectedEmployeeStatus === "inactive" ? " selected" : "") + '>Inactive employees</option>' +
             '<option value="all"' + (selectedEmployeeStatus === "all" ? " selected" : "") + '>All employees</option>' +
           '</select>' +
+          '<select id="payrollTypeSelect" aria-label="Employee type">' + typeOptions + '</select>' +
           '<input id="payrollEmployeeSearch" type="search" placeholder="Search employee" aria-label="Search employee" value="' + esc(employeeQuery) + '">' +
           '<button class="btn btn-soft" id="payrollExportBtn" type="button">Export payroll CSV</button>' +
         '</div>' +
@@ -249,8 +325,37 @@ import "./auth.js";
       bindEmployeeClicks(section);
     };
 
+    const updateDateControls = () => {
+      section.querySelector("#payrollMonthControl").hidden = selectedDatePreset !== "month";
+      section.querySelector("#payrollCustomDates").hidden = selectedDatePreset !== "custom";
+    };
+
+    section.querySelector("#payrollDatePreset").addEventListener("change", event => {
+      selectedDatePreset = event.target.value;
+      updateDateControls();
+      refreshCalendar();
+    });
+
     section.querySelector("#payrollMonthSelect").addEventListener("change", event => {
       selectedMonth = event.target.value;
+      refreshCalendar();
+    });
+
+    section.querySelector("#payrollDateFrom").addEventListener("change", event => {
+      customDateFrom = event.target.value;
+      if (customDateTo && customDateFrom > customDateTo) {
+        customDateTo = customDateFrom;
+        section.querySelector("#payrollDateTo").value = customDateTo;
+      }
+      refreshCalendar();
+    });
+
+    section.querySelector("#payrollDateTo").addEventListener("change", event => {
+      customDateTo = event.target.value;
+      if (customDateFrom && customDateTo < customDateFrom) {
+        customDateFrom = customDateTo;
+        section.querySelector("#payrollDateFrom").value = customDateFrom;
+      }
       refreshCalendar();
     });
 
@@ -261,6 +366,11 @@ import "./auth.js";
 
     section.querySelector("#payrollStatusSelect").addEventListener("change", event => {
       selectedEmployeeStatus = event.target.value;
+      refreshCalendar();
+    });
+
+    section.querySelector("#payrollTypeSelect").addEventListener("change", event => {
+      selectedEmployeeType = event.target.value;
       refreshCalendar();
     });
 
@@ -310,7 +420,7 @@ import "./auth.js";
   }
 
   function exportCSV() {
-    const dates = monthDates(selectedMonth);
+    const dates = selectedDates();
     const rows = [[
       "Employee_ID", "Employee_Status", "Name", "Nickname", "Type", "Location", "Date",
       "First_IN", "Last_OUT", "Attendance_Status", "Minutes_Late", "Recorded_Span_Hours"
@@ -318,9 +428,7 @@ import "./auth.js";
 
     filteredEmployees().forEach(emp => {
       const map = new Map(
-        (emp.daily || [])
-          .filter(day => String(day.dateKey || "").startsWith(selectedMonth))
-          .map(day => [day.dateKey, day])
+        (emp.daily || []).map(day => [day.dateKey, day])
       );
 
       dates.forEach(dateKey => {
@@ -348,7 +456,9 @@ import "./auth.js";
     const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "speedship-payroll-attendance-" + selectedMonth + ".csv";
+    const rangeStart = dates[0] || "range";
+    const rangeEnd = dates[dates.length - 1] || "range";
+    link.download = "speedship-payroll-attendance-" + rangeStart + "-to-" + rangeEnd + ".csv";
     link.click();
     URL.revokeObjectURL(link.href);
   }
