@@ -7,6 +7,7 @@ import "./auth.js";
   let payrollData = null;
   let selectedMonth = "";
   let selectedBranch = "all";
+  let selectedEmployeeStatus = "active";
   let employeeQuery = "";
   let observer = null;
 
@@ -112,7 +113,9 @@ import "./auth.js";
   function filteredEmployees() {
     const query = employeeQuery.trim().toLowerCase();
     return (payrollData && payrollData.employees || []).filter(emp => {
-      if (String(emp.status || "").toLowerCase() !== "active") return false;
+      const status = String(emp.status || "").toLowerCase();
+      const statusOK = selectedEmployeeStatus === "all" || status === selectedEmployeeStatus;
+      if (!statusOK) return false;
       const locations = (emp.assignedLocs || []).map(x => String(x || ""));
       const branchOK = selectedBranch === "all" || locations.some(x => x === selectedBranch);
       const haystack = [emp.name, emp.nick, emp.id, emp.type, ...locations].join(" ").toLowerCase();
@@ -190,7 +193,7 @@ import "./auth.js";
     });
 
     if (!body) {
-      body = '<tr><td colspan="' + (dates.length + 6) + '" class="payroll-empty">No employees match this branch or search.</td></tr>';
+      body = '<tr><td colspan="' + (dates.length + 6) + '" class="payroll-empty">No employees match this status, branch or search.</td></tr>';
     }
 
     return '<div class="payroll-calendar-wrap"><table class="payroll-calendar"><thead><tr>' +
@@ -220,10 +223,15 @@ import "./auth.js";
       '<div class="payroll-head">' +
         '<div><div class="eyebrow">PAYROLL PREPARATION</div>' +
         '<div class="card-title">Monthly IN / OUT Calendar</div>' +
-        '<div class="card-sub">Daily first IN and last OUT for every active employee. No record is not automatically treated as absence.</div></div>' +
+        '<div class="card-sub">Daily first IN and last OUT by employee status. No record is not automatically treated as absence.</div></div>' +
         '<div class="payroll-actions">' +
           '<select id="payrollMonthSelect" aria-label="Payroll month">' + options + '</select>' +
           '<select id="payrollBranchSelect" aria-label="Branch">' + branchOptions + '</select>' +
+          '<select id="payrollStatusSelect" aria-label="Employee status">' +
+            '<option value="active"' + (selectedEmployeeStatus === "active" ? " selected" : "") + '>Active employees</option>' +
+            '<option value="inactive"' + (selectedEmployeeStatus === "inactive" ? " selected" : "") + '>Inactive employees</option>' +
+            '<option value="all"' + (selectedEmployeeStatus === "all" ? " selected" : "") + '>All employees</option>' +
+          '</select>' +
           '<input id="payrollEmployeeSearch" type="search" placeholder="Search employee" aria-label="Search employee" value="' + esc(employeeQuery) + '">' +
           '<button class="btn btn-soft" id="payrollExportBtn" type="button">Export payroll CSV</button>' +
         '</div>' +
@@ -248,6 +256,11 @@ import "./auth.js";
 
     section.querySelector("#payrollBranchSelect").addEventListener("change", event => {
       selectedBranch = event.target.value;
+      refreshCalendar();
+    });
+
+    section.querySelector("#payrollStatusSelect").addEventListener("change", event => {
+      selectedEmployeeStatus = event.target.value;
       refreshCalendar();
     });
 
@@ -299,7 +312,7 @@ import "./auth.js";
   function exportCSV() {
     const dates = monthDates(selectedMonth);
     const rows = [[
-      "Employee_ID", "Name", "Nickname", "Type", "Location", "Date",
+      "Employee_ID", "Employee_Status", "Name", "Nickname", "Type", "Location", "Date",
       "First_IN", "Last_OUT", "Attendance_Status", "Minutes_Late", "Recorded_Span_Hours"
     ]];
 
@@ -316,6 +329,7 @@ import "./auth.js";
         const hours = spanHours(day);
         rows.push([
           emp.id,
+          emp.status,
           emp.name,
           emp.nick,
           emp.type,
