@@ -102,7 +102,13 @@
     if (dashboardUser && !force) return dashboardUser;
     const user = await window.SSSAuth?.ready();
     if (!user) return null;
-    dashboardUser = await request("dashboardMe", { method: "POST", dashboard: true, body: {} });
+    try {
+      dashboardUser = await request("dashboardMe", { method: "POST", dashboard: true, body: {} });
+    } catch (error) {
+      if (error.status !== 401) throw error;
+      await window.SSSAuth?.idToken(true);
+      dashboardUser = await request("dashboardMe", { method: "POST", dashboard: true, body: {} });
+    }
     return dashboardUser;
   }
 
@@ -125,9 +131,15 @@
       }
       return me;
     } catch (e) {
-      if (e.status === 401 || e.status === 403) location.href = "login.html";
-      else throw e;
-      return null;
+      if (e.status === 401) {
+        location.href = "login.html?reason=session";
+        return null;
+      }
+      if (e.status === 403) {
+        SSS.toast(e.message || "Dashboard access denied", "error");
+        return null;
+      }
+      throw e;
     }
   }
 

@@ -1,3 +1,4 @@
+import "./auth.js";
 (async () => {
   const page = document.body.dataset.dashboardPage;
   const allowed = page === "admin" ? ["admin","super_admin"] : page === "hr" ? ["hr","admin","super_admin"] : ["executive","admin","super_admin"];
@@ -43,14 +44,31 @@
 
   function titleForPage(){ return page === "hr" ? "HR Attendance Records" : page === "admin" ? "Attendance System Admin" : "C-Level Attendance Overview"; }
 
+  async function protectedRequest(action, options = {}) {
+    try {
+      return await SSS.request(action, { ...options, dashboard:true });
+    } catch (error) {
+      if (error.status !== 401) throw error;
+      await window.SSSAuth.idToken(true);
+      return SSS.request(action, { ...options, dashboard:true });
+    }
+  }
+
   async function load(){
     $("content").innerHTML = `<div class="card">Loading dashboard…</div>`;
     try {
-      data = await SSS.request("dashboardData", { dashboard:true, query:{days} });
-      if (role === "super_admin") accessData = await SSS.request("listDashboardUsers", { method:"POST", dashboard:true, body:{} });
+      data = await protectedRequest("dashboardData", { query:{days} });
+      if (role === "super_admin") accessData = await protectedRequest("listDashboardUsers", { method:"POST", body:{} });
       render();
     } catch(e) {
-      if(e.status===401 || e.status===403){ await SSS.logoutDashboard(); location.href="login.html"; return; }
+      if(e.status===401){
+        $("content").innerHTML=`<div class="card"><strong>Session expired</strong><div class="card-sub">Your Firebase session could not be refreshed.</div><div style="margin-top:12px"><a class="btn btn-primary" href="login.html?reason=session">Sign in again</a></div></div>`;
+        return;
+      }
+      if(e.status===403){
+        $("content").innerHTML=`<div class="card"><strong>Dashboard access denied</strong><div class="card-sub">${SSS.esc(e.message)}</div><div style="margin-top:12px"><a class="btn btn-soft" href="login.html">Back to management login</a></div></div>`;
+        return;
+      }
       $("content").innerHTML=`<div class="card"><strong>Unable to load dashboard</strong><div class="card-sub">${SSS.esc(e.message)}</div></div>`;
     }
   }
