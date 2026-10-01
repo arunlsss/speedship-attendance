@@ -376,7 +376,6 @@
 
     @media (max-width: 880px) {
       .layout { grid-template-columns: 1fr; }
-      .camera-card { order: -1; }
       .intro { align-items: flex-start; }
     }
     @media (max-width: 620px) {
