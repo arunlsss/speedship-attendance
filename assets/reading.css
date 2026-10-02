@@ -1,0 +1,260 @@
+
+/* Typography overrides only; application styles stay in their original files. */
+html.reading-dashboard button,html.reading-dashboard input,html.reading-dashboard select,html.reading-dashboard textarea{font-size:inherit;}
+html.reading-dashboard .small{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .brand-mark{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .brand-title{font-size:calc(max(var(--min-text-size, 0px), 0.9375rem) * var(--text-scale, 1));}
+html.reading-dashboard .brand-sub{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .clock{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .date{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .btn{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .page-head h1{font-size:calc(max(var(--min-text-size, 0px), clamp(1.5625rem,4vw,2.25rem)) * var(--text-scale, 1));}
+html.reading-dashboard .page-head p{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .status-chip{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .eyebrow{font-size:calc(max(var(--min-text-size, 0px), 0.5625rem) * var(--text-scale, 1));}
+html.reading-dashboard .card-title{font-size:calc(max(var(--min-text-size, 0px), 0.9375rem) * var(--text-scale, 1));}
+html.reading-dashboard .card-sub{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .field-label{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .avatar{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .emp-name{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .emp-sub{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .camera-placeholder strong{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .camera-placeholder span{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .camera-badge{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .ready-item strong{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .ready-item span{font-size:calc(max(var(--min-text-size, 0px), 0.5625rem) * var(--text-scale, 1));}
+html.reading-dashboard .submit-btn{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .modal h2{font-size:calc(max(var(--min-text-size, 0px), 1.125rem) * var(--text-scale, 1));}
+html.reading-dashboard .modal p{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .code-input{font-size:calc(max(var(--min-text-size, 0px), 1.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .toast{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .nav a{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-label{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-value{font-size:calc(max(var(--min-text-size, 0px), 1.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-sub{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .toolbar select,html.reading-dashboard .toolbar input{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .table th,html.reading-dashboard .table td{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .table th{font-size:calc(max(var(--min-text-size, 0px), 0.5625rem) * var(--text-scale, 1));}
+html.reading-dashboard .badge{font-size:calc(max(var(--min-text-size, 0px), 0.5625rem) * var(--text-scale, 1));}
+html.reading-dashboard .info-label{font-size:calc(max(var(--min-text-size, 0px), 0.5625rem) * var(--text-scale, 1));}
+html.reading-dashboard .info-value{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .role-btn{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+@media (max-width: 620px){
+html.reading-dashboard .kpi-value{font-size:calc(max(var(--min-text-size, 0px), 1.375rem) * var(--text-scale, 1));}
+}
+html.reading-dashboard .auth-hero-copy h1{font-size:calc(max(var(--min-text-size, 0px), clamp(2.375rem,5vw,4.25rem)) * var(--text-scale, 1));}
+html.reading-dashboard .auth-hero-copy p{font-size:calc(max(var(--min-text-size, 0px), 1rem) * var(--text-scale, 1));}
+html.reading-dashboard .auth-security-list span{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .auth-security-list strong{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .auth-security-list small{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .auth-topline h2{font-size:calc(max(var(--min-text-size, 0px), 1.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .auth-tab{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .text-btn{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .notice-box{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .auth-footer{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .state-icon{font-size:calc(max(var(--min-text-size, 0px), 1.125rem) * var(--text-scale, 1));}
+html.reading-dashboard .access-state h3{font-size:calc(max(var(--min-text-size, 0px), 1.3125rem) * var(--text-scale, 1));}
+html.reading-dashboard .access-state p{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .approval-path{font-size:calc(max(var(--min-text-size, 0px), 0.5625rem) * var(--text-scale, 1));}
+@media (max-width: 540px){
+html.reading-dashboard .auth-topline h2{font-size:calc(max(var(--min-text-size, 0px), 1.4375rem) * var(--text-scale, 1));}
+}
+html.reading-dashboard .summary-value{font-size:calc(max(var(--min-text-size, 0px), clamp(1.5rem,3vw,2.125rem)) * var(--text-scale, 1));}
+html.reading-dashboard .summary-label{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .summary-sub{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .coverage-number strong{font-size:calc(max(var(--min-text-size, 0px), clamp(2.125rem,5vw,3.25rem)) * var(--text-scale, 1));}
+html.reading-dashboard .coverage-number span{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .coverage-foot{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .bar-tooltip{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .chart-foot{font-size:calc(max(var(--min-text-size, 0px), 0.5625rem) * var(--text-scale, 1));}
+html.reading-dashboard .branch-row-top strong{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .exception-row{font-size:inherit;}
+html.reading-dashboard .exception-person strong{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .exception-person span{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .exception-metrics span{font-size:calc(max(var(--min-text-size, 0px), 0.5625rem) * var(--text-scale, 1));}
+html.reading-dashboard .reliability-row strong{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .reliability-row span{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .reliability-row b{font-size:calc(max(var(--min-text-size, 0px), 1.1875rem) * var(--text-scale, 1));}
+html.reading-dashboard .empty-state strong{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .empty-state span{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-layout{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .sidebar .brand-title{font-size:calc(max(var(--min-text-size, 0px), 1rem) * var(--text-scale, 1));}
+html.reading-dashboard .sidebar .brand-sub{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .nav a{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .sidebar-footer .small{font-size:calc(max(var(--min-text-size, 0px), 0.78125rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-topbar strong{font-size:calc(max(var(--min-text-size, 0px), 1rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-topbar .small{font-size:calc(max(var(--min-text-size, 0px), 0.78125rem) * var(--text-scale, 1));}
+html.reading-dashboard .dashboard-page-head p{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-layout .eyebrow{font-size:calc(max(var(--min-text-size, 0px), 0.65625rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-layout .card-title{font-size:calc(max(var(--min-text-size, 0px), 1.0625rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-layout .card-sub{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-label{font-size:calc(max(var(--min-text-size, 0px), 0.71875rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-value{font-size:calc(max(var(--min-text-size, 0px), 1.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-sub{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .toolbar select,html.reading-dashboard .toolbar input{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .table th,html.reading-dashboard .table td{font-size:calc(max(var(--min-text-size, 0px), 0.84375rem) * var(--text-scale, 1));}
+html.reading-dashboard .table th{font-size:calc(max(var(--min-text-size, 0px), 0.65625rem) * var(--text-scale, 1));}
+html.reading-dashboard .badge{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-layout .small{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .info-label{font-size:calc(max(var(--min-text-size, 0px), 0.65625rem) * var(--text-scale, 1));}
+html.reading-dashboard .info-value{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .summary-label{font-size:calc(max(var(--min-text-size, 0px), 0.84375rem) * var(--text-scale, 1));}
+html.reading-dashboard .summary-sub{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .coverage-number span{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .coverage-foot{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .bar-tooltip{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .chart-foot{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .branch-row-top strong{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .exception-person strong{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .exception-person span{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .exception-metrics span{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .reliability-row strong{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .reliability-row span{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .empty-state strong{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .empty-state span{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-pager{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-pager .btn{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .sync-record summary::after{font-size:calc(max(var(--min-text-size, 0px), 1.25rem) * var(--text-scale, 1));}
+html.reading-dashboard .sync-record-main strong{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .sync-record-main > span{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .sync-record-detail{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .sync-summary{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-person strong{font-size:calc(max(var(--min-text-size, 0px), 0.9375rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-person > span{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-details{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .employee-record{font-size:inherit;}
+html.reading-dashboard .record-location{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-metrics strong{font-size:calc(max(var(--min-text-size, 0px), 1.25rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-metrics small{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .employee-record > .record-footer{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+@media (max-width: 980px){
+html.reading-dashboard .mobile-nav > a,html.reading-dashboard .mobile-nav > button{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .mobile-menu-head .icon-btn{font-size:calc(max(var(--min-text-size, 0px), 1.5rem) * var(--text-scale, 1));}
+html.reading-dashboard .mobile-account > span{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .mobile-menu .btn{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+}
+@media (max-width: 620px){
+html.reading-dashboard .dash-topbar-title strong{font-size:calc(max(var(--min-text-size, 0px), 1rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-topbar-title .small{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-topbar > .toolbar-group :is(select, .btn){font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .dashboard-page-head h1{font-size:calc(max(var(--min-text-size, 0px), 1.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .dashboard-page-head p{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .dashboard-page-head .status-chip{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-layout .card-title{font-size:calc(max(var(--min-text-size, 0px), 1.0625rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-layout .card-sub{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-value{font-size:calc(max(var(--min-text-size, 0px), 1.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-label{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .kpi-sub{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .dash-layout .toolbar :is(select, input, .btn){font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard #employeeSearch{font-size:calc(max(var(--min-text-size, 0px), 1rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-pager{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .record-pager .btn{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .drawer-head .icon-btn{font-size:calc(max(var(--min-text-size, 0px), 1.5rem) * var(--text-scale, 1));}
+html.reading-dashboard .modal :is(input, select, textarea){font-size:calc(max(var(--min-text-size, 0px), 1rem) * var(--text-scale, 1));}
+}
+html.reading-attendance button,html.reading-attendance input,html.reading-attendance select,html.reading-attendance textarea{font-size:inherit;}
+html.reading-attendance .brand-mark{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-attendance .brand-title{font-size:calc(max(var(--min-text-size, 0px), 1rem) * var(--text-scale, 1));}
+html.reading-attendance .brand-sub{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-attendance .clock{font-size:calc(max(var(--min-text-size, 0px), 0.9375rem) * var(--text-scale, 1));}
+html.reading-attendance .date{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-attendance .icon-button{font-size:calc(max(var(--min-text-size, 0px), 1.0625rem) * var(--text-scale, 1));}
+html.reading-attendance .secondary-button{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-attendance .ghost-button{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-attendance .intro h1{font-size:calc(max(var(--min-text-size, 0px), clamp(1.5rem, 4vw, 2.125rem)) * var(--text-scale, 1));}
+html.reading-attendance .intro p{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-attendance .status-chip{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-attendance .eyebrow{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-attendance .card-title{font-size:calc(max(var(--min-text-size, 0px), 1rem) * var(--text-scale, 1));}
+html.reading-attendance .hint{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-attendance label.field-label{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-attendance .avatar{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-attendance .employee-name{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-attendance .employee-sub{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-attendance .selected-panel strong{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-attendance .camera-live-badge{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-attendance .ready-item span{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-attendance .ready-item strong{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-attendance .submit-button{font-size:calc(max(var(--min-text-size, 0px), 0.9375rem) * var(--text-scale, 1));}
+html.reading-attendance .modal h2{font-size:calc(max(var(--min-text-size, 0px), 1.25rem) * var(--text-scale, 1));}
+html.reading-attendance .modal p{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-attendance .toast-title{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-attendance .toast-detail{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-attendance .upload-card strong{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-attendance .upload-card small{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-attendance .empty{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+@media (max-width: 620px){
+html.reading-attendance .brand-title{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-attendance .brand-sub{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-attendance .intro p{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+}
+html.reading-dashboard .payroll-date-pair span{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-legend{font-size:calc(max(var(--min-text-size, 0px), 0.75rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-employee-head{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-day-head strong{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-day-head span{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-person strong{font-size:calc(max(var(--min-text-size, 0px), 0.84375rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-person span{font-size:calc(max(var(--min-text-size, 0px), 0.71875rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-day span{font-size:calc(max(var(--min-text-size, 0px), 0.6875rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-summary-head{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-summary strong{font-size:calc(max(var(--min-text-size, 0px), 0.875rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-summary span{font-size:calc(max(var(--min-text-size, 0px), 0.625rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-footnote{font-size:calc(max(var(--min-text-size, 0px), 0.71875rem) * var(--text-scale, 1));}
+html.reading-dashboard .payroll-empty{font-size:calc(max(var(--min-text-size, 0px), 0.8125rem) * var(--text-scale, 1));}
+@font-face{font-family:"Euclid Circular A";src:url("./fonts/Euclid Circular A Light.ttf") format("truetype");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"Euclid Circular A";src:url("./fonts/Euclid Circular A Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Euclid Circular A";src:url("./fonts/Euclid Circular A Medium.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Euclid Circular A";src:url("./fonts/Euclid Circular A SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Euclid Circular A";src:url("./fonts/Euclid Circular A Bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Li.ttf") format("truetype");font-weight:300;font-style:normal;font-display:swap;size-adjust:125%}
+@font-face{font-family:"DB Ozone X";src:url("./fonts/DB-Ozone-X-v3.2-1.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap;size-adjust:125%}
+@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Med.ttf") format("truetype");font-weight:500;font-style:normal;font-display:swap;size-adjust:125%}
+@font-face{font-family:"DB Ozone X";src:url("./fonts/DB Ozone X Bd.ttf") format("truetype");font-weight:700;font-style:normal;font-display:swap;size-adjust:125%}
+
+/* Text scales independently of the camera, charts and page width. */
+:root { --min-text-size: 0px; --text-scale: 1; }
+body { font-size: calc(1rem * var(--text-scale)); line-height: 1.5; font-family: var(--font, "Euclid Circular A", "DB Ozone X", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif); }
+.brand-mark { width: calc(2.625rem * var(--text-scale)); height: calc(2.625rem * var(--text-scale)); }
+.text-size-control { display: flex; flex-direction: column; gap: 3px; min-width: 0; color: var(--text-2); }
+.text-size-control > span { font-size: calc(max(var(--min-text-size), .875rem) * var(--text-scale)); font-weight: 600; }
+.text-size-control select { width: auto; max-width: 100%; min-height: 44px; padding: 8px 10px; font-size: calc(1rem * var(--text-scale)); }
+.auth-display-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 8px; }
+.topbar-inner, .header-actions, .dash-topbar, .auth-topline { flex-wrap: wrap; }
+.header-actions { justify-content: flex-end; }
+.brand-title, .brand-sub { white-space: normal; overflow-wrap: anywhere; }
+.card-title { line-height: 1.45; }
+.submit-wrap { position: static; }
+.camera-placeholder .hint { color: #abb6c4; }
+.card-head, .selected-panel, .modal-actions { flex-wrap: wrap; }
+.secondary-button, .ghost-button, .submit-button, .segment, .btn { height: auto; padding-top: 9px; padding-bottom: 9px; white-space: normal; }
+.employee-name, .employee-sub { white-space: normal; overflow-wrap: anywhere; }
+.sidebar-footer { overflow-wrap: anywhere; }
+.auth-topline > div { min-width: 0; }
+.sidebar { overflow-y: auto; }
+.payroll-day { width: 100%; min-width: 72px; padding: 8px 6px; }
+
+@media (min-width: 981px) {
+  :root { --min-text-size: 1rem; --text-3: #596675; }
+  :root[data-theme="dark"] { --text-3: #b1bdcb; }
+  .dash-layout { grid-template-columns: minmax(240px, calc(15rem * var(--text-scale))) minmax(0, 1fr); }
+  .dash-topbar > .toolbar-group { justify-content: flex-end; }
+  .sidebar .brand { align-items: flex-start; }
+  .table th, .table td { padding: 14px 16px; }
+  .field-label, label.field-label { line-height: 1.5; }
+}
+
+@media (max-width: 980px) {
+  .dash-topbar .text-size-control { display: none; }
+  .mobile-menu .text-size-control { width: 100%; }
+  .mobile-menu .text-size-control select { width: 100%; }
+  .header-actions { flex-wrap: wrap; }
+  .auth-display-controls { width: 100%; }
+}
+
+@media (max-width: 620px) {
+  .topbar-inner > .brand, .topbar-inner > .header-actions { width: 100%; }
+  .header-actions { justify-content: space-between; }
+  .header-actions .text-size-control { flex: 1 1 100%; }
+  .header-actions .text-size-control select { width: 100%; }
+  .readiness { grid-template-columns: 1fr; }
+}
