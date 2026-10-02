@@ -1,0 +1,18 @@
+.language-control { display: flex; flex-direction: column; gap: 3px; min-width: 0; color: var(--text-2); }
+.language-control > span { font-size: calc(max(var(--min-text-size, 0px), .875rem) * var(--text-scale, 1)); font-weight: 600; }
+.language-control select { width: auto; max-width: 100%; min-height: 44px; padding: 8px 10px; font-size: calc(1rem * var(--text-scale, 1)); }
+:root[lang="th"] .auth-hero-copy h1 { line-height: 1.35; letter-spacing: -.02em; overflow-wrap: anywhere; }
+:root[lang="th"] :is(.page-head h1, .intro h1, .auth-topline h2) { line-height: 1.4; }
+@media (max-width: 980px) {
+  .dash-topbar .language-control { display: none; }
+  .mobile-menu .language-control, .mobile-menu .language-control select { width: 100%; }
+}
+@media (max-width: 620px) {
+  .header-actions .text-size-control, .header-actions .language-control { flex: 1 1 calc(50% - 8px); width: calc(50% - 8px); }
+  .header-actions .language-control select { width: 100%; }
+  .auth-display-controls .text-size-control, .auth-display-controls .language-control { flex: 1 1 calc(50% - 8px); }
+  .auth-display-controls select { width: 100%; }
+}
+.dashboard-page-head { flex-wrap: wrap; }
+.dashboard-page-head .status-chip { max-width: 100%; white-space: normal; }
+.sidebar .nav a { overflow-wrap: anywhere; }
