@@ -1,4 +1,5 @@
 import "./auth.js";
+import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
 
 (async () => {
   const viewer = await SSS.requireDashboard(["hr", "admin", "super_admin"]);
@@ -14,6 +15,19 @@ import "./auth.js";
   let selectedEmployeeType = "all";
   let employeeQuery = "";
   let observer = null;
+  let layoutObserver = null;
+  const leave = createHRLeaveCalendar({ viewer, request: SSS.request, esc: SSS.esc, toast: SSS.toast, timeOnly, onChange: refreshCalendar });
+
+  function refreshCalendar() {
+    const section = document.getElementById("hrPayrollSection");
+    if (!section) return;
+    const oldWrap = section.querySelector(".payroll-calendar-wrap");
+    const position = { left: oldWrap?.scrollLeft || 0, top: oldWrap?.scrollTop || 0 };
+    section.querySelector("#payrollCalendarHost").innerHTML = buildCalendar();
+    const wrap = section.querySelector(".payroll-calendar-wrap");
+    if (wrap) { wrap.scrollLeft = position.left; wrap.scrollTop = position.top; }
+    bindEmployeeClicks(section);
+  }
 
   function esc(value) {
     return SSS.esc(value == null ? "" : value);
@@ -187,7 +201,8 @@ import "./auth.js";
       head += '<th class="payroll-day-head' + (weekend ? ' weekend' : '') + '"><strong>' +
         Number(dateKey.slice(-2)) + '</strong><span>' + dow + '</span></th>';
     });
-    head += '<th class="payroll-summary-head">Recorded</th>' +
+    leave.ensure(dates);
+    head += '<th class="payroll-summary-head">HR status days</th>' + '<th class="payroll-summary-head">Recorded</th>' +
       '<th class="payroll-summary-head">Complete</th>' +
       '<th class="payroll-summary-head">Late</th>' +
       '<th class="payroll-summary-head">Incomplete</th>' +
@@ -199,6 +214,7 @@ import "./auth.js";
         (emp.daily || []).map(day => [day.dateKey, day])
       );
 
+      let classified = 0;
       let recorded = 0;
       let complete = 0;
       let late = 0;
@@ -208,7 +224,10 @@ import "./auth.js";
 
       dates.forEach(dateKey => {
         const day = map.get(dateKey);
-        const state = dayState(day);
+        const classification = leave.get(emp.id, dateKey);
+        const leaveType = leave.typeFor(classification);
+        if (leaveType) classified += 1;
+        const state = leaveType || dayState(day);
         if (day) {
           recorded += 1;
           if (day.complete && day.firstIn && day.lastOut) complete += 1;
@@ -221,7 +240,7 @@ import "./auth.js";
           (day && day.firstIn ? " · IN " + timeOnly(day.firstIn) : "") +
           (day && day.lastOut ? " · OUT " + timeOnly(day.lastOut) : "");
         cells += '<td><button class="payroll-day ' + state.cls + '" data-employee="' + esc(emp.id) +
-          '" title="' + esc(title) + '"><span class="payroll-in">' +
+          '" data-date="' + esc(dateKey) + '" aria-label="' + esc(title) + '" title="' + esc(title) + '">' + (leaveType ? '<span class="payroll-leave-label">' + esc(leaveType.short) + '</span>' : '') + '<span class="payroll-in">' +
           (day && day.firstIn ? timeOnly(day.firstIn) : "—") +
           '</span><span class="payroll-out">' +
           (day && day.lastOut ? timeOnly(day.lastOut) : "—") +
@@ -233,6 +252,7 @@ import "./auth.js";
         '<strong>' + esc(emp.name) + '</strong>' +
         '<span>' + esc((emp.nick || emp.id) + " · " + emp.id) + '</span>' +
         '</button></td>' + cells +
+        '<td class="payroll-summary"><strong>' + (leave.ready(dates) ? classified : '—') + '</strong><span>classified</span></td>' +
         '<td class="payroll-summary"><strong>' + recorded + '</strong><span>days</span></td>' +
         '<td class="payroll-summary"><strong>' + complete + '</strong><span>complete</span></td>' +
         '<td class="payroll-summary' + (late ? ' warn' : '') + '"><strong>' + late + '</strong><span>late</span></td>' +
@@ -241,10 +261,10 @@ import "./auth.js";
     });
 
     if (!body) {
-      body = '<tr><td colspan="' + (dates.length + 6) + '" class="payroll-empty">No employees match this status, type, branch or search.</td></tr>';
+      body = '<tr><td colspan="' + (dates.length + 7) + '" class="payroll-empty">No employees match this status, type, branch or search.</td></tr>';
     }
 
-    return '<div class="payroll-calendar-wrap"><table class="payroll-calendar"><thead><tr>' +
+    return leave.notice(dates) + '<div class="payroll-calendar-wrap"><table class="payroll-calendar"><thead><tr>' +
       head + '</tr></thead><tbody>' + body + '</tbody></table></div>' +
       '<div class="payroll-footnote">Recorded span hours = first IN to last OUT. It is not automatically payable hours, overtime, leave or a salary deduction.</div>';
   }
@@ -317,13 +337,12 @@ import "./auth.js";
         '<span><i class="payroll-dot late"></i>Late</span>' +
         '<span><i class="payroll-dot missing"></i>Incomplete</span>' +
         '<span><i class="payroll-dot empty"></i>No record</span>' +
+        '<span><i class="payroll-dot leave"></i>Paid Time Off</span>' +
+        '<span><i class="payroll-dot sick"></i>Sick Leave</span>' +
+        '<span><i class="payroll-dot off"></i>Day Off / Public Holiday</span>' +
+        '<span><i class="payroll-dot missing"></i>Absent</span>' +
       '</div>' +
       '<div id="payrollCalendarHost">' + buildCalendar() + '</div>';
-
-    const refreshCalendar = () => {
-      section.querySelector("#payrollCalendarHost").innerHTML = buildCalendar();
-      bindEmployeeClicks(section);
-    };
 
     const updateDateControls = () => {
       section.querySelector("#payrollMonthControl").hidden = selectedDatePreset !== "month";
@@ -385,9 +404,17 @@ import "./auth.js";
   }
 
   function bindEmployeeClicks(section) {
+    const retry = section.querySelector("#leaveRetry");
+    if (retry) retry.onclick = () => { leave.ensure(selectedDates(), true); refreshCalendar(); };
     section.querySelectorAll("[data-employee]").forEach(el => {
       el.addEventListener("click", () => {
         const employeeId = el.getAttribute("data-employee");
+        const dateKey = el.getAttribute("data-date");
+        if (dateKey) {
+          const employee = payrollData.employees.find(emp => emp.id === employeeId);
+          if (employee) leave.open(employee, dateKey, (employee.daily || []).find(day => day.dateKey === dateKey), selectedDates());
+          return;
+        }
         const tableRow = document.querySelector('.employeeRow[data-id="' + CSS.escape(employeeId) + '"]');
         if (tableRow) {
           tableRow.click();
@@ -401,16 +428,26 @@ import "./auth.js";
   function findEmployeeMaster() {
     const content = document.getElementById("content");
     if (!content) return null;
-    return Array.from(content.querySelectorAll("section.card")).find(section =>
-      section.textContent.includes("EMPLOYEE ATTENDANCE MASTER")
-    ) || null;
+    return content.querySelector("#employeeTable")?.closest("section.card") || null;
   }
 
   function mount() {
     if (document.getElementById("hrPayrollSection")) return;
     const master = findEmployeeMaster();
     if (!master || !payrollData) return;
-    master.parentNode.insertBefore(buildSection(), master);
+    const section = buildSection();
+    master.parentNode.insertBefore(section, master);
+    const topbar = document.querySelector(".dash-topbar");
+    const sticky = section.querySelector(".payroll-employee-head");
+    const measure = () => {
+      document.documentElement.style.setProperty("--payroll-topbar-offset", (topbar?.getBoundingClientRect().height || 0) + 16 + "px");
+      section.style.setProperty("--payroll-employee-width", (section.querySelector(".payroll-employee-head")?.getBoundingClientRect().width || 220) + "px");
+    };
+    layoutObserver?.disconnect();
+    layoutObserver = new ResizeObserver(measure);
+    if (topbar) layoutObserver.observe(topbar);
+    if (sticky) layoutObserver.observe(sticky);
+    measure();
   }
 
   function safeCSV(value) {
@@ -423,7 +460,7 @@ import "./auth.js";
     const dates = selectedDates();
     const rows = [[
       "Employee_ID", "Employee_Status", "Name", "Nickname", "Type", "Location", "Date",
-      "First_IN", "Last_OUT", "Attendance_Status", "Minutes_Late", "Recorded_Span_Hours"
+      "First_IN", "Last_OUT", "Attendance_Status", "Minutes_Late", "Recorded_Span_Hours", "HR_Status", "HR_Note"
     ]];
 
     filteredEmployees().forEach(emp => {
@@ -447,7 +484,9 @@ import "./auth.js";
           day && day.lastOut ? timeOnly(day.lastOut) : "",
           state.label,
           day && day.onTime === false ? Number(day.minutesLate || 0) : "",
-          hours == null ? "" : hours.toFixed(2)
+          hours == null ? "" : hours.toFixed(2),
+          leave.ready(dates) ? leave.typeFor(leave.get(emp.id, dateKey))?.label || "" : "Unavailable",
+          leave.ready(dates) ? leave.get(emp.id, dateKey)?.note || "" : ""
         ]);
       });
     });
@@ -469,6 +508,10 @@ import "./auth.js";
       query: { days: 90 }
     });
     mount();
+    document.getElementById("refreshBtn")?.addEventListener("click", () => {
+      leave.ensure(selectedDates(), true);
+      refreshCalendar();
+    });
 
     const content = document.getElementById("content");
     if (content) {

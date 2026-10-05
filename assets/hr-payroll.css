@@ -55,4 +55,32 @@
   .payroll-date-pair{width:100%}
   .payroll-date-pair input{min-width:0;width:auto}
   .payroll-employee-head,.payroll-employee{min-width:190px}
-}
+}.payroll-dot.leave{background:var(--green)}
+.payroll-dot.sick{background:#9b6ee8}
+.payroll-dot.off{background:var(--text-3)}
+.payroll-day.leave{background:var(--green-soft);box-shadow:inset 0 3px 0 var(--green)}
+.payroll-day.sick{background:color-mix(in srgb,#9b6ee8 14%,var(--surface));box-shadow:inset 0 3px 0 #9b6ee8}
+.payroll-day.unpaid,.payroll-day.absent{background:var(--red-soft);box-shadow:inset 0 3px 0 var(--red)}
+.payroll-day.off{background:var(--surface-2);box-shadow:inset 0 3px 0 var(--text-3)}
+html.reading-dashboard .payroll-day .payroll-leave-label{font-size:calc(max(var(--min-text-size,0px),.75rem)*var(--text-scale,1));font-weight:650;overflow-wrap:anywhere}
+.payroll-day:has(.payroll-leave-label){width:100%;min-width:72px;padding:8px 6px}
+.leave-notice{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0;color:var(--text-2);font-size:calc(max(var(--min-text-size,0px),.875rem)*var(--text-scale,1))}
+.leave-notice.warning{color:var(--amber)}
+.leave-dialog{margin:auto;box-sizing:border-box;width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;border:1px solid var(--border);border-radius:20px;padding:24px;background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm)}
+.leave-dialog::backdrop{background:rgba(0,0,0,.5)}
+.leave-dialog h2{font-size:calc(1.5rem*var(--text-scale,1));line-height:1.4;margin:0 0 12px}
+.leave-person strong,.leave-person span{display:block;overflow-wrap:anywhere}
+.leave-person span{color:var(--text-2);margin-top:4px}
+.leave-times{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.leave-times div{border:1px solid var(--border);border-radius:12px;padding:12px}
+.leave-times span,.leave-times strong{display:block}
+.leave-times span,.leave-help{color:var(--text-2)}
+html.reading-dashboard .leave-dialog :is(p,.field-label,.leave-times span,.leave-times strong,.btn,select,textarea){font-size:calc(max(var(--min-text-size,0px),1rem)*var(--text-scale,1));line-height:1.5}
+.leave-dialog .leave-help{margin:12px 0 18px}
+.leave-dialog textarea{width:100%;min-height:100px;padding:10px 12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:12px;resize:vertical}
+.leave-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin-top:20px}
+.leave-dialog .leave-error{color:var(--red);overflow-wrap:anywhere}
+@media(max-width:620px){.leave-dialog{padding:18px}.leave-actions .btn{flex:1;white-space:normal}}
+
+html:has(.payroll-card){scroll-padding-top:var(--payroll-topbar-offset,24px)}
+.payroll-calendar-wrap{scroll-padding-left:var(--payroll-employee-width,220px);scroll-padding-top:90px}

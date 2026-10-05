@@ -132,6 +132,47 @@
     ["Error (auth/weak-password).", "รหัสผ่านยังไม่ปลอดภัยเพียงพอ"], ["Error (auth/invalid-email).", "รูปแบบอีเมลไม่ถูกต้อง"],
   ];
 
+  pairs.push(
+    ["Paid Time Off", "ลาโดยได้รับค่าจ้าง (PTO)"],
+    ["Sick Leave", "ลาป่วย"],
+    ["Personal Leave", "ลากิจ"],
+    ["Unpaid Leave", "ลาโดยไม่ได้รับค่าจ้าง"],
+    ["Day Off", "วันหยุด"],
+    ["Public Holiday", "วันหยุดนักขัตฤกษ์"],
+    ["Absent", "ขาดงาน"],
+    ["Other Leave", "การลา / หยุดอื่น ๆ"],
+    ["PTO", "PTO"],
+    ["Sick", "ลาป่วย"],
+    ["Personal", "ลากิจ"],
+    ["Unpaid", "ลาไม่รับค่าจ้าง"],
+    ["Off", "วันหยุด"],
+    ["Holiday", "วันหยุดนักขัตฤกษ์"],
+    ["Other", "อื่น ๆ"],
+    ["Day Off / Public Holiday", "วันหยุด / วันหยุดนักขัตฤกษ์"],
+    ["HR status days", "วันที่ HR ระบุสถานะ"],
+    ["classified", "ระบุสถานะแล้ว"],
+    ["Day status", "สถานะประจำวัน"],
+    ["HR day status", "สถานะประจำวันโดย HR"],
+    ["No HR classification", "ยังไม่ระบุสถานะโดย HR"],
+    ["HR note (optional)", "หมายเหตุของ HR (ไม่บังคับ)"],
+    ["Close", "ปิด"],
+    ["Save HR status", "บันทึกสถานะโดย HR"],
+    ["Saving…", "กำลังบันทึก…"],
+    ["HR day status saved", "บันทึกสถานะประจำวันแล้ว"],
+    ["Retry", "ลองใหม่"],
+    ["Loading leave statuses…", "กำลังโหลดข้อมูลการลา…"],
+    ["Click a calendar day to assign or clear its HR status.", "คลิกวันที่ในปฏิทินเพื่อระบุหรือยกเลิกสถานะโดย HR"],
+    ["Click a calendar day to view its HR status. HR manages changes.", "คลิกวันที่ในปฏิทินเพื่อดูสถานะประจำวัน HR เป็นผู้แก้ไขข้อมูล"],
+    ["HR status does not replace clock-in/out records or automatically calculate pay.", "สถานะที่ HR ระบุไม่แทนที่เวลาเข้าและออกงาน และไม่คำนวณค่าจ้างโดยอัตโนมัติ"],
+    ["Leave status is temporarily unavailable. Please contact your system administrator.", "ไม่สามารถโหลดสถานะการลาได้ในขณะนี้ กรุณาติดต่อผู้ดูแลระบบ"],
+    ["Unable to save HR status. Please try again.", "บันทึกสถานะไม่ได้ กรุณาลองใหม่"],
+    ["Unable to load HR status. Please close and try again.", "โหลดสถานะไม่ได้ กรุณาปิดหน้าต่างแล้วลองใหม่"],
+    ["Another HR user changed this day. Close and reopen it to review the latest status.", "HR ท่านอื่นแก้ไขสถานะของวันนี้แล้ว กรุณาปิดแล้วเปิดใหม่เพื่อตรวจสอบสถานะล่าสุด"],
+    ["Only HR or Super Admin can edit attendance classifications", "เฉพาะ HR หรือผู้ดูแลระบบสูงสุดเท่านั้นที่แก้ไขสถานะประจำวันได้"],
+    ["HR note must be 500 characters or less", "หมายเหตุของ HR ต้องไม่เกิน 500 ตัวอักษร"],
+    ["Employee not found", "ไม่พบพนักงาน"]
+  );
+
   const normalize = text => text.trim().replace(/\s+/g, " ");
   const enToTh = new Map();
   const thToEn = new Map();
