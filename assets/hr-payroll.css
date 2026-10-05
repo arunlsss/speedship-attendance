@@ -1,4 +1,4 @@
-.payroll-card{margin-top:16px;overflow:hidden}
+.payroll-card{margin-top:16px;overflow:visible}
 .payroll-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
 .payroll-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .payroll-actions select,.payroll-actions input{width:auto;min-width:170px;min-height:42px}
@@ -84,3 +84,54 @@ html.reading-dashboard .leave-dialog :is(p,.field-label,.leave-times span,.leave
 
 html:has(.payroll-card){scroll-padding-top:var(--payroll-topbar-offset,24px)}
 .payroll-calendar-wrap{scroll-padding-left:var(--payroll-employee-width,220px);scroll-padding-top:90px}
+
+.payroll-export-actions{display:flex;gap:10px;flex-wrap:wrap}
+.payroll-filter-panel{margin-top:22px;padding:18px;background:var(--surface-2);border:1px solid var(--border);border-radius:18px}
+.payroll-period-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.payroll-range-trigger{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);cursor:pointer;text-align:left}
+.payroll-range-trigger:hover{border-color:var(--brand)}
+.payroll-range-trigger>span:first-child,#payrollFilterCount{color:var(--text-2)}
+.payroll-range-edit{color:var(--brand);font-weight:650}
+.payroll-filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.payroll-filter-grid>label,.payroll-type-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.payroll-filter-grid select,.payroll-filter-grid input{width:100%;min-width:0;min-height:48px}
+.payroll-type-picker{position:relative}
+.payroll-type-picker summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;list-style:none;box-sizing:border-box}
+.payroll-type-picker summary::-webkit-details-marker{display:none}
+.payroll-type-options{position:absolute;top:calc(100% + 8px);left:0;min-width:100%;width:max-content;max-width:min(400px,calc(100vw - 80px));max-height:380px;overflow:auto;padding:10px;box-sizing:border-box;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.16);z-index:12}
+.payroll-type-options label,.payroll-paid-types label,.payroll-incentive{display:flex;align-items:center;gap:10px;padding:10px 8px;cursor:pointer}
+html.reading-dashboard :is(.payroll-type-options,.payroll-paid-types,.payroll-incentive) input[type=checkbox]{width:20px;min-width:20px;height:20px;min-height:20px;accent-color:var(--brand);flex:none}
+.payroll-type-options label:hover{background:var(--brand-soft);border-radius:8px}
+.payroll-type-options .btn{width:100%;margin-top:6px}
+.payroll-selected-types{display:flex;flex-wrap:wrap;gap:8px}
+.payroll-selected-types:empty{display:none}
+.payroll-chip{margin-top:14px;border-radius:8px;padding:6px 10px;background:var(--brand-soft);color:var(--text)}
+.payroll-dialog-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.payroll-dialog-head .btn{min-width:44px}
+.payroll-range-dialog{width:min(660px,calc(100vw - 24px))}
+.payroll-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 20px}
+.payroll-presets button{border:1px solid var(--border);border-radius:10px;background:var(--surface-2);color:var(--text);padding:12px 8px;min-height:48px;cursor:pointer;overflow-wrap:anywhere}
+.payroll-presets button[aria-pressed=true]{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:700}
+.payroll-presets button:disabled{opacity:.4;cursor:default}
+.payroll-month-nav{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:end;gap:10px;margin-bottom:18px}
+.payroll-month-nav label,.payroll-range-fields label,.payroll-export-fields label{display:flex;flex-direction:column;gap:8px;min-width:0}
+.payroll-month-nav[hidden],.payroll-export-fields [hidden]{display:none}
+.payroll-month-nav .btn{min-height:48px}
+.payroll-range-fields,.payroll-export-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.payroll-range-fields input,.payroll-export-fields input,.payroll-export-fields select,.payroll-month-nav select{width:100%;min-width:0;min-height:48px;padding:10px;box-sizing:border-box}
+.payroll-range-coverage{margin-top:0;color:var(--text-2)}
+.payroll-export-dialog{width:min(680px,calc(100vw - 24px))}
+.payroll-paid-types{border:1px solid var(--border);border-radius:12px;margin:20px 0 8px;padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.payroll-incentive{align-items:flex-start}
+html.reading-dashboard :is(.payroll-range-dialog,.payroll-export-dialog,.payroll-filter-panel) :is(button,input,select,label,summary,legend,strong,span,p){font-size:calc(max(var(--min-text-size,0px),1rem)*var(--text-scale,1));line-height:1.45}
+.payroll-filter-panel :is(button,summary,input,select):focus-visible,.payroll-range-dialog button:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
+@media(max-width:1100px){.payroll-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){
+ .payroll-filter-panel{padding:12px}.payroll-filter-grid{grid-template-columns:minmax(0,1fr)}
+ .payroll-period-bar{align-items:stretch}.payroll-range-trigger{width:100%;gap:7px}.payroll-range-trigger strong{width:100%;overflow-wrap:anywhere}
+ .payroll-export-actions{width:100%}.payroll-export-actions .btn{flex:1;white-space:normal}
+ .payroll-type-options{width:100%;max-width:none}
+ .payroll-presets{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .payroll-range-fields,.payroll-export-fields,.payroll-paid-types{grid-template-columns:minmax(0,1fr)}
+ .payroll-month-nav .btn{padding:10px;min-width:38px}
+}

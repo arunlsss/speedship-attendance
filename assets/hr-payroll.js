@@ -1,18 +1,16 @@
 import "./auth.js";
 import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
+import { bindPayrollControls } from "./hr-payroll-controls.js?v=20261005-payroll";
+import { openPayrollExport } from "./hr-payroll-export.js?v=20261005-payroll";
 
 (async () => {
   const viewer = await SSS.requireDashboard(["hr", "admin", "super_admin"]);
   if (!viewer) return;
 
   let payrollData = null;
-  let selectedMonth = "";
-  let selectedDatePreset = "month";
-  let customDateFrom = "";
-  let customDateTo = "";
+  const rangeState = { month: "", preset: "month", from: "", to: "", types: null };
   let selectedBranch = "all";
   let selectedEmployeeStatus = "active";
-  let selectedEmployeeType = "all";
   let employeeQuery = "";
   let observer = null;
   let layoutObserver = null;
@@ -27,6 +25,7 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
     const wrap = section.querySelector(".payroll-calendar-wrap");
     if (wrap) { wrap.scrollLeft = position.left; wrap.scrollTop = position.top; }
     bindEmployeeClicks(section);
+    rangeSummary();
   }
 
   function esc(value) {
@@ -68,15 +67,13 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
     return dates;
   }
 
-  function selectedDates() {
-    const today = bangkokDateKey();
-    if (selectedDatePreset === "today") return [today];
-    if (selectedDatePreset === "yesterday") return [shiftDateKey(today, -1)];
-    if (selectedDatePreset === "7") return dateRange(shiftDateKey(today, -6), today);
-    if (selectedDatePreset === "30") return dateRange(shiftDateKey(today, -29), today);
-    if (selectedDatePreset === "60") return dateRange(shiftDateKey(today, -59), today);
-    if (selectedDatePreset === "custom") return dateRange(customDateFrom, customDateTo);
-    return monthDates(selectedMonth);
+  function selectedDates() { return dateRange(rangeState.from, rangeState.to); }
+
+  function rangeSummary() {
+    const section = document.getElementById("hrPayrollSection");
+    if (!section) return;
+    section.querySelector("#payrollRangeSummary").textContent = rangeState.from + " → " + rangeState.to;
+    section.querySelector("#payrollFilterCount").textContent = filteredEmployees().length + " employees";
   }
 
   function monthLabel(key) {
@@ -90,15 +87,9 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
   }
 
   function availableMonths() {
-    const set = new Set([bangkokMonthKey()]);
-    (payrollData && payrollData.employees || []).forEach(emp => {
-      (emp.daily || []).forEach(day => {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(String(day.dateKey || ""))) {
-          set.add(day.dateKey.slice(0, 7));
-        }
-      });
-    });
-    return Array.from(set).sort().reverse();
+    const from = payrollData?.period?.from || shiftDateKey(bangkokDateKey(), -89);
+    const to = payrollData?.period?.to || bangkokDateKey();
+    return Array.from(new Set(dateRange(from,to).map(date => date.slice(0,7)))).sort().reverse();
   }
 
   function monthDates(key) {
@@ -178,7 +169,7 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
       const statusOK = selectedEmployeeStatus === "all" || status === selectedEmployeeStatus;
       if (!statusOK) return false;
       const type = String(emp.type || "").trim();
-      const typeOK = selectedEmployeeType === "all" || type === selectedEmployeeType;
+      const typeOK = rangeState.types === null || rangeState.types.has(type);
       if (!typeOK) return false;
       const locations = (emp.assignedLocs || []).map(x => String(x || ""));
       const branchOK = selectedBranch === "all" || locations.some(x => x === selectedBranch);
@@ -271,113 +262,25 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
 
   function buildSection() {
     const months = availableMonths();
-    if (!months.includes(selectedMonth)) selectedMonth = months[0] || bangkokMonthKey();
-
-    const options = months.map(key =>
-      '<option value="' + esc(key) + '"' + (key === selectedMonth ? ' selected' : '') + '>' +
-      esc(monthLabel(key)) + '</option>'
-    ).join("");
-
-    const branchOptions = ['<option value="all">All branches</option>']
-      .concat(availableBranches().map(name =>
-        '<option value="' + esc(name) + '"' + (name === selectedBranch ? ' selected' : '') + '>' +
-        esc(name) + '</option>'
-      )).join("");
-
-    const typeOptions = ['<option value="all">All employee types</option>']
-      .concat(availableEmployeeTypes().map(type =>
-        '<option value="' + esc(type) + '"' + (type === selectedEmployeeType ? ' selected' : '') + '>' +
-        esc(type) + '</option>'
-      )).join("");
-
-    const minDate = payrollData && payrollData.period && payrollData.period.from || shiftDateKey(bangkokDateKey(), -89);
-    const maxDate = payrollData && payrollData.period && payrollData.period.to || bangkokDateKey();
-    if (!customDateTo) customDateTo = maxDate;
-    if (!customDateFrom) customDateFrom = shiftDateKey(maxDate, -6);
-    if (customDateFrom < minDate) customDateFrom = minDate;
-    if (customDateTo > maxDate) customDateTo = maxDate;
-
+    if (!months.includes(rangeState.month)) rangeState.month = months[0] || bangkokMonthKey();
+    const bounds = { from: payrollData?.period?.from || shiftDateKey(bangkokDateKey(),-89), to: payrollData?.period?.to || bangkokDateKey() };
+    if (!rangeState.from) rangeState.from = [bounds.from,rangeState.month + "-01"].sort().at(-1);
+    if (!rangeState.to) rangeState.to = bounds.to;
+    const branchOptions = ['<option value="all">All branches</option>'].concat(availableBranches().map(name => '<option value="' + esc(name) + '"' + (name === selectedBranch ? ' selected' : '') + '>' + esc(name) + '</option>')).join("");
+    const types = availableEmployeeTypes();
     const section = document.createElement("section");
     section.id = "hrPayrollSection";
     section.className = "card attendance-card payroll-card";
-    section.innerHTML =
-      '<div class="payroll-head">' +
-        '<div><div class="eyebrow">PAYROLL PREPARATION</div>' +
-        '<div class="card-title">Monthly IN / OUT Calendar</div>' +
-        '<div class="card-sub">Daily first IN and last OUT by employee status. No record is not automatically treated as absence.</div></div>' +
-        '<div class="payroll-actions">' +
-          '<select id="payrollDatePreset" aria-label="Date range">' +
-            '<option value="month"' + (selectedDatePreset === "month" ? " selected" : "") + '>Monthly</option>' +
-            '<option value="custom"' + (selectedDatePreset === "custom" ? " selected" : "") + '>Date to Date</option>' +
-            '<option value="yesterday"' + (selectedDatePreset === "yesterday" ? " selected" : "") + '>Yesterday</option>' +
-            '<option value="today"' + (selectedDatePreset === "today" ? " selected" : "") + '>Today</option>' +
-            '<option value="7"' + (selectedDatePreset === "7" ? " selected" : "") + '>7 Days</option>' +
-            '<option value="30"' + (selectedDatePreset === "30" ? " selected" : "") + '>30 Days</option>' +
-            '<option value="60"' + (selectedDatePreset === "60" ? " selected" : "") + '>60 Days</option>' +
-          '</select>' +
-          '<span id="payrollMonthControl"' + (selectedDatePreset === "month" ? "" : " hidden") + '><select id="payrollMonthSelect" aria-label="Payroll month">' + options + '</select></span>' +
-          '<span id="payrollCustomDates" class="payroll-date-pair"' + (selectedDatePreset === "custom" ? "" : " hidden") + '>' +
-            '<input id="payrollDateFrom" type="date" aria-label="From date" min="' + esc(minDate) + '" max="' + esc(maxDate) + '" value="' + esc(customDateFrom) + '">' +
-            '<span>to</span>' +
-            '<input id="payrollDateTo" type="date" aria-label="To date" min="' + esc(minDate) + '" max="' + esc(maxDate) + '" value="' + esc(customDateTo) + '">' +
-          '</span>' +
-          '<select id="payrollBranchSelect" aria-label="Branch">' + branchOptions + '</select>' +
-          '<select id="payrollStatusSelect" aria-label="Employee status">' +
-            '<option value="active"' + (selectedEmployeeStatus === "active" ? " selected" : "") + '>Active employees</option>' +
-            '<option value="inactive"' + (selectedEmployeeStatus === "inactive" ? " selected" : "") + '>Inactive employees</option>' +
-            '<option value="all"' + (selectedEmployeeStatus === "all" ? " selected" : "") + '>All employees</option>' +
-          '</select>' +
-          '<select id="payrollTypeSelect" aria-label="Employee type">' + typeOptions + '</select>' +
-          '<input id="payrollEmployeeSearch" type="search" placeholder="Search employee" aria-label="Search employee" value="' + esc(employeeQuery) + '">' +
-          '<button class="btn btn-soft" id="payrollExportBtn" type="button">Export payroll CSV</button>' +
-        '</div>' +
-      '</div>' +
-      '<div class="payroll-legend">' +
-        '<span><i class="payroll-dot complete"></i>Complete</span>' +
-        '<span><i class="payroll-dot late"></i>Late</span>' +
-        '<span><i class="payroll-dot missing"></i>Incomplete</span>' +
-        '<span><i class="payroll-dot empty"></i>No record</span>' +
-        '<span><i class="payroll-dot leave"></i>Paid Time Off</span>' +
-        '<span><i class="payroll-dot sick"></i>Sick Leave</span>' +
-        '<span><i class="payroll-dot off"></i>Day Off / Public Holiday</span>' +
-        '<span><i class="payroll-dot missing"></i>Absent</span>' +
-      '</div>' +
-      '<div id="payrollCalendarHost">' + buildCalendar() + '</div>';
-
-    const updateDateControls = () => {
-      section.querySelector("#payrollMonthControl").hidden = selectedDatePreset !== "month";
-      section.querySelector("#payrollCustomDates").hidden = selectedDatePreset !== "custom";
-    };
-
-    section.querySelector("#payrollDatePreset").addEventListener("change", event => {
-      selectedDatePreset = event.target.value;
-      updateDateControls();
-      refreshCalendar();
-    });
-
-    section.querySelector("#payrollMonthSelect").addEventListener("change", event => {
-      selectedMonth = event.target.value;
-      refreshCalendar();
-    });
-
-    section.querySelector("#payrollDateFrom").addEventListener("change", event => {
-      customDateFrom = event.target.value;
-      if (customDateTo && customDateFrom > customDateTo) {
-        customDateTo = customDateFrom;
-        section.querySelector("#payrollDateTo").value = customDateTo;
-      }
-      refreshCalendar();
-    });
-
-    section.querySelector("#payrollDateTo").addEventListener("change", event => {
-      customDateTo = event.target.value;
-      if (customDateFrom && customDateTo < customDateFrom) {
-        customDateFrom = customDateTo;
-        section.querySelector("#payrollDateFrom").value = customDateFrom;
-      }
-      refreshCalendar();
-    });
-
+    section.innerHTML = '<div class="payroll-head"><div><div class="eyebrow">PAYROLL PREPARATION</div><div class="card-title">Monthly IN / OUT Calendar</div><div class="card-sub">Daily first IN and last OUT by employee status. No record is not automatically treated as absence.</div></div>' +
+      '<div class="payroll-export-actions"><button class="btn btn-soft" id="payrollExportBtn" type="button">Export payroll CSV</button><button class="btn btn-primary" id="payrollTemplateBtn" type="button">Full Time Emp Att · Excel</button></div></div>' +
+      '<div class="payroll-filter-panel"><div class="payroll-period-bar"><button id="payrollRangeBtn" type="button" class="payroll-range-trigger"><span>Date range</span><strong id="payrollRangeSummary" data-no-translate>' + rangeState.from + ' → ' + rangeState.to + '</strong><span class="payroll-range-edit">Change dates</span></button><span id="payrollFilterCount"></span></div>' +
+      '<div class="payroll-filter-grid"><label><span>Branch</span><select id="payrollBranchSelect">' + branchOptions + '</select></label>' +
+      '<label><span>Employee status</span><select id="payrollStatusSelect"><option value="active"' + (selectedEmployeeStatus === "active" ? ' selected' : '') + '>Active employees</option><option value="inactive"' + (selectedEmployeeStatus === "inactive" ? ' selected' : '') + '>Inactive employees</option><option value="all"' + (selectedEmployeeStatus === "all" ? ' selected' : '') + '>All employees</option></select></label>' +
+      '<div class="payroll-type-field"><span>Employee type</span><details id="payrollTypes" class="payroll-type-picker"><summary><span id="payrollTypeSummary">All employee types</span><span aria-hidden="true">⌄</span></summary><div class="payroll-type-options"><label><input type="checkbox" id="payrollAllTypes"><span>All employee types</span></label>' +
+      types.map(type => '<label><input type="checkbox" data-type value="' + esc(type) + '"><span>' + esc(type) + '</span></label>').join('') + '<button class="btn btn-soft" id="payrollTypesDone" type="button">Done</button></div></details></div>' +
+      '<label><span>Search employee</span><input id="payrollEmployeeSearch" type="search" placeholder="Name, ID or nickname" value="' + esc(employeeQuery) + '"></label></div><div id="payrollSelectedTypes" class="payroll-selected-types"></div></div>' +
+      '<div class="payroll-legend"><span><i class="payroll-dot complete"></i>Complete</span><span><i class="payroll-dot late"></i>Late</span><span><i class="payroll-dot missing"></i>Incomplete</span><span><i class="payroll-dot empty"></i>No record</span><span><i class="payroll-dot leave"></i>Paid Time Off</span><span><i class="payroll-dot sick"></i>Sick Leave</span><span><i class="payroll-dot off"></i>Day Off / Public Holiday</span><span><i class="payroll-dot missing"></i>Absent</span></div><div id="payrollCalendarHost">' + buildCalendar() + '</div>';
+    bindPayrollControls({section,types,months,state:rangeState,bounds,esc,onChange:refreshCalendar});
     section.querySelector("#payrollBranchSelect").addEventListener("change", event => {
       selectedBranch = event.target.value;
       refreshCalendar();
@@ -388,17 +291,13 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
       refreshCalendar();
     });
 
-    section.querySelector("#payrollTypeSelect").addEventListener("change", event => {
-      selectedEmployeeType = event.target.value;
-      refreshCalendar();
-    });
-
     section.querySelector("#payrollEmployeeSearch").addEventListener("input", event => {
       employeeQuery = event.target.value;
       refreshCalendar();
     });
 
     section.querySelector("#payrollExportBtn").addEventListener("click", exportCSV);
+    section.querySelector("#payrollTemplateBtn").addEventListener("click", () => openPayrollExport({employees:filteredEmployees(),dates:selectedDates(),leave,esc,toast:SSS.toast}));
     bindEmployeeClicks(section);
     return section;
   }
@@ -448,6 +347,7 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
     if (topbar) layoutObserver.observe(topbar);
     if (sticky) layoutObserver.observe(sticky);
     measure();
+    rangeSummary();
   }
 
   function safeCSV(value) {
@@ -458,6 +358,7 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
 
   function exportCSV() {
     const dates = selectedDates();
+    if (!dates.length || !filteredEmployees().length) { SSS.toast("No employees or dates to export.","error"); return; }
     const rows = [[
       "Employee_ID", "Employee_Status", "Name", "Nickname", "Type", "Location", "Date",
       "First_IN", "Last_OUT", "Attendance_Status", "Minutes_Late", "Recorded_Span_Hours", "HR_Status", "HR_Note"
@@ -508,9 +409,14 @@ import { createHRLeaveCalendar } from "./hr-leave.js?v=20261005-leave";
       query: { days: 90 }
     });
     mount();
-    document.getElementById("refreshBtn")?.addEventListener("click", () => {
-      leave.ensure(selectedDates(), true);
-      refreshCalendar();
+    document.getElementById("refreshBtn")?.addEventListener("click", async () => {
+      try {
+        payrollData = await SSS.request("dashboardData", { dashboard: true, query: { days: 90 } });
+        document.getElementById("hrPayrollSection")?.remove();
+        mount();
+        leave.ensure(selectedDates(), true);
+        refreshCalendar();
+      } catch (error) { SSS.toast("Payroll calendar could not load: " + error.message,"error"); }
     });
 
     const content = document.getElementById("content");

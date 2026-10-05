@@ -133,6 +133,34 @@
   ];
 
   pairs.push(
+    ["Change dates", "เปลี่ยนวันที่"],
+    ["Custom range", "กำหนดช่วงวันที่"],
+    ["1–15", "วันที่ 1–15"],
+    ["16–Month end", "วันที่ 16–สิ้นเดือน"],
+    ["Previous month", "เดือนก่อนหน้า"], ["Next month", "เดือนถัดไป"],
+    ["Apply dates", "ใช้ช่วงวันที่นี้"], ["Done", "เสร็จสิ้น"],
+    ["Available attendance data", "ช่วงวันที่มีข้อมูลลงเวลา"],
+    ["Choose a start date before the end date, within available data.", "กรุณาเลือกวันที่เริ่มต้นไม่เกินวันที่สิ้นสุด และอยู่ในช่วงที่มีข้อมูล"],
+    ["Name, ID or nickname", "ชื่อ รหัสพนักงาน หรือชื่อเล่น"],
+    ["Full Time Emp Att · Excel", "ส่งออกแบบ Full Time Emp Att · Excel"],
+    ["Full Time Emp Att export", "ส่งออกแบบ Full Time Emp Att"],
+    ["Confirm the payroll rules for this export.", "กำหนดกติกาคำนวณเงินเดือนสำหรับการส่งออกครั้งนี้"],
+    ["Stored salary basis", "ฐานค่าจ้างที่บันทึกในระบบ"],
+    ["Daily rate", "ค่าจ้างรายวัน"], ["Monthly salary", "เงินเดือนรายเดือน"],
+    ["Monthly divisor", "จำนวนวันที่ใช้หารเงินเดือน"],
+    ["Regular hours per day", "ชั่วโมงทำงานปกติต่อวัน"],
+    ["OT starts at", "เวลาเริ่มคิด OT"],
+    ["OT rounding minutes", "ช่วงนาทีที่ใช้ปัด OT"],
+    ["OT rounding method", "วิธีปัดเวลา OT"],
+    ["Nearest", "ปัดเป็นช่วงที่ใกล้ที่สุด"], ["Round down", "ปัดลง"], ["Round up", "ปัดขึ้น"],
+    ["OT multiplier", "ตัวคูณค่าจ้าง OT"], ["e.g. 1.5", "เช่น 1.5"],
+    ["Paid HR statuses", "สถานะการลา / หยุดที่ได้รับค่าจ้าง"],
+    ["Include stored incentive in each exported half-period", "รวมค่าตอบแทนเพิ่มเติมที่บันทึกไว้ในแต่ละรอบครึ่งเดือนที่ส่งออก"],
+    ["Incomplete records and overnight shifts need HR review. Incentives and additional adjustments can be edited in Excel.", "HR ต้องตรวจสอบวันที่ลงเวลาไม่ครบและกะข้ามคืน สามารถแก้ค่าตอบแทนเพิ่มเติมและรายการปรับยอดใน Excel ได้"],
+    ["Download Excel", "ดาวน์โหลด Excel"],
+    ["No employees or dates to export.", "ไม่มีพนักงานหรือวันที่สำหรับส่งออก"],
+    ["Wait for HR statuses to load before exporting payroll.", "กรุณารอโหลดสถานะจาก HR ให้ครบก่อนส่งออกเงินเดือน"],
+    ["Unable to export payroll. Please try again.", "ส่งออกข้อมูลเงินเดือนไม่ได้ กรุณาลองใหม่"],
     ["Paid Time Off", "ลาโดยได้รับค่าจ้าง (PTO)"],
     ["Sick Leave", "ลาป่วย"],
     ["Personal Leave", "ลากิจ"],
@@ -185,6 +213,7 @@
   const shortTh = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
   const shortEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const fragments = [
+    [/^(\d+) types selected$/i, n => `เลือก ${n} ประเภท`],
     [/^(\d+) days$/i, n => `${n} วัน`], [/^(\d+) pending$/i, n => `${n} รออนุมัติ`],
     [/^(\d+) without a check-in yet$/i, n => `${n} คนยังไม่ลงเวลาเข้างาน`],
     [/^Shift start \+ (\d+) min grace$/i, n => `เวลาเริ่มกะ + ผ่อนผัน ${n} นาที`],
