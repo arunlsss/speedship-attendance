@@ -201,6 +201,60 @@
     ["Employee not found", "ไม่พบพนักงาน"]
   );
 
+  pairs.push(
+    ["Employee registration", "ลงทะเบียนพนักงาน"],
+    ["EMPLOYEE REGISTRATION", "ลงทะเบียนพนักงาน"],
+    ["New employee? Register here", "พนักงานใหม่? ลงทะเบียนที่นี่"],
+    ["Register as an employee", "ลงทะเบียนเป็นพนักงาน"],
+    ["Submit your details for HR approval. Once approved, your name will appear on the attendance page.", "ส่งข้อมูลให้ฝ่ายบุคคลอนุมัติ เมื่ออนุมัติแล้ว ชื่อของคุณจะปรากฏในหน้าลงเวลา"],
+    ["Preferred branch", "สาขาที่ต้องการ"],
+    ["Already registered or cannot find your name? Please contact HR.", "ลงทะเบียนแล้วหรือไม่พบชื่อ? กรุณาติดต่อฝ่ายบุคคล"],
+    ["Checking availability...", "กำลังตรวจสอบความพร้อม..."],
+    ["Submit registration", "ส่งคำขอลงทะเบียน"],
+    ["Submitting registration...", "กำลังส่งคำขอลงทะเบียน..."],
+    ["REGISTRATION SUBMITTED", "ส่งคำขอลงทะเบียนแล้ว"],
+    ["Waiting for HR approval", "รอฝ่ายบุคคลอนุมัติ"],
+    ["Your details have been submitted. HR will assign your employee type and branch before you can clock in.", "ส่งข้อมูลแล้ว ฝ่ายบุคคลจะกำหนดประเภทพนักงานและสาขาก่อนเริ่มลงเวลาได้"],
+    ["Employee registration will be available after the backend update. Please contact HR for now.", "ระบบลงทะเบียนจะพร้อมใช้งานหลังอัปเดตระบบ กรุณาติดต่อฝ่ายบุคคลในระหว่างนี้"],
+    ["No branches are available. Please contact HR.", "ไม่มีสาขาที่พร้อมใช้งาน กรุณาติดต่อฝ่ายบุคคล"],
+    ["Registration cannot set employee permissions, status or compensation", "การลงทะเบียนไม่สามารถกำหนดสิทธิ์ สถานะ หรือค่าตอบแทนได้"],
+    ["Enter a valid Thai phone number", "กรุณากรอกเบอร์โทรศัพท์ไทยที่ถูกต้อง"],
+    ["Choose an available branch", "กรุณาเลือกสาขาที่พร้อมใช้งาน"],
+    ["This phone number is already registered. Please contact HR.", "เบอร์โทรศัพท์นี้ลงทะเบียนแล้ว กรุณาติดต่อฝ่ายบุคคล"],
+    ["Invalid full name", "ชื่อและนามสกุลไม่ถูกต้อง"],
+    ["Invalid nickname", "ชื่อเล่นไม่ถูกต้อง"],
+    ["Invalid phone", "เบอร์โทรศัพท์ไม่ถูกต้อง"],
+    ["Too many registrations. Please try again later.", "มีการลงทะเบียนจำนวนมาก กรุณาลองใหม่ภายหลัง"],
+    ["Unable to submit registration", "ส่งคำขอลงทะเบียนไม่ได้"],
+    ["Please try submitting the registration again", "กรุณาลองส่งคำขอลงทะเบียนอีกครั้ง"],
+    ["Employee spreadsheet sync", "ซิงค์ข้อมูลพนักงานจากสเปรดชีต"],
+    ["Sync missing employees", "ซิงค์พนักงานที่ตกหล่น"],
+    ["Adds missing employee IDs from the Employees sheet every day at 12:00 PM Bangkok time. Existing employee records are preserved.", "เพิ่มรหัสพนักงานที่ตกหล่นจากชีต Employees ทุกวันเวลา 12:00 น. ตามเวลาประเทศไทย โดยคงข้อมูลพนักงานที่มีอยู่แล้ว"],
+    ["Employee sync will be available after the backend update.", "ระบบซิงค์พนักงานจะพร้อมใช้งานหลังอัปเดตระบบ"],
+    ["Syncing missing employees...", "กำลังซิงค์พนักงานที่ตกหล่น..."],
+    ["The first employee sync has not run yet.", "ยังไม่เคยซิงค์ข้อมูลพนักงาน"],
+    ["Imported", "เพิ่มแล้ว"],
+    ["Already present", "มีอยู่แล้ว"],
+    ["Skipped", "ข้าม"],
+    ["Failed", "ล้มเหลว"],
+    ["Rows needing review", "แถวที่ต้องตรวจสอบ"],
+    ["Sheet row", "แถวในชีต"],
+    ["Shows the first 50 skipped rows.", "แสดง 50 แถวแรกที่ถูกข้าม"],
+    ["Employee sync complete", "ซิงค์ข้อมูลพนักงานเสร็จแล้ว"],
+    ["Missing or invalid employee ID", "รหัสพนักงานหายไปหรือไม่ถูกต้อง"],
+    ["Duplicate employee ID in sheet", "รหัสพนักงานซ้ำในชีต"],
+    ["Missing or invalid name", "ชื่อหายไปหรือไม่ถูกต้อง"],
+    ["Missing or invalid employee status", "สถานะพนักงานหายไปหรือไม่ถูกต้อง"],
+    ["Some employee records could not be imported. Retry the sync.", "นำเข้าข้อมูลพนักงานบางรายการไม่ได้ กรุณาซิงค์อีกครั้ง"],
+    ["An employee sync is already running. Please try again shortly.", "กำลังซิงค์ข้อมูลพนักงานอยู่ กรุณาลองใหม่อีกสักครู่"],
+    ["Employees can register on the attendance page and wait for HR/Admin approval.", "พนักงานลงทะเบียนในหน้าลงเวลาและรอฝ่ายบุคคลหรือผู้ดูแลระบบอนุมัติได้"],
+    ["HR/Admin reviews employee registrations. Dashboard accounts are separate management access.", "ฝ่ายบุคคลหรือผู้ดูแลระบบตรวจสอบการลงทะเบียนพนักงาน บัญชีแดชบอร์ดเป็นสิทธิ์สำหรับฝ่ายจัดการแยกต่างหาก"],
+    ["This employee has already been reviewed", "พนักงานนี้ได้รับการตรวจสอบแล้ว"],
+    ["Choose an employee type and assigned location", "กรุณาเลือกประเภทพนักงานและสาขาที่กำหนด"]
+  );
+
+  pairs.push(["Pending employee registrations","คำขอลงทะเบียนพนักงานรออนุมัติ"], ["Review details and assign an employee type and branch before approval.","ตรวจสอบข้อมูลและกำหนดประเภทพนักงานกับสาขาก่อนอนุมัติ"], ["The previous employee sync did not finish. Please retry the sync.","การซิงค์ข้อมูลพนักงานครั้งก่อนยังไม่เสร็จ กรุณาซิงค์อีกครั้ง"]);
+
   const normalize = text => text.trim().replace(/\s+/g, " ");
   const enToTh = new Map();
   const thToEn = new Map();
