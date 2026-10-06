@@ -255,6 +255,14 @@
 
   pairs.push(["Pending employee registrations","คำขอลงทะเบียนพนักงานรออนุมัติ"], ["Review details and assign an employee type and branch before approval.","ตรวจสอบข้อมูลและกำหนดประเภทพนักงานกับสาขาก่อนอนุมัติ"], ["The previous employee sync did not finish. Please retry the sync.","การซิงค์ข้อมูลพนักงานครั้งก่อนยังไม่เสร็จ กรุณาซิงค์อีกครั้ง"]);
 
+  pairs.push(
+    ["Bank account number", "เลขบัญชีธนาคาร"],
+    ["Enter the account number only. Spaces and hyphens are allowed.", "กรอกเฉพาะเลขบัญชี เว้นวรรคหรือใส่ขีดคั่นได้"],
+    ["Bank account entry will be available after the backend update. HR can add it later.", "กรอกบัญชีธนาคารได้หลังอัปเดตระบบ ฝ่ายบุคคลสามารถเพิ่มข้อมูลให้ภายหลังได้"],
+    ["Invalid bank account number", "เลขบัญชีธนาคารไม่ถูกต้อง"],
+    ["Enter a bank account number with 6 to 20 digits", "กรุณากรอกเลขบัญชีธนาคาร 6 ถึง 20 หลัก"]
+  );
+
   const normalize = text => text.trim().replace(/\s+/g, " ");
   const enToTh = new Map();
   const thToEn = new Map();

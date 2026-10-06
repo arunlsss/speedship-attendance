@@ -10,3 +10,5 @@
 
 .employee-registration-dialog .primary-button{border:0;background:var(--accent);color:var(--surface);padding:12px 18px;border-radius:12px;min-height:48px;font:inherit;font-weight:650;cursor:pointer}.employee-registration-dialog :focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .pending-employee-list{display:grid;gap:12px;margin-top:18px}.pending-employee{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px;border:1px solid var(--border);border-radius:12px}.pending-employee>div{min-width:0;overflow-wrap:anywhere;line-height:1.65}.pending-employee button{flex-shrink:0}
+
+.registration-bank{grid-column:1/-1}.registration-bank small{color:var(--text-2);font:inherit;font-size:.9em;line-height:1.5}
