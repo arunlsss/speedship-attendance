@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://attendanceapi-wl5ots23eq-as.a.run.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' https://www.gstatic.com; img-src 'self' data:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
   <title>Speedship Management Access</title>
   <link rel="stylesheet" href="assets/styles.css">
-<link rel="stylesheet" href="assets/reading.css?v=20261002-reading"><script src="assets/reading.js?v=20261002-reading"></script><link rel="stylesheet" href="assets/language.css?v=20261002-language"><script src="assets/language.js?v=20261002-language"></script></head>
+<link rel="stylesheet" href="assets/reading.css?v=20261002-reading"><script src="assets/reading.js?v=20261002-reading"></script><link rel="stylesheet" href="assets/language.css?v=20261002-language"><script src="assets/language.js?v=20261002-language"></script><link rel="stylesheet" href="assets/ui-alignment.css?v=20261007"></head>
 <body>
 <div class="auth-shell">
   <section class="auth-brand-panel">
@@ -40,22 +40,22 @@
         </div>
 
         <form id="signinForm" class="auth-form active" autocomplete="on">
-          <div class="field"><label class="field-label">Work email</label><input id="loginEmail" type="email" autocomplete="username" placeholder="name@speedshipsolution.com" required></div>
-          <div class="field"><label class="field-label">Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required></div>
+          <div class="field"><label class="field-label" for="loginEmail">Work email</label><input id="loginEmail" type="email" autocomplete="username" placeholder="name@speedshipsolution.com" required></div>
+          <div class="field"><label class="field-label" for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required></div>
           <button class="btn btn-primary auth-main-btn" id="loginBtn" type="submit">Sign in</button>
           <button class="text-btn" id="forgotBtn" type="button">Forgot password?</button>
         </form>
 
         <form id="registerForm" class="auth-form" autocomplete="on">
-          <div class="field"><label class="field-label">Full name</label><input id="regName" autocomplete="name" placeholder="ชื่อ-นามสกุล" required></div>
+          <div class="field"><label class="field-label" for="regName">Full name</label><input id="regName" autocomplete="name" placeholder="ชื่อ-นามสกุล" required></div>
           <div class="grid-2">
-            <div class="field"><label class="field-label">Job title</label><input id="regJobTitle" placeholder="e.g. HR Manager"></div>
-            <div class="field"><label class="field-label">Employee ID</label><input id="regEmployeeId" placeholder="Optional"></div>
+            <div class="field"><label class="field-label" for="regJobTitle">Job title</label><input id="regJobTitle" placeholder="e.g. HR Manager"></div>
+            <div class="field"><label class="field-label" for="regEmployeeId">Employee ID</label><input id="regEmployeeId" placeholder="Optional"></div>
           </div>
-          <div class="field"><label class="field-label">Work email</label><input id="regEmail" type="email" autocomplete="email" placeholder="name@speedshipsolution.com" required></div>
+          <div class="field"><label class="field-label" for="regEmail">Work email</label><input id="regEmail" type="email" autocomplete="email" placeholder="name@speedshipsolution.com" required></div>
           <div class="grid-2">
-            <div class="field"><label class="field-label">Password</label><input id="regPassword" type="password" autocomplete="new-password" minlength="8" required></div>
-            <div class="field"><label class="field-label">Confirm</label><input id="regConfirm" type="password" autocomplete="new-password" minlength="8" required></div>
+            <div class="field"><label class="field-label" for="regPassword">Password</label><input id="regPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+            <div class="field"><label class="field-label" for="regConfirm">Confirm</label><input id="regConfirm" type="password" autocomplete="new-password" minlength="8" required></div>
           </div>
           <div class="notice-box"><strong>Registration ≠ access</strong><span>Your account remains Pending until a Super Admin assigns HR, Admin, C-Level or Super Admin access.</span></div>
           <button class="btn btn-primary auth-main-btn" id="registerBtn" type="submit">Create access request</button>
@@ -67,7 +67,7 @@
         <div class="eyebrow">ONE-TIME INITIALIZATION</div>
         <strong>Initialize the first Super Admin</strong>
         <p class="small muted">Sign in with the verified account that should become the first Super Admin, then enter the bootstrap key. This stops working after the first active Super Admin exists.</p>
-        <div class="field"><label class="field-label">Bootstrap key</label><input id="bootstrapKey" type="password" autocomplete="off"></div>
+        <div class="field"><label class="field-label" for="bootstrapKey">Bootstrap key</label><input id="bootstrapKey" type="password" autocomplete="off"></div>
         <button class="btn btn-soft" id="bootstrapBtn" type="button">Initialize Super Admin</button>
       </div>
     </div>
