@@ -1,0 +1,34 @@
+/* Keep labels and field baselines consistent across every attendance page. */
+:root{--field-height:48px;--field-radius:12px;--field-gap:8px}
+.header-actions,.dash-topbar>.toolbar-group,.toolbar-group,.auth-display-controls{align-items:flex-end;gap:12px;min-width:0}
+.ui-field,.text-size-control,.language-control,.payroll-date-field{display:flex;flex-direction:column;gap:var(--field-gap);min-width:0;color:var(--text-2)}
+.ui-field>span,.text-size-control>span,.language-control>span,.payroll-date-field>span{font-size:calc(1rem * var(--text-scale,1));font-weight:500;line-height:1.5}
+html :is(.header-actions,.dash-topbar>.toolbar-group,.toolbar-group,.auth-display-controls) :is(select,input,.btn,.theme-select){min-height:var(--field-height);border-radius:var(--field-radius);font-size:calc(1rem * var(--text-scale,1));line-height:1.5;padding:11px 12px;box-sizing:border-box}
+html.reading-dashboard .dash-layout .toolbar :is(select,input,.btn),html.reading-dashboard .dash-topbar>.toolbar-group :is(select,input,.btn){font-size:calc(1rem * var(--text-scale,1))}
+.ui-field>input,.ui-field>select{width:100%;max-width:100%;min-width:0}
+.toolbar-group>.ui-field{flex:1 1 170px;max-width:260px}
+.dash-topbar>.toolbar-group>.ui-field{flex:0 1 auto}
+.toolbar-group>.btn{flex-shrink:0}
+.field{min-width:0}
+.field-label{line-height:1.5}
+.field:has(>input),.field:has(>select){display:flex;flex-direction:column;gap:var(--field-gap)}
+.field:has(>input)>.field-label,.field:has(>select)>.field-label{margin-bottom:0}
+.grid-2>.field+.field{margin-top:0}
+.grid-2:has(>.field){align-items:end}
+.header-actions .theme-switch{min-height:var(--field-height)}
+.header-actions .theme-icon-btn{width:40px;height:40px}
+html .field :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select),html .registration-fields :is(input,select){min-height:var(--field-height);border-radius:var(--field-radius);font-size:calc(1rem * var(--text-scale,1));line-height:1.5}
+.payroll-filter-grid{align-items:end}
+.payroll-period-bar{align-items:flex-end}
+.payroll-range-trigger{min-height:var(--field-height);min-width:0;border-radius:var(--field-radius);padding:11px 16px;line-height:1.5;gap:12px}
+.payroll-range-trigger strong{overflow-wrap:anywhere;min-width:0}
+.payroll-range-edit{margin-left:auto}
+.payroll-filter-grid>label,.payroll-type-field{gap:var(--field-gap)}
+.payroll-filter-grid :is(input,select),.payroll-type-picker summary{min-height:var(--field-height);border-radius:var(--field-radius);padding:11px 12px;line-height:1.5;box-sizing:border-box}
+.payroll-type-picker summary>span:first-child{min-width:0;overflow-wrap:anywhere}
+.payroll-type-options{width:100%;max-width:none}
+.payroll-type-options label{min-height:44px;overflow-wrap:anywhere}
+.payroll-type-options label span{min-width:0}
+.registration-heading button{min-height:44px}
+@media(max-width:980px){.dash-topbar>.toolbar-group>.ui-field{flex:1 1 140px;max-width:none}.toolbar-group>.ui-field{max-width:none}}
+@media(max-width:620px){.toolbar-group>.ui-field{flex:1 1 100%;width:100%}.dash-topbar>.toolbar-group>.ui-field{flex:1 1 100%}.header-actions{gap:12px}.auth-display-controls{align-items:flex-end}.payroll-date-field{width:100%}.payroll-range-trigger{width:100%}.payroll-range-trigger strong{width:auto}.payroll-range-edit{margin-left:0}.payroll-period-bar{gap:12px}.toolbar-group>.btn{white-space:normal}}
