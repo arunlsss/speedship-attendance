@@ -263,6 +263,29 @@
     ["Enter a bank account number with 6 to 20 digits", "กรุณากรอกเลขบัญชีธนาคาร 6 ถึง 20 หลัก"]
   );
 
+  pairs.push(
+    ["Register and start clocking in at your selected branch immediately. Only management accounts need approval.", "ลงทะเบียนแล้วเริ่มลงเวลาในสาขาที่เลือกได้ทันที เฉพาะบัญชีฝ่ายจัดการเท่านั้นที่ต้องรออนุมัติ"],
+    ["Branch", "สาขา"], ["Profile photo", "รูปประจำตัว"], ["Profile photo preview", "ตัวอย่างรูปประจำตัว"],
+    ["Choose a clear photo of your face. It will be resized before upload.", "เลือกรูปใบหน้าที่ชัดเจน ระบบจะปรับขนาดก่อนอัปโหลด"],
+    ["Choose a JPG, PNG or WebP photo under 10 MB.", "เลือกรูป JPG, PNG หรือ WebP ขนาดไม่เกิน 10 MB"],
+    ["Photo upload will be available after the backend update.", "อัปโหลดรูปได้หลังอัปเดตระบบ"],
+    ["Please update the backend to enable immediate employee registration.", "กรุณาอัปเดตระบบเพื่อให้พนักงานลงทะเบียนและเริ่มใช้งานได้ทันที"],
+    ["REGISTRATION COMPLETE", "ลงทะเบียนเรียบร้อย"], ["You can clock in now", "เริ่มลงเวลาได้ทันที"],
+    ["Your employee record is active. Select your branch and name on the attendance page to clock in.", "ข้อมูลพนักงานพร้อมใช้งานแล้ว เลือกสาขาและชื่อของคุณในหน้าลงเวลาเพื่อเริ่มใช้งาน"],
+    ["Your profile photo has been saved and will sync to the Employees sheet.", "บันทึกรูปประจำตัวแล้ว ระบบจะซิงค์ไปยังชีต Employees"],
+    ["Please contact HR", "กรุณาติดต่อฝ่ายบุคคล"],
+    ["Your existing employee record is not active. Please contact HR to check its status.", "ข้อมูลพนักงานเดิมยังไม่พร้อมใช้งาน กรุณาติดต่อฝ่ายบุคคลเพื่อตรวจสอบสถานะ"],
+    ["Please refresh the attendance page to find your name.", "กรุณารีเฟรชหน้าลงเวลาเพื่อค้นหาชื่อของคุณ"],
+    ["Employees can register on the attendance page and clock in immediately.", "พนักงานลงทะเบียนในหน้าลงเวลาและเริ่มลงเวลาได้ทันที"],
+    ["HR/Admin maintains employee details. Only management accounts require Super Admin approval.", "ฝ่ายบุคคลหรือผู้ดูแลระบบจัดการข้อมูลพนักงาน เฉพาะบัญชีฝ่ายจัดการเท่านั้นที่ต้องได้รับอนุมัติจากผู้ดูแลระบบสูงสุด"],
+    ["Sync employee photos", "ซิงค์รูปพนักงาน"], ["Syncing employee photo links...", "กำลังซิงค์ลิงก์รูปพนักงาน..."],
+    ["Photo links updated", "ลิงก์รูปที่อัปเดต"], ["Employee photo sync complete", "ซิงค์รูปพนักงานเสร็จแล้ว"],
+    ["Invalid registration photo", "รูปลงทะเบียนไม่ถูกต้อง"], ["Use a JPEG registration photo under 2 MB", "ใช้รูปลงทะเบียน JPEG ขนาดไม่เกิน 2 MB"],
+    ["Please wait before syncing employee photos again.", "กรุณารอสักครู่ก่อนซิงค์รูปพนักงานอีกครั้ง"],
+    ["Check the Employees sheet headers and row limit before syncing photos", "กรุณาตรวจสอบหัวตารางและจำนวนแถวของชีต Employees ก่อนซิงค์รูป"],
+    ["Employee not found. Please contact HR.", "ไม่พบข้อมูลพนักงาน กรุณาติดต่อฝ่ายบุคคล"]
+  );
+  pairs.push(["Employee details to complete", "ข้อมูลพนักงานที่ต้องระบุเพิ่มเติม"], ["New employees can clock in immediately. Set their employment type here; older pending records still need review.", "พนักงานใหม่ลงเวลาได้ทันที กำหนดประเภทการจ้างงานที่นี่ ส่วนรายการเดิมที่รออนุมัติยังต้องตรวจสอบ"], ["EMPLOYEE DETAILS", "ข้อมูลพนักงาน"], ["Save details", "บันทึกข้อมูล"], ["Employee details saved", "บันทึกข้อมูลพนักงานแล้ว"]);
   const normalize = text => text.trim().replace(/\s+/g, " ");
   const enToTh = new Map();
   const thToEn = new Map();

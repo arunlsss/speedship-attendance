@@ -503,6 +503,18 @@ const CONFIG = {
   }
 
   function bindEvents() {
+    document.addEventListener("employee-registered", async event => {
+      try {
+        state.employees = await apiGet("getEmployees");
+        if (state.submitting) return;
+        $("locationSelect").value = event.detail.locationId;
+        setLocation(event.detail.locationId);
+        $("employeeSearch").value = "";
+        renderEmployees();
+        const employee = state.employees.find(emp => emp.id === event.detail.empId);
+        if (employee && employeeMatchesLocation(employee)) selectEmployee(employee.id);
+      } catch (error) { toast("Please refresh the attendance page to find your name.", error.message, "error"); }
+    });
     document.querySelectorAll("[data-theme-pref]").forEach(button => {
       button.addEventListener("click", () => setThemePreference(button.dataset.themePref));
     });

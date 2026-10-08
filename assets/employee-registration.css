@@ -12,3 +12,4 @@
 .pending-employee-list{display:grid;gap:12px;margin-top:18px}.pending-employee{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px;border:1px solid var(--border);border-radius:12px}.pending-employee>div{min-width:0;overflow-wrap:anywhere;line-height:1.65}.pending-employee button{flex-shrink:0}
 
 .registration-bank{grid-column:1/-1}.registration-bank small{color:var(--text-2);font:inherit;font-size:.9em;line-height:1.5}
+.registration-photo{grid-column:1/-1}.registration-photo small{color:var(--text-2);font-size:.9em;line-height:1.5}.registration-photo-preview{width:120px;height:120px;border-radius:16px;object-fit:cover;border:1px solid var(--border)}.employee-sync-actions{display:flex;flex-wrap:wrap;gap:10px}
