@@ -3,12 +3,21 @@ import './auth.js';
   const viewer = await SSS.requireDashboard(['hr','admin','super_admin']);
   if (!viewer) return;
   let lastStatus = null, busy = false, photoSupported = false, photoBusy = false;
+  let statusLoaded = false, lastFinishedAt = null;
   async function loadStatus() {
     try {
       const health = await SSS.request('health');
       photoSupported = health.capabilities?.employeePhotoSync === true;
       if (!health.capabilities?.employeeSheetImport) { lastStatus = {status:'unavailable'}; }
-      else lastStatus = await SSS.request('getEmployeeSyncStatus', {dashboard:true});
+      else {
+        lastStatus = await SSS.request('getEmployeeSyncStatus', {dashboard:true});
+        const finishedAt = lastStatus.finishedAt || null;
+        if (statusLoaded && finishedAt && finishedAt !== lastFinishedAt && !busy) {
+          document.getElementById('refreshBtn')?.click();
+        }
+        lastFinishedAt = finishedAt;
+        statusLoaded = true;
+      }
     } catch (error) { lastStatus = {status:'error', error:error.message}; }
     renderStatus();
   }
@@ -23,9 +32,9 @@ import './auth.js';
     status.replaceChildren();
     if (!row) { status.textContent = 'Checking availability...'; return; }
     if (row.status === 'unavailable') { status.textContent = 'Employee sync will be available after the backend update.'; return; }
-    if ((busy && !photoBusy) || row.status === 'running') { status.textContent = 'Syncing missing employees...'; return; }
+    if ((busy && !photoBusy) || row.status === 'running') { status.textContent = 'Syncing employees and status...'; return; }
     if (row.status === 'not_run') { status.textContent = 'The first employee sync has not run yet.'; return; }
-    const labels = [['Imported',row.created||0],['Already present',row.existing||0],['Skipped',row.skipped||0],['Failed',row.failed||0]];
+    const labels = [['Imported',row.created||0],['Already present',row.existing||0],['Status updated',row.statusUpdated||0],['Skipped',row.skipped||0],['Failed',row.failed||0]];
     labels.forEach(([label,count]) => { const item = document.createElement('span'); item.append(Object.assign(document.createElement('span'),{textContent:label}),document.createTextNode(': '),Object.assign(document.createElement('strong'),{textContent:count}),document.createTextNode(' · ')); status.append(item); });
     if (row.finishedAt) { const time = document.createElement('time'); time.dataset.noTranslate = ''; time.textContent = new Date(row.finishedAt).toLocaleString(document.documentElement.lang==='th'?'th-TH':'en-GB',{timeZone:'Asia/Bangkok'}); status.append(time); }
     if (row.error) { const p = document.createElement('p'); p.textContent = row.error; status.append(p); }
@@ -36,7 +45,7 @@ import './auth.js';
     const anchor = document.getElementById('addEmployeeBtn');
     if (!anchor || document.getElementById('employeeSync')) return;
     const box = document.createElement('section'); box.id = 'employeeSync'; box.className = 'employee-sync';
-    box.innerHTML = '<div class="employee-sync-heading"><h3>Employee spreadsheet sync</h3>' + (['hr','super_admin'].includes(viewer.role) ? '<div class="employee-sync-actions"><button class="btn btn-soft" type="button">Sync missing employees</button><button class="btn btn-soft" type="button" data-sync-photos disabled>Sync employee photos</button></div>' : '') + '</div><p>Adds missing employee IDs from the Employees sheet every day at 12:00 PM Bangkok time. Existing employee records are preserved.</p><p class="employee-sync-status" role="status"></p><p class="employee-photo-sync-status" role="status"></p><details hidden><summary>Rows needing review</summary><ul></ul><p>Shows the first 50 skipped rows.</p></details>';
+    box.innerHTML = '<div class="employee-sync-heading"><h3>Employee spreadsheet sync</h3>' + (['hr','super_admin'].includes(viewer.role) ? '<div class="employee-sync-actions"><button class="btn btn-soft" type="button">Sync employees and status</button><button class="btn btn-soft" type="button" data-sync-photos disabled>Sync employee photos</button></div>' : '') + '</div><p>Adds missing employees and updates existing employee statuses from the Employees sheet every day at 12:00 PM Bangkok time. Other existing employee details are preserved.</p><p class="employee-sync-status" role="status"></p><p class="employee-photo-sync-status" role="status"></p><details hidden><summary>Rows needing review</summary><ul></ul><p>Shows the first 50 skipped rows.</p></details>';
     anchor.closest('.card').after(box);
     const button = box.querySelector('button');
     if (button) button.onclick = async () => {
