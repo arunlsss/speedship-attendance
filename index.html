@@ -45,6 +45,17 @@
   </header>
 
   <main>
+    <section class="card" id="deviceApproval" hidden style="margin-bottom:16px">
+      <h2>อนุมัติอุปกรณ์ลงเวลา / Device approval</h2>
+      <p id="deviceProtectionStatus" role="status"></p><p id="deviceApprovalCode" data-no-translate></p>
+      <div id="deviceApprovalForm">
+        <p>เลือกสถานที่และชื่อของคุณด้านล่าง จากนั้นส่งคำขอให้ฝ่ายจัดการ / Select your location and name below, then request management approval.</p>
+        <label for="deviceLabel">ชื่ออุปกรณ์ / Device name</label><input id="deviceLabel" maxlength="80" placeholder="เช่น โทรศัพท์ของ Arun / Warehouse tablet">
+        <label for="deviceKind">การใช้งาน / Usage</label><select id="deviceKind"><option value="employee">โทรศัพท์ส่วนตัว / Personal phone</option><option value="shared">อุปกรณ์ส่วนกลาง / Shared company device</option></select>
+        <button type="button" class="secondary-button" id="requestDeviceApproval">ขออนุมัติอุปกรณ์ / Request approval</button>
+      </div>
+      <button type="button" class="secondary-button" id="resetDeviceApproval" hidden>สร้างคำขอใหม่ / New approval request</button>
+    </section>
     <section class="intro">
       <div>
         <h1>ลงเวลาเข้าและออกงาน</h1>
@@ -166,7 +177,8 @@
 <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 <div class="upload-center" id="uploadCenter"></div>
 
-<script src="assets/attendance.js?v=20261008-registration-photo"></script>
+<script src="assets/attendance-device.js?v=20261009-device-approval"></script>
+<script src="assets/attendance.js?v=20261009-device-approval"></script>
 <script src="assets/employee-registration.js?v=20261008-registration-photo"></script>
 </body>
 </html>

@@ -396,7 +396,7 @@ const CONFIG = {
 
   function updateSubmitButton() {
     const button = $("submitButton");
-    const ready = !!(state.selectedLocation && state.selectedEmployee && state.photoDataUrl);
+    const ready = !!(state.selectedLocation && state.selectedEmployee && state.photoDataUrl && window.SSSAttendanceDevice?.canSubmit());
     button.disabled = !ready || state.submitting;
     button.className = `submit-button ${state.logType === "IN" ? "in" : "out"}`;
     button.textContent = state.submitting ? "กำลังบันทึก..." : `ลงชื่อ${state.logType === "IN" ? "เข้างาน" : "ออกงาน"}`;
@@ -410,7 +410,7 @@ const CONFIG = {
   }
 
   async function submitAttendance(forceWrite = false, preserved = null) {
-    if (!state.selectedLocation || !state.selectedEmployee || !state.photoDataUrl || state.submitting) return;
+    if (!state.selectedLocation || !state.selectedEmployee || !state.photoDataUrl || state.submitting || !window.SSSAttendanceDevice?.canSubmit()) return;
     state.submitting = true;
     updateSubmitButton();
 
@@ -427,6 +427,7 @@ const CONFIG = {
       const gpsPromise = getGps().catch(() => state.gps || { lat: "", lng: "", accuracy: null });
       const result = await apiPost({
         action: "appendLog",
+        deviceKey: window.SSSAttendanceDevice?.key() || "",
         logId,
         empId: employeeSnapshot.id,
         locId: locationSnapshot.id,
@@ -502,7 +503,10 @@ const CONFIG = {
     updateSubmitButton();
   }
 
+  window.SSSAttendanceSelection = () => ({employeeId:state.selectedEmployee?.id || "",locationId:state.selectedLocation?.id || ""});
+
   function bindEvents() {
+    document.addEventListener("attendance-device-state", updateSubmitButton);
     document.addEventListener("employee-registered", async event => {
       try {
         state.employees = await apiGet("getEmployees");
