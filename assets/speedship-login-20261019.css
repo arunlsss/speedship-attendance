@@ -62,3 +62,19 @@ body.ssp-has-nav #loginPage.active,body.ssp-has-nav .auth-shell{min-height:calc(
 /* Use the same type metrics in all three login frames. */
 .sss-glass-card,.login-page .login-wrap{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
 .sss-glass-card h1,.sss-glass-card h2,.login-page h1,.sss-glass-card input,.login-page input{font-family:inherit!important}
+
+/* Compact account preferences while keeping them available. */
+:root{--sss-login-height:680px}
+.sss-glass-card,.login-page .login-wrap,.login-page>.login-card{padding:28px!important}
+.sss-login-brand,.login-page .login-brand{margin-bottom:20px!important}
+.sss-glass-card .subtitle,.sss-glass-card .auth-intro,.login-page .login-card>p{margin-bottom:18px!important}
+.sss-glass-card .field,.login-page .field{margin-bottom:16px!important}
+.sss-glass-card label,.sss-glass-card .field-label,.login-page .field>span{margin-bottom:6px!important}
+.auth-shell .auth-display-controls{display:flex!important;align-items:center;gap:12px;margin:12px 0 18px!important;flex-wrap:wrap}
+.auth-shell .auth-display-controls label{display:flex!important;align-items:center;gap:7px;margin:0!important;font-size:11px!important;line-height:1.3!important}
+.auth-shell .auth-display-controls label span{font-size:11px!important;color:#b5bdb7!important}
+.auth-shell .sss-glass-card .auth-display-controls select{width:auto!important;max-width:112px;height:32px!important;min-height:32px!important;padding:0 8px!important;font-size:12px!important;border-radius:8px!important;color-scheme:dark}
+.auth-shell .auth-tabs{margin-bottom:18px!important}
+.auth-shell .text-btn{padding:0!important;min-height:0!important;height:auto!important}
+.auth-shell .auth-footer{margin-top:18px!important;padding-top:16px!important}
+@media(max-width:520px){.sss-glass-card,.login-page .login-wrap,.login-page>.login-card{padding:24px!important;min-height:660px}.auth-shell .auth-display-controls{gap:10px}.auth-shell .auth-display-controls label{gap:5px}}
