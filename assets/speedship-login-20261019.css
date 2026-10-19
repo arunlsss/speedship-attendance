@@ -78,3 +78,12 @@ body.ssp-has-nav #loginPage.active,body.ssp-has-nav .auth-shell{min-height:calc(
 .auth-shell .text-btn{padding:0!important;min-height:0!important;height:auto!important}
 .auth-shell .auth-footer{margin-top:18px!important;padding-top:16px!important}
 @media(max-width:520px){.sss-glass-card,.login-page .login-wrap,.login-page>.login-card{padding:24px!important;min-height:660px}.auth-shell .auth-display-controls{gap:10px}.auth-shell .auth-display-controls label{gap:5px}}
+
+.auth-shell .sss-login-brand{margin-bottom:16px!important}
+.auth-shell .sss-glass-card .auth-intro{margin-bottom:12px!important;font-size:calc(14px * var(--text-scale,1))!important}
+.auth-shell .auth-tabs{margin-bottom:12px!important}
+.auth-shell .auth-footer{margin-top:16px!important}
+.auth-shell .sss-glass-card .field label{font-size:calc(13px * var(--text-scale,1))!important}
+.auth-shell .sss-glass-card .field input{font-size:calc(16px * var(--text-scale,1))!important}
+.auth-shell .sss-glass-card .btn-primary{font-size:calc(15px * var(--text-scale,1))!important}
+.auth-shell .sss-glass-card h2{font-size:calc(30px * var(--text-scale,1))!important}
