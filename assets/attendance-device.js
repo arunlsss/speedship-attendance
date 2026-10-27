@@ -7,7 +7,13 @@
   function changed(){document.dispatchEvent(new Event('attendance-device-state'));}
   async function call(action,body={}){
     const r=await fetch('https://attendanceapi-wl5ots23eq-as.a.run.app',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,deviceKey:key,...body})});
-    const p=await r.json();if(!r.ok||p.ok!==true)throw new Error(p.error||'Device check failed');return p.data;
+    const p=await r.json();
+    if(!r.ok||p.ok!==true){
+      const error=new Error(p.error||'Device check failed');
+      if(action==='attendanceDeviceStatus' && p.error==='Unknown POST action: attendanceDeviceStatus') error.code='DEVICE_API_UNSUPPORTED';
+      throw error;
+    }
+    return p.data;
   }
   function newKey(){
     const bytes=new Uint8Array(32);crypto.getRandomValues(bytes);
@@ -25,7 +31,16 @@
   async function refresh(){
     if(!key)return;
     try{info=await call('attendanceDeviceStatus');ready=true;render();changed();}
-    catch{ready=false;render();statusMessage(text('ตรวจสอบอุปกรณ์ไม่สำเร็จ กรุณาลองใหม่','Unable to verify device. Please retry.'));changed();}
+    catch(error){
+      // The current attendance backend no longer implements device approval.
+      // Only its explicit unsupported-action response enables compatibility mode.
+      // Authentication/approval errors and connectivity failures still block submission.
+      if(error.code==='DEVICE_API_UNSUPPORTED'){
+        info={enforced:false,compatibility:'unsupported-device-api'};ready=true;
+        render();changed();return;
+      }
+      ready=false;render();statusMessage(text('ตรวจสอบอุปกรณ์ไม่สำเร็จ กรุณาลองใหม่','Unable to verify device. Please retry.'));changed();
+    }
   }
   async function init(){
     try{key=localStorage.getItem(storeKey)||'';if(!/^[a-f0-9]{64}$/.test(key))newKey();}
