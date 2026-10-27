@@ -1,0 +1,11 @@
+# Publish frontend files only.
+exclude:
+  - backend
+  - node_modules
+  - tests
+  - scripts
+  - .github
+  - package.json
+  - package-lock.json
+  - .env
+  - .env.local
