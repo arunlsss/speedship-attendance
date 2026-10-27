@@ -419,3 +419,17 @@ button, .panel, .employee-button, .ready-item, .status-chip, select, input, text
 
 /* Automatic mode hides the manual selector and its field label. */
 #attendanceTypePicker[hidden], .field:has(> #attendanceTypePicker[hidden]) { display:none!important; }
+
+/* Links styled as buttons use the same theme and geometry as native buttons. */
+a.secondary-button, a.icon-button, a.ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+a.secondary-button, a.secondary-button:visited, a.icon-button, a.icon-button:visited { color: var(--text); }
+a.ghost-button, a.ghost-button:visited { color: var(--text-2); }
+a.secondary-button:focus-visible, a.icon-button:focus-visible, a.ghost-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
