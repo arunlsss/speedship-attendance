@@ -10,3 +10,5 @@
 html body,html body :is(h1,h2,h3,h4,h5,h6,p,a,button,input,select,textarea,label,legend,summary,table,th,td,span,strong,b,small,div,section,header,footer,nav,aside,li,dt,dd),html body .ssp-header,html body .ssp-header *{font-family:var(--speedship-font)!important}
 html body :is(code,pre,kbd,samp){font-family:ui-monospace,monospace!important}
 html body .ssp-header .ssp-links a,html body .ssp-header .ssp-management,html body .ssp-header .ssp-menu summary{font-family:var(--speedship-font)!important}
+
+html body .sss-glass-card,html body .login-page .login-wrap{font-family:var(--speedship-font)!important}
