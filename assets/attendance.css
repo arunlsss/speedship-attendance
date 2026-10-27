@@ -416,3 +416,6 @@ button, .panel, .employee-button, .ready-item, .status-chip, select, input, text
 }
 .hint-spaced{margin-top:6px}
 
+
+/* Automatic mode hides the manual selector and its field label. */
+#attendanceTypePicker[hidden], .field:has(> #attendanceTypePicker[hidden]) { display:none!important; }
