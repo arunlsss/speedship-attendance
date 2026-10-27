@@ -1,0 +1,7 @@
+# Server source is deployed separately and must not be committed here.
+/backend/
+/node_modules/
+/dist/
+.env
+.env.*
+*-debug.log

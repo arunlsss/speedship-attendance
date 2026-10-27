@@ -1,0 +1,9 @@
+# Keep server source and local development files out of GitHub Pages.
+exclude:
+  - backend
+  - node_modules
+  - tests
+  - package.json
+  - package-lock.json
+  - .env
+  - .env.local

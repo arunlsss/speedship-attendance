@@ -46,10 +46,11 @@ import "./auth.js";
       { href:"hr.html", label:"HR Records", short:"HR", icon:"records", show: role === "hr" || role === "admin" || role === "super_admin" },
       { href:"admin.html", label: role === "super_admin" ? "Super Admin" : "System Admin", short:"Admin", icon:"admin", show: role === "admin" || role === "super_admin" },
       { href:"executive.html", label:"C-Level Overview", short:"Overview", icon:"overview", show: role === "executive" || role === "admin" || role === "super_admin" },
+      { href:"pto.html?view=management", label:"PTO Requests & Allowances", short:"PTO", icon:"records", show: ["hr","executive","super_admin"].includes(role) },
       { href:"index.html", label:"Attendance App", short:"Clock in", icon:"clock", show:true }
     ].filter(x=>x.show);
     const nav = pages.map(x=>`<a href="${x.href}" ${page === x.href.replace('.html','') ? 'class="active" aria-current="page"' : ''}>${SSS.esc(x.label)}</a>`).join("");
-    const mobileNav = pages.map(x=>`<a href="${x.href}" aria-label="${SSS.esc(x.label)}" ${page === x.href.replace('.html','') ? 'class="active" aria-current="page"' : ''}>${navIcon(x.icon)}<span>${x.short}</span></a>`).join("");
+    const mobileNav = pages.filter(x=>!x.href.startsWith("pto.html")).map(x=>`<a href="${x.href}" aria-label="${SSS.esc(x.label)}" ${page === x.href.replace('.html','') ? 'class="active" aria-current="page"' : ''}>${navIcon(x.icon)}<span>${x.short}</span></a>`).join("");
     return `<div class="dash-layout">
       <aside class="sidebar">
         <div class="brand"><div class="brand-mark">SSS</div><div><div class="brand-title">Speedship</div><div class="brand-sub">Attendance Operations</div></div></div>
@@ -62,7 +63,7 @@ import "./auth.js";
       </main>
       <nav class="mobile-nav" aria-label="Dashboard">${mobileNav}<button type="button" id="mobileMoreBtn" aria-expanded="false" aria-controls="mobileMenu">${navIcon("more")}<span>More</span></button></nav>
       <div class="mobile-menu-backdrop" id="mobileMenuBackdrop" hidden></div>
-      <section class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Dashboard menu" hidden><div class="mobile-menu-head"><strong>Dashboard menu</strong><button type="button" class="icon-btn" id="mobileMenuClose" aria-label="Close menu">×</button></div><div class="mobile-account"><strong>${SSS.esc(viewer.displayName || viewer.email || "Management")}</strong><span>${SSS.esc(viewer.email || "")}</span><span>${SSS.esc(role === "super_admin" ? "Super Admin" : role === "executive" ? "C-Level" : role.toUpperCase())}</span></div><button type="button" class="btn btn-soft" id="mobileThemeBtn">Theme · <span data-theme-label>Auto</span></button><button type="button" class="btn btn-ghost" id="mobileLogoutBtn">Sign out</button></section>
+      <section class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Dashboard menu" hidden><div class="mobile-menu-head"><strong>Dashboard menu</strong><button type="button" class="icon-btn" id="mobileMenuClose" aria-label="Close menu">×</button></div><div class="mobile-account"><strong>${SSS.esc(viewer.displayName || viewer.email || "Management")}</strong><span>${SSS.esc(viewer.email || "")}</span><span>${SSS.esc(role === "super_admin" ? "Super Admin" : role === "executive" ? "C-Level" : role.toUpperCase())}</span></div>${["hr","executive","super_admin"].includes(role) ? '<a class="btn btn-soft" href="pto.html?view=management">PTO Requests & Allowances</a>' : ""}<button type="button" class="btn btn-soft" id="mobileThemeBtn">Theme · <span data-theme-label>Auto</span></button><button type="button" class="btn btn-ghost" id="mobileLogoutBtn">Sign out</button></section>
       <div class="drawer-backdrop" id="drawerBackdrop"></div><aside class="drawer" id="drawer"><div class="drawer-head"><div><div class="eyebrow">EMPLOYEE RECORD</div><strong id="drawerTitle">Employee</strong></div><button class="icon-btn" id="drawerClose">×</button></div><div class="drawer-body" id="drawerBody"></div></aside>
       <div class="modal-backdrop" id="actionModal"><div class="modal" id="actionModalContent"></div></div>
     </div>`;
@@ -434,3 +435,4 @@ import "./auth.js";
 
   load();
 })();
+
