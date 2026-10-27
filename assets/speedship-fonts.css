@@ -1,0 +1,12 @@
+/* One bilingual type system for all Speedship portals and navigation. */
+@font-face{font-family:"Speedship Euclid";src:url("/assets/fonts/euclid-regular.woff2") format("woff2");font-weight:300 400;font-display:swap;unicode-range:U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF}
+@font-face{font-family:"Speedship Euclid";src:url("/assets/fonts/euclid-medium.woff2") format("woff2");font-weight:500;font-display:swap;unicode-range:U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF}
+@font-face{font-family:"Speedship Euclid";src:url("/assets/fonts/euclid-semibold.woff2") format("woff2");font-weight:600;font-display:swap;unicode-range:U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF}
+@font-face{font-family:"Speedship Euclid";src:url("/assets/fonts/euclid-bold.woff2") format("woff2");font-weight:700 900;font-display:swap;unicode-range:U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF}
+@font-face{font-family:"Speedship Ozone";src:url("/assets/fonts/db-ozone-regular.woff2") format("woff2");font-weight:300 400;font-display:swap;size-adjust:125%;unicode-range:U+0E00-0E7F}
+@font-face{font-family:"Speedship Ozone";src:url("/assets/fonts/db-ozone-medium.woff2") format("woff2");font-weight:500;font-display:swap;size-adjust:125%;unicode-range:U+0E00-0E7F}
+@font-face{font-family:"Speedship Ozone";src:url("/assets/fonts/db-ozone-bold.woff2") format("woff2");font-weight:600 900;font-display:swap;size-adjust:125%;unicode-range:U+0E00-0E7F}
+:root{--speedship-font:"Speedship Euclid","Speedship Ozone",Arial,sans-serif;--font:var(--speedship-font);--font-brand:var(--speedship-font)}
+html body,html body :is(h1,h2,h3,h4,h5,h6,p,a,button,input,select,textarea,label,legend,summary,table,th,td,span,strong,b,small,div,section,header,footer,nav,aside,li,dt,dd),html body .ssp-header,html body .ssp-header *{font-family:var(--speedship-font)!important}
+html body :is(code,pre,kbd,samp){font-family:ui-monospace,monospace!important}
+html body .ssp-header .ssp-links a,html body .ssp-header .ssp-management,html body .ssp-header .ssp-menu summary{font-family:var(--speedship-font)!important}

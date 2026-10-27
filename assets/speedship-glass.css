@@ -1,0 +1,24 @@
+/* Liquid Glass surfaces. Existing forms and attendance state stay intact. */
+:root{--glass-fill:linear-gradient(135deg,#464b47b8,#242927d9 58%,#4b5144ad);--glass-edge:#e4f4e42b;--glass-shadow:inset 0 1px 1px #ffffff28,inset 0 -1px 1px #0005,0 18px 44px #0003;--glass-solid:#202924}
+:root[data-theme=light]{--glass-fill:linear-gradient(135deg,#ffffffed,#edf3eee8);--glass-edge:#ffffffbf;--glass-shadow:inset 0 1px 1px #fff,0 12px 32px #183c2310;--glass-solid:#f2f6f2}
+body{background:radial-gradient(ellipse at 100% 5%,#2d66403b,transparent 50%),radial-gradient(ellipse at 0% 85%,#777d5930,transparent 50%),var(--bg);background-attachment:fixed}
+.card,.panel,.modal,.auth-card,.pto-stat,.branch-shift-form,.sidebar,.dash-topbar,.topbar,.theme-switch,.status-chip,.selected-panel{background:var(--glass-solid);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow)}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+ .card,.panel,.modal,.auth-card,.pto-stat,.branch-shift-form,.sidebar,.dash-topbar,.topbar,.theme-switch,.status-chip,.selected-panel{background:var(--glass-fill);backdrop-filter:blur(28px) saturate(120%);-webkit-backdrop-filter:blur(28px) saturate(120%)}
+}
+.card,.panel,.modal,.auth-card,.branch-shift-form{border-radius:28px}
+.pto-stat{border-radius:22px}
+.camera-frame{border-radius:22px}
+.icon-button,.secondary-button,.ghost-button,.btn,.primary-small,.danger-small,.employee-button,input,select,textarea{border-radius:16px}
+.secondary-button,.ghost-button,.btn-soft,.btn-ghost{background:color-mix(in srgb,var(--surface-2) 82%,transparent);border-color:var(--glass-edge);color:var(--text)}
+.submit-button,.submit-btn,.btn-primary{border-radius:999px;box-shadow:inset 0 1px 1px #ffffff4d,0 8px 24px #0002}
+.submit-button.in,.submit-btn.in{background:linear-gradient(145deg,#3c9252,#256b36);color:#fff}
+.theme-switch{border-radius:22px}.theme-icon-btn{border-radius:16px}
+html body .ssp-header{background:#202824e6!important;border-bottom-color:var(--glass-edge);box-shadow:inset 0 1px 1px #ffffff1c,0 8px 24px #0002;backdrop-filter:blur(30px) saturate(120%);-webkit-backdrop-filter:blur(30px) saturate(120%)}
+html body .ssp-header .ssp-management{border-radius:999px!important;box-shadow:inset 0 1px 1px #ffffff40,0 4px 16px #0002}
+html body .ssp-header .ssp-menu-panel{background:#242b27f5;border:1px solid #ffffff24;border-radius:0 0 28px 28px;box-shadow:var(--glass-shadow)}
+.topbar-inner,.header-actions,.pto-tools{gap:10px}.card-head{gap:12px}
+input,select,textarea{min-height:44px}.employee-button{min-height:52px}
+@media(max-width:620px){.card,.panel,.branch-shift-form{border-radius:24px}.header-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;align-items:end}.header-actions>*{min-width:0}.header-actions select,.header-actions>.secondary-button{width:100%}.header-actions>.secondary-button{min-height:44px;text-align:center}.header-actions>[data-employee-register]{grid-column:1 / -1}.theme-switch{width:max-content}.pto-heading{gap:16px}.pto-tools{gap:8px}}
+@media(prefers-reduced-transparency:reduce){.card,.panel,.modal,.auth-card,.pto-stat,.branch-shift-form,.sidebar,.dash-topbar,.topbar,.theme-switch,.status-chip,.selected-panel{background:var(--glass-solid);backdrop-filter:none;-webkit-backdrop-filter:none}html body .ssp-header{background:#202824!important;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media print{body{background:#fff!important}.card,.panel,.modal,.auth-card,.pto-stat,.branch-shift-form,.sidebar,.dash-topbar,.topbar{background:#fff!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#111!important;border-color:#ccc!important}}
