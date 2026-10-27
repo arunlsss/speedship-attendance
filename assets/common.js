@@ -3,7 +3,7 @@
   const THEME_KEY = "sss_theme";
   let dashboardUser = null;
 
-  function applyTheme(pref = localStorage.getItem(THEME_KEY) || "auto") {
+  function applyTheme(pref = localStorage.getItem(THEME_KEY) || "dark") {
     const dark = pref === "dark" || (pref === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
     document.documentElement.dataset.theme = dark ? "dark" : "light";
     document.documentElement.dataset.themePreference = pref;
@@ -12,7 +12,7 @@
   }
 
   function cycleTheme() {
-    const current = localStorage.getItem(THEME_KEY) || "auto";
+    const current = localStorage.getItem(THEME_KEY) || "dark";
     const next = current === "auto" ? "light" : current === "light" ? "dark" : "auto";
     localStorage.setItem(THEME_KEY, next);
     applyTheme(next);
@@ -20,7 +20,7 @@
   }
 
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => {
-    if ((localStorage.getItem(THEME_KEY) || "auto") === "auto") applyTheme("auto");
+    if ((localStorage.getItem(THEME_KEY) || "dark") === "auto") applyTheme("auto");
   });
 
   async function request(action, { method = "GET", body = null, dashboard = false, query = {} } = {}) {
@@ -157,3 +157,4 @@
     dashboardUser: () => dashboardUser
   };
 })();
+

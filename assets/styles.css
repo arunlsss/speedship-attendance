@@ -19,9 +19,9 @@
   --text-3:#8d99a8;
   --border:#e1e7ee;
   --border-strong:#cbd5e1;
-  --brand:#2563eb;
-  --brand-2:#1d4ed8;
-  --brand-soft:rgba(37,99,235,.10);
+  --brand:#256b36;
+  --brand-2:#1b5129;
+  --brand-soft:rgba(37,107,54,.10);
   --green:#059669;
   --green-soft:rgba(5,150,105,.11);
   --red:#dc2626;
@@ -34,7 +34,7 @@
   --shadow:0 18px 50px rgba(15,23,42,.09);
   --radius:18px;
   --radius-sm:12px;
-  --focus:0 0 0 4px rgba(37,99,235,.16);
+  --focus:0 0 0 4px rgba(37,107,54,.16);
   --font:"Euclid Circular A","DB Ozone X",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
@@ -49,9 +49,9 @@
   --text-3:#738092;
   --border:#263240;
   --border-strong:#394758;
-  --brand:#7aa7ff;
-  --brand-2:#9bbdff;
-  --brand-soft:rgba(122,167,255,.13);
+  --brand:#75cf88;
+  --brand-2:#9bdfaa;
+  --brand-soft:rgba(117,207,136,.13);
   --green:#5bd3a9;
   --green-soft:rgba(91,211,169,.12);
   --red:#ff8080;
@@ -62,7 +62,7 @@
   --purple-soft:rgba(180,147,255,.12);
   --shadow-sm:0 1px 2px rgba(0,0,0,.18),0 8px 28px rgba(0,0,0,.20);
   --shadow:0 20px 60px rgba(0,0,0,.33);
-  --focus:0 0 0 4px rgba(122,167,255,.18);
+  --focus:0 0 0 4px rgba(117,207,136,.18);
 }
 
 *{box-sizing:border-box}
@@ -168,12 +168,12 @@ textarea{min-height:76px;resize:vertical}input::placeholder,textarea::placeholde
 @media(max-width:620px){.brand-sub{display:none}.page-head{align-items:flex-start;flex-direction:column}.grid-2{gap:12px}.card{padding:15px}.readiness{grid-template-columns:1fr 1fr 1fr}.button-row{flex-direction:column}.kpi-grid{grid-template-columns:1fr 1fr}.kpi-value{font-size:22px}.role-grid{grid-template-columns:1fr}.top-actions .btn .btn-label{display:none}.info-grid{grid-template-columns:1fr}}
 /* V4 role-based authentication */
 .auth-shell{min-height:100vh;display:grid;grid-template-columns:minmax(320px,.9fr) minmax(480px,1.1fr);background:var(--bg)}
-.auth-brand-panel{position:relative;overflow:hidden;background:linear-gradient(145deg,#0a1830 0%,#0d2143 54%,#11366a 100%);color:#fff;padding:48px}
-.auth-brand-panel:after{content:"";position:absolute;width:520px;height:520px;border-radius:50%;right:-260px;bottom:-180px;background:radial-gradient(circle,rgba(73,135,255,.36),rgba(73,135,255,0) 68%)}
+.auth-brand-panel{position:relative;overflow:hidden;background:linear-gradient(145deg,#080d0a 0%,#10291a 54%,#14381d 100%);color:#fff;padding:48px}
+.auth-brand-panel:after{content:"";position:absolute;width:520px;height:520px;border-radius:50%;right:-260px;bottom:-180px;background:radial-gradient(circle,rgba(117,207,136,.36),rgba(117,207,136,0) 68%)}
 .auth-brand-inner{position:relative;z-index:1;height:100%;min-height:620px;display:flex;flex-direction:column}
 .auth-brand-panel .brand-sub,.auth-brand-panel .eyebrow{color:rgba(255,255,255,.62)}
 .auth-hero-copy{margin:auto 0;max-width:570px}.auth-hero-copy h1{font-size:clamp(38px,5vw,68px);letter-spacing:-.055em;line-height:.98;margin:14px 0 22px}.auth-hero-copy p{font-size:16px;line-height:1.8;color:rgba(255,255,255,.7);max-width:520px}
-.auth-security-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.auth-security-list>div{padding:14px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.055);backdrop-filter:blur(10px)}.auth-security-list span{display:block;font:500 11px var(--mono);color:#7daaff;margin-bottom:10px}.auth-security-list strong{display:block;font-size:12px}.auth-security-list small{display:block;color:rgba(255,255,255,.55);font-size:10px;line-height:1.5;margin-top:4px}
+.auth-security-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.auth-security-list>div{padding:14px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.055);backdrop-filter:blur(10px)}.auth-security-list span{display:block;font:500 11px var(--mono);color:#9bdfaa;margin-bottom:10px}.auth-security-list strong{display:block;font-size:12px}.auth-security-list small{display:block;color:rgba(255,255,255,.55);font-size:10px;line-height:1.5;margin-top:4px}
 .auth-form-panel{display:grid;place-items:center;padding:34px}.auth-card{width:min(560px,100%);background:var(--surface);border:1px solid var(--border);border-radius:26px;padding:30px;box-shadow:var(--shadow)}.auth-topline{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.auth-topline h2{margin:4px 0 0;font-size:28px;letter-spacing:-.035em}.auth-intro{line-height:1.7;margin:10px 0 20px}
 .auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border:1px solid var(--border);border-radius:13px;padding:4px;margin-bottom:20px}.auth-tab{border:0;background:transparent;color:var(--text-2);font:600 12px var(--font);padding:10px;border-radius:9px;cursor:pointer}.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 8px rgba(0,0,0,.08)}.auth-form{display:none}.auth-form.active{display:block}.auth-main-btn{width:100%;margin-top:16px}.text-btn{border:0;background:none;color:var(--brand);font:600 11px var(--font);cursor:pointer;padding:10px 0}.notice-box{display:flex;flex-direction:column;gap:4px;margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--brand-soft);border:1px solid color-mix(in srgb,var(--brand) 24%,var(--border));font-size:11px}.notice-box span{color:var(--text-2);line-height:1.5}
 .auth-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:22px;padding-top:15px;font-size:11px}.auth-footer a{color:var(--text-2)}.setup-box{margin-top:14px;padding:16px;border:1px dashed var(--border);border-radius:14px;background:var(--surface-2)}.setup-box p{line-height:1.6;margin:6px 0 12px}
@@ -193,7 +193,7 @@ textarea{min-height:76px;resize:vertical}input::placeholder,textarea::placeholde
   inset:0;
   pointer-events:none;
   border-radius:inherit;
-  background:linear-gradient(135deg,rgba(37,99,235,.035),transparent 42%);
+  background:linear-gradient(135deg,rgba(37,107,54,.035),transparent 42%);
   opacity:0;
   transition:opacity .22s ease;
 }
@@ -577,3 +577,4 @@ textarea{min-height:76px;resize:vertical}input::placeholder,textarea::placeholde
 @media(prefers-reduced-transparency:reduce){
   .mobile-nav{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}
 }
+

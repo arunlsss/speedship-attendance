@@ -94,7 +94,7 @@ const CONFIG = {
 
   const systemThemeMedia = matchMedia("(prefers-color-scheme: dark)");
   systemThemeMedia.addEventListener?.("change", () => {
-    if ((localStorage.getItem(CONFIG.THEME_KEY) || "system") === "system") applyTheme("system");
+    if ((localStorage.getItem(CONFIG.THEME_KEY) || "dark") === "system") applyTheme("system");
   });
 
   function updateClock() {
@@ -558,7 +558,7 @@ const CONFIG = {
   }
 
   async function init() {
-    applyTheme(localStorage.getItem(CONFIG.THEME_KEY) || "system");
+    applyTheme(localStorage.getItem(CONFIG.THEME_KEY) || "dark");
     bindEvents();
     updateClock();
     setInterval(updateClock, 1000);
