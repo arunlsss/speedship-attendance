@@ -1,8 +1,10 @@
+import { matchesEmployeeQuery } from './employee-filter.js?v=20261027';
 import './auth.js';
 const root = document.getElementById('ptoRoot'), errorBox = document.getElementById('ptoError');
 const esc = SSS.esc, management = new URLSearchParams(location.search).get('view') === 'management';
 const today = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 let year = Number(today.slice(0,4)), state, actor, selected = [], requestId = crypto.randomUUID(), busy = false;
+const managementFilters = {employee:'', status:'pending'};
 const statuses = {pending:'รออนุมัติ / Pending',approved:'อนุมัติ / Approved',rejected:'ไม่อนุมัติ / Rejected',cancelled:'ยกเลิก / Cancelled'};
 document.getElementById('ptoTheme').onclick = () => SSS.cycleTheme();
 const showError = e => { errorBox.textContent = e.message || String(e); errorBox.hidden = false; };
@@ -19,10 +21,10 @@ function employeeMarkup() {
 }
 function managementMarkup() {
   const configured = state.ceoEmail ? 'CEO: '+esc(state.ceoEmail) : 'ยังไม่ได้กำหนดบัญชี CEO / CEO account has not been designated';
-  return '<section class="card"><div class="pto-row"><div><h2>จัดการสิทธิ์และคำขอลา / PTO management</h2><p>'+configured+'</p></div>'+yearControl()+'<button class="btn btn-soft" id="ptoRefresh">Refresh</button><a class="btn btn-soft" href="'+SSS.routeForRole(actor.role)+'">Dashboard</a></div><p class="pto-help">เฉพาะ CEO ที่ได้รับมอบหมายเท่านั้นที่กำหนดสิทธิ์และอนุมัติได้ HR ดูข้อมูลและเชื่อมบัญชีพนักงานได้ / Only the designated CEO can set allowances and approve requests. HR can view records and link employee accounts.</p></section>'+
+  return '<section class="card"><div class="pto-row"><div><h2>จัดการสิทธิ์และคำขอลา / PTO management</h2><p>'+configured+'</p></div>'+yearControl()+'<button class="btn btn-soft" id="ptoRefresh">Refresh</button><a class="btn btn-soft" href="'+SSS.routeForRole(actor.role)+'">Dashboard</a></div><p class="pto-help">เฉพาะ CEO ที่ได้รับมอบหมายเท่านั้นที่กำหนดสิทธิ์และอนุมัติได้ HR ดูข้อมูลและเชื่อมบัญชีพนักงานได้ / Only the designated CEO can set allowances and approve requests. HR can view records and link employee accounts.</p><div class="field"><label for="ptoEmployeeSearch">ค้นหาชื่อพนักงาน / Search employee name</label><input type="search" id="ptoEmployeeSearch" placeholder="ชื่อ ชื่อเล่น รหัส หรืออีเมล / Name, nickname, ID or email" aria-describedby="ptoFilterHelp"><p class="pto-help" id="ptoFilterHelp">ใช้กับสิทธิ์รายบุคคล คำขอลา และการเชื่อมบัญชี / Filters allowances, leave requests and account linking.</p><button class="btn btn-ghost" type="button" id="ptoClearFilters">ล้างตัวกรอง / Clear filters</button></div></section>'+
     (state.canDesignate?'<section class="card"><details><summary>กำหนดบัญชี CEO / Designate CEO</summary><form id="ptoCeoForm" class="pto-form"><div class="field"><label for="ptoCeoEmail">อีเมลบัญชี C-Level หรือ Super Admin / Account email</label><input type="email" required id="ptoCeoEmail" value="'+esc(state.ceoEmail)+'"></div><button class="btn btn-primary">Save CEO</button></form></details></section>':'')+
     (state.canLink?'<section class="card"><details><summary>เชื่อมบัญชีพนักงาน / Link employee account</summary><p class="pto-help">พนักงานสร้างบัญชีและยืนยันอีเมลในหน้าขอลาก่อน จากนั้น HR เชื่อมอีเมลกับรหัสพนักงาน การเชื่อมใหม่จะยกเลิกบัญชีเดิมของพนักงาน / Employee creates and verifies a leave account first. HR then links it here. Relinking replaces that employee’s previous access.</p><form id="ptoLinkForm" class="pto-form"><div class="field"><label for="ptoLinkEmployee">พนักงาน / Employee</label><select id="ptoLinkEmployee" required><option value="">เลือกพนักงาน / Select employee</option>'+state.employees.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.name)+' ('+esc(e.id)+')'+(e.email?' · '+esc(e.email):'')+'</option>').join('')+'</select></div><div class="field"><label for="ptoLinkEmail">อีเมลที่ยืนยันแล้ว / Verified account email</label><input id="ptoLinkEmail" type="email" required></div><button class="btn btn-primary">Link account</button></form></details></section>':'')+
-    '<section class="card"><h2>สิทธิ์รายบุคคล / Employee allowances</h2><div class="field"><label for="ptoEmployeeSearch">ค้นหาพนักงาน / Search employees</label><input type="search" id="ptoEmployeeSearch"></div><div class="pto-table"><table><thead><tr><th>Employee</th><th>Allowance</th><th>Used</th><th>Pending</th><th>Available</th>'+(state.canManage?'<th>Action</th>':'')+'</tr></thead><tbody>'+state.employees.map(e=>'<tr data-employee-row data-search="'+esc((e.name+' '+e.id).toLowerCase())+'"><td>'+esc(e.name)+'<br><small>'+esc(e.id)+'</small></td><td>'+(state.canManage?'<input type="number" min="0" max="366" step="1" data-allowance="'+esc(e.id)+'" aria-label="Allowance for '+esc(e.name)+'" value="'+(e.balance.allowance ?? '')+'" placeholder="Not set">':esc(e.balance.allowance ?? 'ยังไม่กำหนด'))+'</td><td>'+e.balance.used+'</td><td>'+e.balance.pending+'</td><td>'+esc(e.balance.available ?? 'ยังไม่กำหนด')+'</td>'+(state.canManage?'<td><button class="btn btn-soft" data-save-allowance="'+esc(e.id)+'">Save</button></td>':'')+'</tr>').join('')+'</tbody></table></div></section><section class="card"><h2>คำขอลา / Leave requests</h2><div class="field"><label for="ptoStatusFilter">สถานะ / Status</label><select id="ptoStatusFilter"><option value="pending">รออนุมัติ / Pending</option><option value="all">ทั้งหมด / All</option><option value="approved">อนุมัติแล้ว / Approved</option><option value="rejected">ไม่อนุมัติ / Rejected</option><option value="cancelled">ยกเลิก / Cancelled</option></select></div><div id="ptoRequests"></div></section>';
+    '<section class="card"><h2>สิทธิ์รายบุคคล / Employee allowances</h2><p id="ptoEmployeeCount" class="pto-help" role="status"></p><p id="ptoEmployeeEmpty" class="pto-help" hidden>ไม่พบพนักงาน / No matching employees</p><div class="pto-table"><table><thead><tr><th>Employee</th><th>Allowance</th><th>Used</th><th>Pending</th><th>Available</th>'+(state.canManage?'<th>Action</th>':'')+'</tr></thead><tbody>'+state.employees.map(e=>'<tr data-employee-row data-employee-id="'+esc(e.id)+'"><td>'+esc(e.name)+'<br><small>'+esc(e.id)+'</small></td><td>'+(state.canManage?'<input type="number" min="0" max="366" step="1" data-allowance="'+esc(e.id)+'" aria-label="Allowance for '+esc(e.name)+'" value="'+(e.balance.allowance ?? '')+'" placeholder="Not set">':esc(e.balance.allowance ?? 'ยังไม่กำหนด'))+'</td><td>'+e.balance.used+'</td><td>'+e.balance.pending+'</td><td>'+esc(e.balance.available ?? 'ยังไม่กำหนด')+'</td>'+(state.canManage?'<td><button class="btn btn-soft" data-save-allowance="'+esc(e.id)+'">Save</button></td>':'')+'</tr>').join('')+'</tbody></table></div></section><section class="card"><h2>คำขอลา / Leave requests</h2><div class="field"><label for="ptoStatusFilter">สถานะ / Status</label><select id="ptoStatusFilter"><option value="pending">รออนุมัติ / Pending</option><option value="all">ทั้งหมด / All</option><option value="approved">อนุมัติแล้ว / Approved</option><option value="rejected">ไม่อนุมัติ / Rejected</option><option value="cancelled">ยกเลิก / Cancelled</option></select></div><div id="ptoRequests"></div></section>';
 }
 async function mutate(action,body) {
   if(busy)return; busy=true; errorBox.hidden=true;
@@ -52,9 +54,40 @@ function bind() {
     document.getElementById('ptoRequestForm').onsubmit=e=>{e.preventDefault();if(!selected.length)return showError(new Error('เพิ่มวันที่ต้องการลาก่อน / Add at least one date'));mutate('submitPtoRequest',{year,dates:selected,reason:document.getElementById('ptoReason').value,requestId});};
     return;
   }
-  const renderRequests=()=>{const filter=document.getElementById('ptoStatusFilter').value;document.getElementById('ptoRequests').innerHTML=state.requests.filter(r=>filter==='all'||r.status===filter).map(r=>requestMarkup(r,state.canManage)).join('')||'<p>ไม่มีคำขอในสถานะนี้ / No matching requests</p>';root.querySelectorAll('[data-decision]').forEach(b=>b.onclick=()=>decisionDialog(state.requests.find(r=>r.id===b.dataset.id),b.dataset.decision));};
-  document.getElementById('ptoStatusFilter').onchange=renderRequests;renderRequests();
-  document.getElementById('ptoEmployeeSearch').oninput=e=>root.querySelectorAll('[data-employee-row]').forEach(row=>row.hidden=!row.dataset.search.includes(e.target.value.toLowerCase()));
+  const employeeById = new Map(state.employees.map(e => [e.id,e]));
+  const renderRequests = () => {
+    const requests = state.requests.filter(r => {
+      const employee = employeeById.get(r.employeeId);
+      return (managementFilters.status === 'all' || r.status === managementFilters.status)
+        && matchesEmployeeQuery({...employee, employeeId:r.employeeId, employeeName:r.employeeName}, managementFilters.employee);
+    });
+    document.getElementById('ptoRequests').innerHTML = '<p class="pto-help" role="status">'+requests.length+' / '+state.requests.length+' คำขอ / requests</p>'
+      + (requests.map(r=>requestMarkup(r,state.canManage)).join('') || '<p>ไม่มีคำขอที่ตรงกับตัวกรอง / No matching requests</p>');
+    root.querySelectorAll('[data-decision]').forEach(b=>b.onclick=()=>decisionDialog(state.requests.find(r=>r.id===b.dataset.id),b.dataset.decision));
+  };
+  const applyEmployeeFilter = () => {
+    const employees = state.employees.filter(e=>matchesEmployeeQuery(e,managementFilters.employee));
+    const ids = new Set(employees.map(e=>e.id));
+    root.querySelectorAll('[data-employee-row]').forEach(row=>row.hidden=!ids.has(row.dataset.employeeId));
+    document.getElementById('ptoEmployeeCount').textContent=employees.length+' / '+state.employees.length+' พนักงาน / employees';
+    document.getElementById('ptoEmployeeEmpty').hidden=employees.length>0;
+    const select=document.getElementById('ptoLinkEmployee');
+    if(select) {
+      const selectedId=select.value;
+      select.innerHTML='<option value="">เลือกพนักงาน / Select employee</option>'+employees.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.name)+' ('+esc(e.id)+')'+(e.email?' · '+esc(e.email):'')+'</option>').join('');
+      select.value=ids.has(selectedId)?selectedId:'';
+    }
+    renderRequests();
+  };
+  const search=document.getElementById('ptoEmployeeSearch'), status=document.getElementById('ptoStatusFilter');
+  search.value=managementFilters.employee;status.value=managementFilters.status;
+  search.oninput=e=>{managementFilters.employee=e.target.value;applyEmployeeFilter();};
+  status.onchange=e=>{managementFilters.status=e.target.value;renderRequests();};
+  document.getElementById('ptoClearFilters').onclick=()=>{
+    managementFilters.employee='';managementFilters.status='pending';
+    search.value='';status.value='pending';applyEmployeeFilter();search.focus();
+  };
+  applyEmployeeFilter();
   root.querySelectorAll('[data-save-allowance]').forEach(b=>b.onclick=()=>{const employeeId=b.dataset.saveAllowance,input=Array.from(root.querySelectorAll('[data-allowance]')).find(i=>i.dataset.allowance===employeeId);if(!input.value||!input.reportValidity())return;mutate('setPtoAllowance',{employeeId,year,allowance:Number(input.value),expectedVersion:state.employees.find(e=>e.id===employeeId).balance.version});});
   const link=document.getElementById('ptoLinkForm');if(link)link.onsubmit=e=>{e.preventDefault();mutate('linkPtoEmployee',{employeeId:document.getElementById('ptoLinkEmployee').value,email:document.getElementById('ptoLinkEmail').value});};
   const ceo=document.getElementById('ptoCeoForm');if(ceo)ceo.onsubmit=e=>{e.preventDefault();mutate('designatePtoCeo',{email:document.getElementById('ptoCeoEmail').value,expectedVersion:state.configVersion});};
