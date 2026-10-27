@@ -293,6 +293,8 @@
   );
   pairs.push(["Employee details to complete", "ข้อมูลพนักงานที่ต้องระบุเพิ่มเติม"], ["New employees can clock in immediately. Set their employment type here; older pending records still need review.", "พนักงานใหม่ลงเวลาได้ทันที กำหนดประเภทการจ้างงานที่นี่ ส่วนรายการเดิมที่รออนุมัติยังต้องตรวจสอบ"], ["EMPLOYEE DETAILS", "ข้อมูลพนักงาน"], ["Save details", "บันทึกข้อมูล"], ["Employee details saved", "บันทึกข้อมูลพนักงานแล้ว"]);
   const normalize = text => text.trim().replace(/\s+/g, " ");
+  pairs.push(...[["Branch shifts","ตั้งค่ากะตามสาขา"],["Branches / Departments","สาขา / หน่วยงาน"],["Clock-in after shift start is late. No grace period.","เข้างานหลังเวลาเริ่มกะถือว่ามาสาย ไม่มีเวลาผ่อนผัน"],["Bangkok time · Same-day shifts; clock-out records actual time.","เวลาไทย · กะเริ่มและจบในวันเดียวกัน การออกงานบันทึกตามเวลาจริง"],["Manage leave requests, allowances and approvals.","ยื่นคำขอลา ตรวจสอบสิทธิ์ และติดตามผลอนุมัติ"],["Select scheduled working days only. Each date uses one full day. Pending requests reserve your available balance.","เลือกเฉพาะวันทำงานที่ต้องการลา วันละ 1 วัน ไม่รวมวันหยุดประจำสัปดาห์หรือวันหยุดนักขัตฤกษ์ คำขอที่รออนุมัติจะกันสิทธิ์ไว้ชั่วคราว"],["No late grace","ไม่มีเวลาผ่อนผันสาย"],["Saved","บันทึกแล้ว"],["Shift","กะ"],["Start","เริ่ม"],["End","สิ้นสุด"],["Not set","ยังไม่กำหนด"],["No active branches","ไม่พบสาขาที่เปิดใช้งาน"],["HR access required","ต้องใช้สิทธิ์ฝ่ายบุคคล"],["Branch is not active","สาขานี้ไม่ได้เปิดใช้งาน"],["Shift changed. Refresh and try again.","กะถูกแก้ไขแล้ว กรุณารีเฟรชและลองใหม่"],["Employee is not active","พนักงานนี้ไม่ได้อยู่ในสถานะใช้งาน"],["Employee is not assigned to this branch","พนักงานไม่ได้ประจำอยู่ที่สาขานี้"],["Clock-in after scheduled start","ลงเวลาหลังเวลาเริ่มกะ"],["Year","ปี"],["Allowance","สิทธิ์ประจำปี"],["Available","สิทธิ์คงเหลือ"],["Used","ใช้แล้ว"],["Employee allowances","สิทธิ์รายบุคคล"],["No matching employees","ไม่พบพนักงาน"],["No matching requests","ไม่พบคำขอที่ตรงกับตัวกรอง"],["Clear filters","ล้างตัวกรอง"]]);
+  pairs.push(["Checking attendance…", "กำลังตรวจสอบ..."]);
   const enToTh = new Map();
   const thToEn = new Map();
   pairs.forEach(([en, th]) => {
@@ -330,13 +332,39 @@
   let observer;
   let queued = false;
   const titleSource = document.title;
-  const protectedContent = "script, style, textarea, input, [data-no-translate], .employee-name, .employee-sub, .employee-meta, #selectedName, #selectedMeta, #employeeReady.good strong, #drawerTitle, .record-person, .exception-person, .payroll-person, .sync-record-main strong, .mobile-account > strong, .mobile-account > span:first-of-type, #duplicateMessage strong, .upload-card strong, .table td:first-child:not([colspan]), .table tr:has(.accessEdit) td:nth-child(4), .account-record .info-value";
+  const protectedContent = ".pto-reason, .pto-table td:first-child, .pto-request h3, #ptoLinkEmployee, .branch-shift-form > strong, script, style, textarea, input, [data-no-translate], .employee-name, .employee-sub, .employee-meta, #selectedName, #selectedMeta, #employeeReady.good strong, #drawerTitle, .record-person, .exception-person, .payroll-person, .sync-record-main strong, .mobile-account > strong, .mobile-account > span:first-of-type, #duplicateMessage strong, .upload-card strong, .table td:first-child:not([colspan]), .table tr:has(.accessEdit) td:nth-child(4), .account-record .info-value";
+
+  // Select one UI language while retaining counts and variable shift times.
+  function selectLanguageVariant(source, language) {
+    const text=String(source);
+    if(text.includes(" · "))return text.split(" · ").map(part=>selectLanguageVariant(part,language)).join(" · ");
+    const count=text.match(/^(\d+\s*\/\s*\d+\s+)(.+?)\s+\/\s+([A-Za-z][A-Za-z ]*)$/u);
+    if(count&&/[\u0E00-\u0E7F]/u.test(count[2]))return count[1]+(language==="th"?count[2]:count[3]);
+    const days=text.match(/^(\d+\s+)วัน\s+\/\s+days$/u);
+    if(days)return days[1]+(language==="th"?"วัน":"days");
+    const shift=text.match(/^กะ\s+\/\s+Shift\s+(.+)$/u);
+    if(shift)return (language==="th"?"กะ ":"Shift ")+shift[1];
+    const index=text.indexOf(" / ");
+    if(index<0)return text;
+    const left=text.slice(0,index).trim(),right=text.slice(index+3).trim();
+    const thai=/[\u0E00-\u0E7F]/u;
+    if(thai.test(left)&&!thai.test(right)&&/[A-Za-z]/u.test(right)){
+      let selected=language==="th"?left:right;
+      if(language==="th"&&/\(optional\)$/i.test(right))selected+=" (ไม่บังคับ)";
+      return selected;
+    }
+    if(!thai.test(left)&&thai.test(right)&&/[A-Za-z]/u.test(left))return language==="th"?right:left;
+    return text;
+  }
 
   function translate(source) {
     const text = normalize(source);
     if (!text) return source;
+    const selected=selectLanguageVariant(text,language);
+    if(selected!==text)return translate(selected);
     const exact = language === "th" ? enToTh.get(text.toLowerCase()) : thToEn.get(text);
     if (exact) return exact;
+    if(text.includes(' · ')){const localized=text.split(' · ').map(translate).join(' · ');if(localized!==text)return localized;}
     if (language === "en") {
       const count = text.match(/^(\d+) คน$/);
       if (count) return `${count[1]} employees`;
@@ -412,7 +440,7 @@
   }
 
   function mountControls() {
-    const header = document.querySelector(".header-actions, .dash-topbar > .toolbar-group, .auth-display-controls");
+    const header = document.querySelector(".header-actions, .dash-topbar > .toolbar-group, .auth-display-controls, .pto-tools, .shift-page .header-actions");
     if (header && !header.querySelector("select[data-language]")) {
       const textSize = header.querySelector(".text-size-control");
       if (textSize) textSize.after(createControl("site-language"));
@@ -468,3 +496,4 @@
   window.addEventListener("storage", event => { if (event.key === key) setLanguage(event.newValue, false); });
   window.SSSLanguage = { translate, language: () => language, setLanguage };
 })();
+
