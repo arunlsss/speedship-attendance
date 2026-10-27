@@ -1,0 +1,16 @@
+name: Public frontend security checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check-public-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check tracked files for server source and obvious secrets
+        run: python3 scripts/check-public-files.py
