@@ -1,0 +1,70 @@
+/* Consistent controls, text hierarchy and responsive spacing across Speedship. */
+html body select:not([multiple]):not([size]),html body select[size="1"]{
+ appearance:none;-webkit-appearance:none;box-sizing:border-box;min-height:44px;max-width:100%;min-width:0;
+ padding-block:10px;padding-inline:14px 44px!important;
+ background-image:url("/assets/chevron-down-light.svg")!important;background-repeat:no-repeat!important;
+ background-position:right 14px center!important;background-size:16px 16px!important;
+ font-size:calc(1rem * var(--text-scale,1));line-height:1.5;text-overflow:ellipsis;cursor:pointer;
+}
+html[data-theme="light"] body select:not([multiple]):not([size]),html[data-theme="light"] body select[size="1"]{background-image:url("/assets/chevron-down-dark.svg")!important}
+html body select:disabled{cursor:not-allowed;opacity:.65}
+html body select option{font-family:var(--speedship-font);background:var(--surface,#111a14);color:var(--text,var(--ink,#f0f6f1))}
+html body :is(input,select,textarea):focus-visible{outline:2px solid var(--accent,#75cf88);outline-offset:3px}
+html body :is(button,a,summary){touch-action:manipulation}
+html body :is(.header-actions,.toolbar-group,.pto-tools,.shift-return-nav,.filters,.auth-actions){gap:12px}
+html body :is(.card-head,.pto-row,.head,.toolbar-group){min-width:0}
+html body :is(.ssp-menu-panel,.sss-dropdown){overscroll-behavior:contain}
+/* Attendance: retain chosen text scaling without making every label body size. */
+html.reading-attendance,html.reading-dashboard{--min-text-size:0px}
+html.reading-attendance body{line-height:1.55}
+html.reading-attendance :is(.field-label,label.field-label,.employee-sub,.hint,.employee-count),
+html.reading-dashboard :is(.field-label,label.field-label,.small){font-size:calc(.8125rem * var(--text-scale,1));line-height:1.6}
+html.reading-attendance .employee-name{font-size:calc(.9375rem * var(--text-scale,1));line-height:1.5}
+html.reading-attendance .brand-sub{font-size:calc(.8125rem * var(--text-scale,1));line-height:1.5}
+html.reading-attendance .card-title{font-size:calc(1.0625rem * var(--text-scale,1));line-height:1.5}
+html.reading-attendance .eyebrow{font-size:calc(.6875rem * var(--text-scale,1));letter-spacing:.1em}
+html.reading-attendance .ready-item span{font-size:calc(.75rem * var(--text-scale,1))}
+html.reading-attendance .ready-item strong{font-size:calc(.8125rem * var(--text-scale,1))}
+html body :is(.text-size-control,.language-control)>span{font-size:calc(.8125rem * var(--text-scale,1));line-height:1.5}
+html body :is(.text-size-control,.language-control){gap:6px;min-width:0}
+html body .text-size-control select{width:calc(10.5rem * var(--text-scale,1))}
+html body .language-control select{width:calc(8.5rem * var(--text-scale,1))}
+html.reading-attendance .topbar-inner{align-items:center;gap:20px}
+html.reading-attendance .header-actions{align-items:end;justify-content:flex-start;gap:12px}
+html.reading-attendance .header-actions>.secondary-button{display:inline-flex;align-items:center;justify-content:center;min-height:46px}
+html.reading-attendance .theme-switch{align-self:end;min-height:46px}
+html.reading-attendance .clock-box{padding-bottom:3px}
+html body :is(.branch-shift-form,.pto-stat){min-width:0}
+html body .shift-return-nav{display:flex;flex-wrap:wrap}
+html body :is(.branch-shift-form,.pto-form) label{line-height:1.6}
+/* Finance: settings and stacked action groups must stay in the viewport. */
+html[data-speedship-site="finance"] .topright{min-width:0;flex-wrap:wrap}
+html[data-speedship-site="finance"] .topbar{flex-wrap:wrap}
+html[data-speedship-site="finance"] .settings-panel{max-width:calc(100vw - 32px);max-height:calc(100dvh - 180px);overflow:auto;z-index:65}
+html[data-speedship-site="finance"] .workflow-step{min-width:0;overflow-wrap:anywhere}
+/* Keep customer login content reachable without a large empty top offset. */
+html body .sss-glass-card{box-sizing:border-box;max-width:calc(100vw - 32px)}
+@media(min-width:621px) and (max-width:1300px){
+ html.reading-attendance .topbar-inner{display:flex;flex-direction:column;align-items:stretch}
+ html.reading-attendance .header-actions{width:100%}
+}
+@media(max-width:620px){
+ html.reading-attendance .header-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
+ html.reading-attendance .header-actions :is(.text-size-control,.language-control){width:100%}
+ html.reading-attendance .header-actions select{width:100%}
+ html.reading-attendance .header-actions .clock-box{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center}
+ html.reading-attendance .header-actions>[data-employee-register]{grid-column:1 / -1}
+ html.reading-attendance :is(.brand-title,.card-title,.selected-panel strong){overflow-wrap:anywhere}
+ html.reading-attendance .brand{min-width:0}
+ html.reading-attendance .topbar-inner{gap:16px}
+ html body .auth-display-controls{align-items:end;gap:12px}
+ html body .auth-display-controls>:is(.text-size-control,.language-control){flex:1 1 130px;width:auto}
+ html body .auth-display-controls select{width:100%}
+ html[data-speedship-site="main"] :is(#prev,#next){top:auto;bottom:96px;transform:none;width:46px;height:46px;padding:0;display:grid;place-items:center}
+ html[data-speedship-site="main"] #prev{left:24px}
+ html[data-speedship-site="main"] #next{right:24px}
+ html[data-speedship-site="finance"] .topright{gap:8px}
+}
+@media(forced-colors:active){
+ html body select:not([multiple]):not([size]),html body select[size="1"]{appearance:auto;-webkit-appearance:auto;background-image:none!important;padding-inline-end:14px!important}
+}
