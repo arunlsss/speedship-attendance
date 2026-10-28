@@ -65,6 +65,24 @@ html body .sss-glass-card{box-sizing:border-box;max-width:calc(100vw - 32px)}
  html[data-speedship-site="main"] #next{right:24px}
  html[data-speedship-site="finance"] .topright{gap:8px}
 }
+/* The login skin used 12px, 32px-high selects with no arrow space. */
+html body .auth-shell .sss-glass-card .auth-display-controls{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px!important;align-items:end}
+html body .auth-shell .sss-glass-card .auth-display-controls label{display:flex!important;flex-direction:column;align-items:stretch!important;gap:6px!important;min-width:0}
+html body .auth-shell .sss-glass-card .auth-display-controls label span{font-size:calc(.8125rem * var(--text-scale,1))!important;line-height:1.5!important}
+html body .auth-shell .sss-glass-card .auth-display-controls select{
+ width:100%!important;max-width:none!important;height:auto!important;min-height:46px!important;
+ padding:10px 40px 10px 12px!important;font-size:calc(1rem * var(--text-scale,1))!important;line-height:1.5!important;
+ background-image:url("/assets/chevron-down-light.svg")!important;background-position:right 12px center!important;background-size:16px 16px!important;background-repeat:no-repeat!important;
+}
+html[data-speedship-site="asn"] #brandPage>div{background:var(--bg)!important;min-height:calc(100svh - 76px)!important;padding:28px 16px;box-sizing:border-box}
+html[data-speedship-site="asn"] .section-card{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:16px}
+html[data-speedship-site="asn"] .btn-ghost{background:var(--surface-2);color:var(--brand);border:1px solid var(--border)}
+html[data-speedship-site="asn"] input.field-error{background:var(--danger-soft)!important;color:var(--text)!important}
+html[data-theme="light"][data-speedship-site="attendance"] :is(.btn-soft,.btn-ghost,.secondary-button,.ghost-button){background:var(--surface-2);color:var(--text);border-color:var(--border)}
+@media(max-width:380px){
+ html.reading-attendance[data-text-size="extra"] .header-actions>:is(.text-size-control,.language-control){grid-column:1 / -1}
+ html body .auth-shell .sss-glass-card .auth-display-controls{grid-template-columns:minmax(0,1fr)}
+}
 @media(forced-colors:active){
  html body select:not([multiple]):not([size]),html body select[size="1"]{appearance:auto;-webkit-appearance:auto;background-image:none!important;padding-inline-end:14px!important}
 }
