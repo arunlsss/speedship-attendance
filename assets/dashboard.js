@@ -31,6 +31,7 @@ import "./auth.js";
   $("mobileMenuBackdrop").onclick = () => toggleMobileMenu(false);
   $("mobileThemeBtn").onclick = () => SSS.cycleTheme();
   $("mobileLogoutBtn").onclick = $("logoutBtn").onclick;
+  $("headerLogoutBtn").onclick = $("logoutBtn").onclick;
   matchMedia("(max-width:980px)").addEventListener("change",e=>{if(!e.matches)toggleMobileMenu(false);});
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") { toggleMobileMenu(false); closeDrawer(); }
@@ -60,7 +61,7 @@ import "./auth.js";
         <div class="sidebar-footer"><div class="small muted">${SSS.esc(viewer.email || "")}<br>Role · <strong>${SSS.esc(role === "super_admin" ? "SUPER ADMIN" : role.toUpperCase())}</strong></div><button class="btn btn-ghost" id="logoutBtn">Sign out</button></div>
       </aside>
       <main class="dash-main">
-        <header class="dash-topbar"><div class="dash-topbar-title"><strong>${titleForPage()}</strong><div class="small muted">Attendance records · Asia/Bangkok</div></div><div class="toolbar-group"><label class="ui-field"><span>Attendance period</span><select id="periodSelect" aria-label="Attendance period"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="60">60 days</option><option value="90">90 days</option></select></label><button class="btn btn-soft" id="refreshBtn">Refresh</button><button class="btn btn-soft" id="themeBtn">Theme · <span data-theme-label>Auto</span></button></div></header>
+        <header class="dash-topbar"><div class="dash-topbar-title"><strong>${titleForPage()}</strong><div class="small muted">Attendance records · Asia/Bangkok</div></div><div class="toolbar-group"><label class="ui-field"><span>Attendance period</span><select id="periodSelect" aria-label="Attendance period"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="60">60 days</option><option value="90">90 days</option></select></label><button class="btn btn-soft" id="refreshBtn">Refresh</button><button class="btn btn-soft" id="themeBtn">Theme · <span data-theme-label>Auto</span></button><button class="btn btn-ghost" id="headerLogoutBtn" type="button">ออกจากระบบ / Log out</button></div></header>
         <div class="dash-content"><div id="content"><div class="card">Loading dashboard…</div></div></div>
       </main>
       <nav class="mobile-nav" aria-label="Dashboard">${mobileNav}<button type="button" id="mobileMoreBtn" aria-expanded="false" aria-controls="mobileMenu">${navIcon("more")}<span>More</span></button></nav>

@@ -8,6 +8,12 @@ let year = Number(today.slice(0,4)), state, actor, requestId = crypto.randomUUID
 const managementFilters = {employee:'', status:'all'};
 const statuses = {pending:'รออนุมัติ / Pending',approved:'CEO อนุมัติแล้ว / CEO Approved',hr_recorded:'HR บันทึกแล้ว / HR Recorded',rejected:'ไม่อนุมัติ / Rejected',cancelled:'ยกเลิก / Cancelled'};
 document.getElementById('ptoTheme').onclick = () => SSS.cycleTheme();
+const headerLogout=document.getElementById('ptoHeaderLogout');
+headerLogout.onclick=async()=>{
+  headerLogout.disabled=true;
+  try { await SSS.logoutDashboard(); location.replace(management?'login.html':'pto.html'); }
+  catch(error){showError(error);headerLogout.disabled=false;}
+};
 const showError = e => { errorBox.textContent = e.message || String(e); errorBox.hidden = false; };
 const call = (action, body) => SSS.request(action,{dashboard:true,method:body ? 'POST':'GET',body,query:body ? {} : {year}});
 function metrics(b) {
@@ -72,7 +78,7 @@ function bindDetails() {
 }
 function employeeMarkup() {
   const disabled=state.balance.available===null||state.balance.available<1;
-  return '<section class="card"><div class="pto-row"><div><h2 data-no-translate>'+esc(state.employee.name)+'</h2><p data-no-translate>'+esc(state.employee.id)+'</p></div>'+yearControl()+'<button class="btn btn-soft" id="ptoRefresh">Refresh</button><button class="btn btn-ghost" id="ptoLogout">Sign out</button></div>'+metrics(state.balance)+'</section><section class="card"><h2>ยื่นคำขอลาพักร้อน / Request PTO</h2><p class="pto-help">เลือกวันเริ่มต้นและวันที่สิ้นสุดการลา หากลาวันเดียวให้เลือกวันเดียวกันทั้งสองช่อง / Select the start and end dates. For one day of leave, select the same date in both fields.</p><form id="ptoRequestForm" class="pto-form"><div class="pto-date-range"><div class="field"><label for="ptoStartDate">วันเริ่มต้นการลา / Leave start date</label><input id="ptoStartDate" type="date" required min="'+esc(today>year+'-01-01'?today:year+'-01-01')+'" max="'+year+'-12-31" aria-describedby="ptoRangeSummary"></div><div class="field"><label for="ptoEndDate">วันที่สิ้นสุดการลา / Leave end date</label><input id="ptoEndDate" type="date" required min="'+esc(today>year+'-01-01'?today:year+'-01-01')+'" max="'+year+'-12-31" aria-describedby="ptoRangeSummary"></div></div><div id="ptoRangeSummary" class="pto-range-summary" role="status">กรุณาเลือกวันเริ่มต้นและวันที่สิ้นสุดการลา / Select a leave start and end date</div><p class="pto-help">นับรวมวันเริ่มต้นและวันสิ้นสุด ยกเว้นวันหยุดที่ HR บันทึกไว้ สูงสุด 31 วันต่อคำขอ / Both dates are included. Recorded days off are excluded. Maximum 31 leave days per request.</p><div class="field"><label for="ptoReason">เหตุผลการลา / Leave reason</label><textarea id="ptoReason" required maxlength="500" rows="3"></textarea></div>'+(disabled?'<p class="pto-help pto-quota-notice">'+(state.balance.available===null?'ยังยื่นลาไม่ได้ กรุณาให้ CEO กำหนดสิทธิ์ลาประจำปีก่อน / Ask the CEO to set your annual allowance before requesting leave.':'สิทธิ์ลาคงเหลือไม่เพียงพอ / No available leave balance.')+'</p>':'')+'<button class="btn btn-primary" id="ptoSubmit" '+(disabled?'disabled':'')+'>ส่งคำขอ / Submit request</button><p class="pto-help">คำขอที่รออนุมัติจะสำรองสิทธิ์ลาไว้ ไม่มีการยกยอดอัตโนมัติ / Pending requests reserve your leave balance. There is no automatic carryover.</p></form></section><section class="card"><h2>คำขอของฉัน / My requests</h2>'+(state.requests.map(r=>requestMarkup(r)).join('')||'<p>ยังไม่มีคำขอ / No requests</p>')+'</section>';
+  return '<section class="card"><div class="pto-row"><div><h2 data-no-translate>'+esc(state.employee.name)+'</h2><p data-no-translate>'+esc(state.employee.id)+'</p></div>'+yearControl()+'<button class="btn btn-soft" id="ptoRefresh">Refresh</button></div>'+metrics(state.balance)+'</section><section class="card"><h2>ยื่นคำขอลาพักร้อน / Request PTO</h2><p class="pto-help">เลือกวันเริ่มต้นและวันที่สิ้นสุดการลา หากลาวันเดียวให้เลือกวันเดียวกันทั้งสองช่อง / Select the start and end dates. For one day of leave, select the same date in both fields.</p><form id="ptoRequestForm" class="pto-form"><div class="pto-date-range"><div class="field"><label for="ptoStartDate">วันเริ่มต้นการลา / Leave start date</label><input id="ptoStartDate" type="date" required min="'+esc(today>year+'-01-01'?today:year+'-01-01')+'" max="'+year+'-12-31" aria-describedby="ptoRangeSummary"></div><div class="field"><label for="ptoEndDate">วันที่สิ้นสุดการลา / Leave end date</label><input id="ptoEndDate" type="date" required min="'+esc(today>year+'-01-01'?today:year+'-01-01')+'" max="'+year+'-12-31" aria-describedby="ptoRangeSummary"></div></div><div id="ptoRangeSummary" class="pto-range-summary" role="status">กรุณาเลือกวันเริ่มต้นและวันที่สิ้นสุดการลา / Select a leave start and end date</div><p class="pto-help">นับรวมวันเริ่มต้นและวันสิ้นสุด ยกเว้นวันหยุดที่ HR บันทึกไว้ สูงสุด 31 วันต่อคำขอ / Both dates are included. Recorded days off are excluded. Maximum 31 leave days per request.</p><div class="field"><label for="ptoReason">เหตุผลการลา / Leave reason</label><textarea id="ptoReason" required maxlength="500" rows="3"></textarea></div>'+(disabled?'<p class="pto-help pto-quota-notice">'+(state.balance.available===null?'ยังยื่นลาไม่ได้ กรุณาให้ CEO กำหนดสิทธิ์ลาประจำปีก่อน / Ask the CEO to set your annual allowance before requesting leave.':'สิทธิ์ลาคงเหลือไม่เพียงพอ / No available leave balance.')+'</p>':'')+'<button class="btn btn-primary" id="ptoSubmit" '+(disabled?'disabled':'')+'>ส่งคำขอ / Submit request</button><p class="pto-help">คำขอที่รออนุมัติจะสำรองสิทธิ์ลาไว้ ไม่มีการยกยอดอัตโนมัติ / Pending requests reserve your leave balance. There is no automatic carryover.</p></form></section><section class="card"><h2>คำขอของฉัน / My requests</h2>'+(state.requests.map(r=>requestMarkup(r)).join('')||'<p>ยังไม่มีคำขอ / No requests</p>')+'</section>';
 }
 function managementMarkup() {
   const configured = state.ceoEmail ? 'CEO: '+esc(state.ceoEmail) : 'ยังไม่ได้กำหนดบัญชี CEO / CEO account has not been designated';
@@ -118,7 +124,6 @@ function bind() {
   document.getElementById('ptoRefresh').onclick=()=>load().catch(showError);
   bindDetails();
   if(!management) {
-    document.getElementById('ptoLogout').onclick=async()=>{await SSSAuth.logout();location.reload();};
     ['ptoStartDate','ptoEndDate'].forEach(id=>document.getElementById(id).oninput=()=>{requestId=crypto.randomUUID();updateRangeSummary();});
     document.getElementById('ptoReason').oninput=()=>{requestId=crypto.randomUUID();};
     document.getElementById('ptoRequestForm').onsubmit=e=>{
@@ -171,6 +176,7 @@ function bind() {
   const ceo=document.getElementById('ptoCeoForm');if(ceo)ceo.onsubmit=e=>{e.preventDefault();mutate('designatePtoCeo',{email:document.getElementById('ptoCeoEmail').value,expectedVersion:state.configVersion});};
 }
 async function load() {
+  headerLogout.hidden=false;
   errorBox.hidden=true;state=await call(management?'getPtoManagement':'getMyPto');root.innerHTML=management?managementMarkup():employeeMarkup();
   if(management){
     const requestsSection=document.getElementById('ptoRequests').closest('section');
@@ -179,11 +185,12 @@ async function load() {
   bind();
 }
 function loginMarkup(user) {
-  root.innerHTML='<section class="card pto-form"><h2>บัญชีสำหรับยื่นลา / Leave account</h2><p class="pto-help">สร้างบัญชี ยืนยันอีเมล แล้วให้ HR เชื่อมบัญชีกับรหัสพนักงาน บัญชีนี้ใช้ยื่นลา การลงเวลายังใช้ขั้นตอนเดิม / Create an account, verify your email, and ask HR to link your employee record.</p>'+(user?'<p>'+esc(user.email)+'</p><div class="pto-actions"><button class="btn btn-soft" id="ptoVerify">ส่งอีเมลยืนยันอีกครั้ง / Resend verification</button><button class="btn btn-primary" id="ptoContinue">ตรวจสอบอีกครั้ง / Check again</button><button class="btn btn-ghost" id="ptoLogout">Sign out</button></div>':'<form id="ptoLoginForm"><div class="field"><label for="ptoEmail">Email</label><input id="ptoEmail" type="email" autocomplete="email" required></div><div class="field"><label for="ptoPassword">Password</label><input id="ptoPassword" type="password" autocomplete="current-password" required minlength="8"></div><div class="pto-actions"><button class="btn btn-primary" name="mode" value="login">Sign in</button><button class="btn btn-soft" name="mode" value="register">Create account</button><button class="btn btn-ghost" id="ptoReset" type="button">Reset password</button></div></form>')+'</section>';
+  headerLogout.hidden=!user;
+  root.innerHTML='<section class="card pto-form"><h2>บัญชีสำหรับยื่นลา / Leave account</h2><p class="pto-help">สร้างบัญชี ยืนยันอีเมล แล้วให้ HR เชื่อมบัญชีกับรหัสพนักงาน บัญชีนี้ใช้ยื่นลา การลงเวลายังใช้ขั้นตอนเดิม / Create an account, verify your email, and ask HR to link your employee record.</p>'+(user?'<p>'+esc(user.email)+'</p><div class="pto-actions"><button class="btn btn-soft" id="ptoVerify">ส่งอีเมลยืนยันอีกครั้ง / Resend verification</button><button class="btn btn-primary" id="ptoContinue">ตรวจสอบอีกครั้ง / Check again</button></div>':'<form id="ptoLoginForm"><div class="field"><label for="ptoEmail">Email</label><input id="ptoEmail" type="email" autocomplete="email" required></div><div class="field"><label for="ptoPassword">Password</label><input id="ptoPassword" type="password" autocomplete="current-password" required minlength="8"></div><div class="pto-actions"><button class="btn btn-primary" name="mode" value="login">Sign in</button><button class="btn btn-soft" name="mode" value="register">Create account</button><button class="btn btn-ghost" id="ptoReset" type="button">Reset password</button></div></form>')+'</section>';
   if(user) {
     document.getElementById('ptoVerify').onclick=async()=>{try{await SSSAuth.resendVerification();SSS.toast('Verification email sent');}catch(e){showError(e);}};
     document.getElementById('ptoContinue').onclick=()=>location.reload();
-    document.getElementById('ptoLogout').onclick=async()=>{await SSSAuth.logout();location.reload();};return;
+    return;
   }
   document.getElementById('ptoLoginForm').onsubmit=async e=>{
     e.preventDefault();if(busy)return;busy=true;errorBox.hidden=true;root.querySelectorAll('button').forEach(b=>b.disabled=true);

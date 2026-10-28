@@ -1,6 +1,13 @@
 import './auth.js';
 (async()=>{
   const viewer=await SSS.requireDashboard(['hr','admin','super_admin']);if(!viewer)return;
+  const logout=document.getElementById('shiftLogout');
+  logout.hidden=false;
+  logout.onclick=async()=>{
+    logout.disabled=true;
+    try{await SSS.logoutDashboard();location.replace('login.html');}
+    catch(error){SSS.toast(error.message,'error');logout.disabled=false;}
+  };
   const dashboardLink=document.getElementById('shiftDashboardLink');
   if(dashboardLink)dashboardLink.href=SSS.routeForRole(viewer.role);
   const managementLink=document.querySelector('.ssp-management');
