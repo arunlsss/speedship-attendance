@@ -17,11 +17,7 @@ const CONFIG = {
     stream: null,
     submitting: false,
     pendingDuplicate: null,
-    gps: null,
-    automatic: false,
-    actionStatus: null,
-    actionRequest: 0,
-    resolvingAction: false
+    gps: null
   };
 
   const $ = id => document.getElementById(id);
@@ -150,10 +146,6 @@ const CONFIG = {
       const [health, locations, employees] = await Promise.all([
         apiGet("health"), apiGet("getLocations"), apiGet("getEmployees")
       ]);
-      state.automatic = health.capabilities?.automaticAttendance === true;
-      $("attendanceTypePicker").hidden = state.automatic;
-      $("automaticStatus").hidden = !state.automatic;
-      $("retryAttendanceStatus").hidden = !state.automatic;
       state.locations = locations;
       state.employees = employees;
       setApiStatus("online", `Online · ${health.region}`);
@@ -184,7 +176,7 @@ const CONFIG = {
     if (state.selectedEmployee && !employeeMatchesLocation(state.selectedEmployee)) clearSelectedEmployee();
     renderEmployees();
     updateReadiness();
-    refreshAutomaticStatus();
+    updateSubmitButton();
   }
 
   function employeeMatchesLocation(emp) {
@@ -237,7 +229,6 @@ const CONFIG = {
     $("employeePicker").style.display = "none";
     updateReadiness();
     updateSubmitButton();
-    refreshAutomaticStatus();
   }
 
   function clearSelectedEmployee() {
@@ -248,7 +239,6 @@ const CONFIG = {
     renderEmployees();
     updateReadiness();
     updateSubmitButton();
-    refreshAutomaticStatus();
   }
 
   function setLogType(type) {
@@ -406,34 +396,12 @@ const CONFIG = {
     emp.querySelector("strong").textContent = state.selectedEmployee ? state.selectedEmployee.nick || state.selectedEmployee.name : "ยังไม่ได้เลือก";
   }
 
-  async function refreshAutomaticStatus() {
-    if (!state.automatic) { updateSubmitButton(); return; }
-    const request=++state.actionRequest;
-    state.actionStatus=null;
-    if(!state.selectedEmployee||!state.selectedLocation){state.resolvingAction=false;$("automaticStatus").textContent="เลือกสาขาและชื่อพนักงาน / Select branch and employee";updateSubmitButton();return;}
-    state.resolvingAction=true;$("automaticStatus").textContent="กำลังตรวจสอบการลงเวลา / Checking attendance";updateSubmitButton();
-    try {
-      const result=await apiGet("getAttendanceStatus",{empId:state.selectedEmployee.id,locId:state.selectedLocation.id});
-      if(request!==state.actionRequest)return;
-      if(!["IN","OUT","COMPLETE"].includes(result.nextAction))throw new Error("Invalid attendance status");
-      state.actionStatus=result;
-      const shift=result.shift?.startTime;
-      $("automaticStatus").textContent=(shift?"กะ / Shift "+shift+"–"+result.shift.endTime+" · ไม่มีผ่อนผันสาย / No late grace":"HR ยังไม่กำหนดกะ / Shift not set")
-        +(result.nextAction==="COMPLETE"?" · ลงเวลาครบแล้ววันนี้ / Completed today":"");
-    } catch(error) {
-      if(request!==state.actionRequest)return;
-      $("automaticStatus").textContent="ตรวจสอบไม่สำเร็จ กดตรวจสอบอีกครั้ง / Unable to check. Retry.";
-    } finally { if(request===state.actionRequest){state.resolvingAction=false;updateSubmitButton();} }
-  }
-
   function updateSubmitButton() {
-    const button=$("submitButton");
-    const action=state.automatic?state.actionStatus?.nextAction:state.logType;
-    const ready=!!(state.selectedLocation&&state.selectedEmployee&&state.photoDataUrl&&window.SSSAttendanceDevice?.canSubmit())
-      &&(!state.automatic||(["IN","OUT"].includes(action)&&!state.resolvingAction));
-    button.disabled=!ready||state.submitting;
-    button.className="submit-button "+(action==="OUT"?"out":"in");
-    button.textContent=state.submitting?"กำลังบันทึก...":state.resolvingAction?"กำลังตรวจสอบ...":action==="COMPLETE"?"ลงเวลาครบแล้ว / Completed":!action&&state.automatic?"เลือกพนักงาน / Select employee":"ลงชื่อ"+(action==="OUT"?"ออกงาน / Clock out":"เข้างาน / Clock in");
+    const button = $("submitButton");
+    const ready = !!(state.selectedLocation && state.selectedEmployee && state.photoDataUrl && window.SSSAttendanceDevice?.canSubmit());
+    button.disabled = !ready || state.submitting;
+    button.className = `submit-button ${state.logType === "IN" ? "in" : "out"}`;
+    button.textContent = state.submitting ? "กำลังบันทึก..." : `ลงชื่อ${state.logType === "IN" ? "เข้างาน" : "ออกงาน"}`;
   }
 
   function thaiClientDateTime(now) {
@@ -445,7 +413,6 @@ const CONFIG = {
 
   async function submitAttendance(forceWrite = false, preserved = null) {
     if (!state.selectedLocation || !state.selectedEmployee || !state.photoDataUrl || state.submitting || !window.SSSAttendanceDevice?.canSubmit()) return;
-    if(state.automatic && (state.resolvingAction || !['IN','OUT'].includes(state.actionStatus?.nextAction))) return;
     state.submitting = true;
     updateSubmitButton();
 
@@ -454,17 +421,14 @@ const CONFIG = {
     const photoSnapshot = preserved?.photoSnapshot || state.photoDataUrl;
     const employeeSnapshot = preserved?.employee || { ...state.selectedEmployee };
     const locationSnapshot = preserved?.location || { ...state.selectedLocation };
-    const logTypeSnapshot = state.automatic ? state.actionStatus.nextAction : preserved?.logType || state.logType;
-    const expectedLastLogId = state.actionStatus?.lastLogId || "";
+    const logTypeSnapshot = preserved?.logType || state.logType;
     const noteSnapshot = preserved?.note ?? $("note").value.trim();
     const writeToken = preserved?.writeToken || randomWriteToken();
 
     try {
       const gpsPromise = getGps().catch(() => state.gps || { lat: "", lng: "", accuracy: null });
       const result = await apiPost({
-        action: state.automatic ? "appendAutomaticLog" : "appendLog",
-        expectedAction: logTypeSnapshot,
-        expectedLastLogId,
+        action: "appendLog",
         deviceKey: window.SSSAttendanceDevice?.key() || "",
         logId,
         empId: employeeSnapshot.id,
@@ -519,7 +483,6 @@ const CONFIG = {
     } catch (error) {
       console.error(error);
       toast("บันทึกไม่สำเร็จ", error.message, "error");
-      if(state.automatic)refreshAutomaticStatus();
     } finally {
       if (!$("duplicateModal").classList.contains("open")) {
         state.submitting = false;
@@ -545,8 +508,6 @@ const CONFIG = {
   window.SSSAttendanceSelection = () => ({employeeId:state.selectedEmployee?.id || "",locationId:state.selectedLocation?.id || ""});
 
   function bindEvents() {
-    $("retryAttendanceStatus").onclick=()=>refreshAutomaticStatus();
-    document.addEventListener("visibilitychange",()=>{if(!document.hidden&&!state.submitting)refreshAutomaticStatus();});
     document.addEventListener("attendance-device-state", updateSubmitButton);
     document.addEventListener("employee-registered", async event => {
       try {
