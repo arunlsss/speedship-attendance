@@ -42,6 +42,7 @@ html[data-speedship-site="finance"] .topright{min-width:0;flex-wrap:wrap}
 html[data-speedship-site="finance"] .topbar{flex-wrap:wrap}
 html[data-speedship-site="finance"] .settings-panel{max-width:calc(100vw - 32px);max-height:calc(100dvh - 180px);overflow:auto;z-index:65}
 html[data-speedship-site="finance"] .workflow-step{min-width:0;overflow-wrap:anywhere}
+html[data-speedship-site="finance"] .workflow-metrics .metric-top{min-height:3em;align-items:flex-start}
 /* Keep customer login content reachable without a large empty top offset. */
 html body .sss-glass-card{box-sizing:border-box;max-width:calc(100vw - 32px)}
 @media(min-width:621px) and (max-width:1300px){
@@ -64,6 +65,7 @@ html body .sss-glass-card{box-sizing:border-box;max-width:calc(100vw - 32px)}
  html[data-speedship-site="main"] #prev{left:24px}
  html[data-speedship-site="main"] #next{right:24px}
  html[data-speedship-site="finance"] .topright{gap:8px}
+ html[data-speedship-site="finance"] .metrics.workflow-metrics{grid-template-columns:minmax(0,1fr)}
 }
 /* The login skin used 12px, 32px-high selects with no arrow space. */
 html body .auth-shell .sss-glass-card .auth-display-controls{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px!important;align-items:end}
