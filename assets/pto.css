@@ -1,1 +1,55 @@
 .pto-shell{max-width:1180px;margin:auto;padding:32px 24px 80px}.pto-heading{display:flex;justify-content:space-between;gap:24px;align-items:center;margin-bottom:24px}.pto-heading h1{font-size:30px;margin:4px 0}.pto-tools{display:flex;gap:8px;flex-wrap:wrap}.pto-shell .card{margin-bottom:20px;padding:24px}.pto-shell .field{margin:12px 0}.pto-shell label{display:block;font-weight:600;margin-bottom:6px}.pto-shell input,.pto-shell select,.pto-shell textarea{width:100%}.pto-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.pto-stat{padding:20px;border:1px solid var(--border,#d8e3df);border-radius:16px;background:var(--surface,#fff)}.pto-stat strong{display:block;font-size:32px;color:var(--primary,#0a6b50)}.pto-stat span{display:block;font-size:13px}.pto-error{padding:14px;border:1px solid #df827a;border-radius:10px;color:#a32924;background:#fff0ef}.pto-form{max-width:650px}.pto-row{display:flex;align-items:end;gap:12px;flex-wrap:wrap}.pto-row .field{flex:1;min-width:150px}.pto-days{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.pto-day{border:1px solid var(--border,#ccdcd3);border-radius:30px;padding:8px 12px;background:transparent;color:inherit;cursor:pointer}.pto-table{overflow-x:auto}.pto-table table{width:100%;border-collapse:collapse;min-width:700px}.pto-table th,.pto-table td{text-align:left;vertical-align:top;padding:14px 10px;border-bottom:1px solid var(--border,#d8e3df)}.pto-table input{min-width:80px;max-width:110px}.pto-status{display:inline-block;border-radius:30px;background:#edf2ef;color:#23483e;padding:5px 10px;font-size:12px}.pto-status.pending{background:#fff0cf;color:#795100}.pto-status.approved{background:#d9f6e8;color:#126342}.pto-status.rejected{background:#ffe3e0;color:#a32924}.pto-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.pto-help{line-height:1.6;color:var(--muted,#566d64)}.pto-year{max-width:160px}.pto-shell button:disabled{opacity:.5;cursor:wait}.pto-request{padding:18px 0;border-bottom:1px solid var(--border,#d8e3df)}.pto-request p{margin:8px 0;white-space:pre-wrap}.pto-request h3{margin:0}.pto-shell a.btn{display:inline-flex;text-decoration:none;align-items:center}.pto-shell .btn{white-space:normal}.pto-shell details>summary{cursor:pointer;font-weight:600;padding:8px 0}.pto-shell [hidden]{display:none!important}[data-theme=dark] .pto-stat{background:var(--surface,#15231e)}[data-theme=dark] .pto-error{background:#3b2423;color:#ffc2b8}@media(max-width:680px){.pto-heading{display:block}.pto-heading h1{font-size:25px}.pto-tools{margin-top:18px}.pto-shell{padding:24px 16px 60px}.pto-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pto-shell .card{padding:18px}.pto-stat{padding:16px}}
+
+/* Leave range and request details share the portal's green/black theme. */
+.pto-date-range{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.pto-range-summary{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border:1px solid var(--border,#ccdcd3);border-radius:14px;background:var(--surface,#fff);min-height:60px;justify-content:center}
+.pto-range-summary strong{font-size:24px;color:var(--primary,#0a6b50)}
+.pto-range-summary span{font-size:13px}.pto-range-summary.is-invalid{border-color:#d18c67;color:#c57739}
+.pto-range-summary strong span{font-size:inherit;color:inherit}
+.pto-quota-notice{padding:12px 16px;border:1px solid var(--border,#ccdcd3);border-radius:12px}
+.pto-shell button:disabled{cursor:not-allowed}
+.pto-request-heading{align-items:center;justify-content:space-between}
+.pto-request .pto-reason{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.pto-request-footer{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:16px}
+.pto-request-footer .pto-help{font-size:12px}.pto-request-dates{font-weight:600}
+.pto-day-count{display:inline-block;font-size:12px;font-weight:500;border:1px solid var(--border,#ccdcd3);border-radius:8px;padding:3px 8px;margin-left:8px}
+.pto-status.hr_recorded{background:#d9f6e8;color:#12523e}.pto-status.cancelled{background:#e5e9e7;color:#4d5c56}
+.pto-details-dialog,.pto-decision-dialog{color:var(--text,#172a22);background:var(--surface,#fff);border:1px solid var(--border,#ccdcd3);border-radius:22px;box-shadow:0 24px 80px #0006;width:min(760px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0}
+.pto-details-dialog[open]{display:flex;flex-direction:column}
+.pto-details-dialog::backdrop,.pto-decision-dialog::backdrop{background:#000a;backdrop-filter:blur(6px)}
+.pto-details-header,.pto-details-footer{padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
+.pto-details-header{border-bottom:1px solid var(--border,#ccdcd3)}
+.pto-details-header h2{margin:4px 0 0;font-size:23px;line-height:1.4}.pto-details-header p{margin:0;font-size:11px;letter-spacing:.08em}
+.pto-details-dialog .pto-dialog-close{font-size:26px;min-width:44px;min-height:44px;padding:0}
+.pto-details-body{overflow-y:auto;overscroll-behavior:contain;padding:22px 26px;min-height:0}
+.pto-details-status{align-items:center;justify-content:space-between;margin-bottom:24px}
+.pto-details-footer{border-top:1px solid var(--border,#ccdcd3)}.pto-details-footer .pto-actions{margin:0;justify-content:flex-end}
+.pto-workflow{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:0;margin:8px 0 28px}
+.pto-workflow li{position:relative;display:flex;flex-direction:column;gap:12px;min-width:0}
+.pto-workflow li:not(:last-child)::after{content:'';position:absolute;top:17px;left:44px;width:calc(100% - 36px);height:2px;background:var(--border,#ccdcd3)}
+.pto-workflow li.is-complete::after{background:#428e6e}
+.pto-step-icon{display:grid;place-items:center;z-index:1;width:36px;height:36px;border-radius:50%;border:1px solid var(--border,#ccdcd3);font-size:15px;font-weight:700;background:var(--surface,#fff);color:var(--muted,#566d64)}
+.is-complete .pto-step-icon{background:#126342;border-color:#328363;color:#fff}
+.pto-workflow [aria-current=step] .pto-step-icon{box-shadow:0 0 0 4px #428e6e25}
+.pto-workflow li>div{display:flex;flex-direction:column;gap:5px;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.pto-workflow strong{font-size:14px}.pto-step-state,.pto-workflow time{color:var(--muted,#566d64)}
+.pto-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 28px;margin:0;padding:24px 0;border-top:1px solid var(--border,#ccdcd3)}
+.pto-detail-grid dt{font-size:12px;color:var(--muted,#566d64);margin-bottom:6px}.pto-detail-grid dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.pto-detail-section{padding:18px 0;border-top:1px solid var(--border,#ccdcd3)}
+.pto-detail-section h3{font-size:14px;margin:0 0 8px}.pto-detail-text{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;line-height:1.7}
+.pto-detail-section summary{cursor:pointer;font-size:14px;font-weight:600}.pto-date-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pto-date-list time{padding:6px 10px;border:1px solid var(--border,#ccdcd3);border-radius:8px;font-size:12px}
+.pto-terminal{padding:14px 16px;margin-bottom:24px;border:1px solid #b27a66;border-radius:12px}.pto-terminal p{margin:6px 0 0;font-size:12px}
+.pto-decision-dialog{padding:26px}.pto-decision-dialog textarea{width:100%;min-height:90px}.pto-decision-dialog .field{margin:18px 0}.pto-decision-dialog label{display:block;margin-bottom:6px}
+[data-theme=dark] .pto-details-dialog,[data-theme=dark] .pto-decision-dialog{background:var(--surface,#111c17);color:var(--text,#e8f3ed)}
+[data-theme=dark] .pto-range-summary{background:var(--surface,#111c17)}
+@media(max-width:600px){
+  .pto-date-range{grid-template-columns:1fr;gap:0}.pto-request-footer{align-items:flex-start;gap:12px}
+  .pto-details-dialog,.pto-decision-dialog{width:calc(100vw - 20px);max-height:calc(100dvh - 20px);border-radius:18px}
+  .pto-details-header,.pto-details-footer{padding:18px}.pto-details-body{padding:18px}
+  .pto-details-header h2{font-size:20px}.pto-detail-grid{gap:20px 14px}
+  .pto-workflow{grid-template-columns:1fr;gap:20px}.pto-workflow li{flex-direction:row;gap:14px}
+  .pto-workflow li:not(:last-child)::after{top:40px;left:17px;width:2px;height:calc(100% - 24px)}
+  .pto-step-icon{flex-shrink:0}.pto-workflow li>div{padding-top:3px}
+  .pto-details-footer{flex-wrap:wrap}.pto-details-footer .pto-actions{flex:1}
+}
