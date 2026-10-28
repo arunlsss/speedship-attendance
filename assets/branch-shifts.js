@@ -1,6 +1,10 @@
 import './auth.js';
 (async()=>{
   const viewer=await SSS.requireDashboard(['hr','admin','super_admin']);if(!viewer)return;
+  const dashboardLink=document.getElementById('shiftDashboardLink');
+  if(dashboardLink)dashboardLink.href=SSS.routeForRole(viewer.role);
+  const managementLink=document.querySelector('.ssp-management');
+  if(managementLink)managementLink.href=SSS.routeForRole(viewer.role);
   const root=document.getElementById('shiftList'),error=document.getElementById('shiftError'),refresh=document.getElementById('refreshShifts');
   const esc=SSS.esc;let busy=false;
   async function load(){
@@ -25,3 +29,4 @@ import './auth.js';
   }
   refresh.onclick=load;load();
 })();
+

@@ -11,6 +11,18 @@ document.querySelectorAll(".auth-tab").forEach(btn => btn.onclick = () => {
 
 function roleLabel(role){ return ({hr:"HR",admin:"Admin",executive:"C-Level",super_admin:"Super Admin"})[role] || role || "Pending"; }
 
+function destinationAfterLogin(role){
+  const next=new URLSearchParams(location.search).get('next');
+  const allowed={
+    'shifts.html':['hr','admin','super_admin'],
+    'hr.html':['hr','admin','super_admin'],
+    'admin.html':['admin','super_admin'],
+    'executive.html':['executive','admin','super_admin'],
+    'pto.html':['hr','admin','executive','super_admin']
+  };
+  return allowed[next]?.includes(role)?next:SSS.routeForRole(role);
+}
+
 function showState(me){
   if (!me) { state.innerHTML=""; forms.hidden=false; return; }
 
@@ -34,7 +46,7 @@ function showState(me){
 
   forms.hidden=true;
   state.innerHTML=`<div class="access-state success"><div class="state-icon ok">✓</div><h3>${SSS.esc(roleLabel(me.role))} access approved</h3><p>Signed in as <strong>${SSS.esc(me.email)}</strong>.</p><button class="btn btn-primary auth-main-btn" id="continueBtn">Open dashboard</button></div>`;
-  $("continueBtn").onclick=()=>location.href=SSS.routeForRole(me.role);
+  $("continueBtn").onclick=()=>location.href=destinationAfterLogin(me.role);
   // Do not auto-redirect. Keeping navigation user-initiated prevents
   // login ↔ dashboard redirect loops when a session/role check fails.
 }
@@ -120,3 +132,4 @@ $("bootstrapBtn").onclick=async()=>{
 };
 
 await refreshState();
+
