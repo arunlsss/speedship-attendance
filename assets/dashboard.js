@@ -11,6 +11,7 @@ import "./auth.js";
   let employeeSearch = "";
   let statusFilter = "all";
   let accessData = null;
+  let accessError = null;
   let employeePage = 0;
   let syncPage = 0;
   const employeePageSize = 20;
@@ -109,7 +110,11 @@ import "./auth.js";
     $("content").innerHTML = `<div class="card">Loading dashboard…</div>`;
     try {
       data = await protectedRequest("dashboardData", { query:{days, includeRecentEvents:false} });
-      if (role === "super_admin") accessData = await protectedRequest("listDashboardUsers", { method:"POST", body:{} });
+      if (page === "admin" && role === "super_admin") {
+        accessError = null;
+        try { accessData = await protectedRequest("listDashboardUsers", { method:"POST", body:{} }); }
+        catch (error) { if (error.status === 401) throw error; accessData = null; accessError = error; }
+      }
       render();
     } catch(e) {
       if(e.status===401){
@@ -180,6 +185,7 @@ import "./auth.js";
   }
 
   function renderAccessControl(){
+    if(accessError)return `<section class="card account-load-error" role="status"><strong>ไม่สามารถโหลดบัญชีแดชบอร์ด / Dashboard accounts could not load</strong><p>ส่วนอื่นของแดชบอร์ดยังใช้งานได้ กรุณาลองโหลดบัญชีอีกครั้ง / Other dashboard sections are available. Try loading the accounts again.</p><button class="btn btn-soft" id="retryAccounts" type="button">ลองอีกครั้ง / Retry accounts</button></section>`;
     const users=accessData?.users||[];
     const pending=users.filter(u=>u.status==="pending").length;
     const rows=users.map(u=>`<tr><td><strong>${SSS.esc(u.displayName||"—")}</strong><br><span class="muted">${SSS.esc(u.email)}</span></td><td>${dashboardRoleBadge(u.role)}</td><td>${statusBadge(u.status)}</td><td>${SSS.esc(u.jobTitle||"—")}</td><td>${SSS.esc(SSS.fmtDateTime(u.lastLoginAt))}</td><td><button class="btn btn-soft accessEdit" data-uid="${SSS.esc(u.uid)}" style="min-height:32px">Manage</button></td></tr>`).join("");
@@ -345,6 +351,7 @@ import "./auth.js";
   }
 
   function bindAdmin(){
+    const retryAccounts=$("retryAccounts");if(retryAccounts)retryAccounts.onclick=()=>load();
     $("employeeSearch").value=employeeSearch;$("statusFilter").value=statusFilter;
     $("employeeSearch").oninput=e=>{employeeSearch=e.target.value;employeePage=0;$("employeeTable").innerHTML=renderEmployeeTable(true);bindCommon();};
     $("statusFilter").onchange=e=>{statusFilter=e.target.value;employeePage=0;$("employeeTable").innerHTML=renderEmployeeTable(true);bindCommon();};
@@ -423,7 +430,7 @@ import "./auth.js";
     const u=(accessData?.users||[]).find(x=>x.uid===uid); if(!u)return;
     const roleOptions=[["hr","HR"],["admin","Admin"],["executive","C-Level"],["super_admin","Super Admin"]].map(([value,label])=>`<option value="${value}" ${u.role===value?"selected":""}>${label}</option>`).join("");
     const statusOptions=[["active","Active"],["pending","Pending"],["disabled","Disabled"],["rejected","Rejected"]].map(([value,label])=>`<option value="${value}" ${u.status===value?"selected":""}>${label}</option>`).join("");
-    $("actionModalContent").innerHTML=`<div class="eyebrow">DASHBOARD ACCESS</div><h2>${SSS.esc(u.displayName||u.email)}</h2><p>${SSS.esc(u.email)}</p><div class="grid-2"><div class="field"><label class="field-label" for="accessRole">Assigned role</label><select id="accessRole">${roleOptions}</select></div><div class="field"><label class="field-label" for="accessStatus">Access status</label><select id="accessStatus">${statusOptions}</select></div></div><div class="notice-box"><strong>Server enforced</strong><span>Changing the page URL or browser storage cannot bypass this role. The backend re-checks the signed-in account on every protected request.</span></div><div class="modal-actions"><button class="btn btn-ghost" id="accessCancel">Cancel</button><button class="btn btn-primary" id="accessSave">Save access</button></div>`;
+    $("actionModalContent").innerHTML=`<div class="eyebrow">DASHBOARD ACCESS</div><h2>${SSS.esc(u.displayName||u.email)}</h2><p>${SSS.esc(u.email)}</p><div class="grid-2"><div class="field"><label class="field-label" for="accessRole">Assigned role</label><select id="accessRole">${roleOptions}</select></div><div class="field"><label class="field-label" for="accessStatus">Access status</label><select id="accessStatus">${statusOptions}</select></div></div><div class="notice-box"><strong>สิทธิ์เข้าใช้งาน / Account access</strong><span>เลือกบทบาทและสถานะบัญชี การปิดใช้งานจะระงับสิทธิ์เข้าแดชบอร์ด / Choose the account role and status. Disabling access prevents this account from using management dashboards.</span></div><div class="modal-actions"><button class="btn btn-ghost" id="accessCancel">Cancel</button><button class="btn btn-primary" id="accessSave">Save access</button></div>`;
     $("actionModal").classList.add("open");
     $("accessCancel").onclick=()=>$("actionModal").classList.remove("open");
     $("accessSave").onclick=async()=>{try{await SSS.request("setDashboardUserAccess",{method:"POST",dashboard:true,body:{uid,role:$("accessRole").value,status:$("accessStatus").value}});SSS.toast("Dashboard access updated","success");$("actionModal").classList.remove("open");await load();}catch(e){SSS.toast(e.message,"error");}};

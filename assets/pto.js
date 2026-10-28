@@ -171,7 +171,12 @@ function bind() {
   const ceo=document.getElementById('ptoCeoForm');if(ceo)ceo.onsubmit=e=>{e.preventDefault();mutate('designatePtoCeo',{email:document.getElementById('ptoCeoEmail').value,expectedVersion:state.configVersion});};
 }
 async function load() {
-  errorBox.hidden=true;state=await call(management?'getPtoManagement':'getMyPto');root.innerHTML=management?managementMarkup():employeeMarkup();bind();
+  errorBox.hidden=true;state=await call(management?'getPtoManagement':'getMyPto');root.innerHTML=management?managementMarkup():employeeMarkup();
+  if(management){
+    const requestsSection=document.getElementById('ptoRequests').closest('section');
+    root.firstElementChild.after(requestsSection);
+  }
+  bind();
 }
 function loginMarkup(user) {
   root.innerHTML='<section class="card pto-form"><h2>บัญชีสำหรับยื่นลา / Leave account</h2><p class="pto-help">สร้างบัญชี ยืนยันอีเมล แล้วให้ HR เชื่อมบัญชีกับรหัสพนักงาน บัญชีนี้ใช้ยื่นลา การลงเวลายังใช้ขั้นตอนเดิม / Create an account, verify your email, and ask HR to link your employee record.</p>'+(user?'<p>'+esc(user.email)+'</p><div class="pto-actions"><button class="btn btn-soft" id="ptoVerify">ส่งอีเมลยืนยันอีกครั้ง / Resend verification</button><button class="btn btn-primary" id="ptoContinue">ตรวจสอบอีกครั้ง / Check again</button><button class="btn btn-ghost" id="ptoLogout">Sign out</button></div>':'<form id="ptoLoginForm"><div class="field"><label for="ptoEmail">Email</label><input id="ptoEmail" type="email" autocomplete="email" required></div><div class="field"><label for="ptoPassword">Password</label><input id="ptoPassword" type="password" autocomplete="current-password" required minlength="8"></div><div class="pto-actions"><button class="btn btn-primary" name="mode" value="login">Sign in</button><button class="btn btn-soft" name="mode" value="register">Create account</button><button class="btn btn-ghost" id="ptoReset" type="button">Reset password</button></div></form>')+'</section>';

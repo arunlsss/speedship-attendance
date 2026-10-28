@@ -1,0 +1,138 @@
+/* Management spacing and responsive controls. Loaded after the shared portal skin. */
+body[data-dashboard-page]{--dashboard-gap:24px;--dashboard-padding:24px}
+body[data-dashboard-page] .dash-content{display:flex;flex-direction:column;gap:var(--dashboard-gap);padding:28px;max-width:1520px}
+body[data-dashboard-page] #content{display:flex;flex-direction:column;gap:var(--dashboard-gap);min-width:0}
+body[data-dashboard-page] :is(#content,.dash-content)>:is(section,.card,.dashboard-grid,.employee-sync){margin:0}
+body[data-dashboard-page] #content>section[style],body[data-dashboard-page] .dash-content>section[style]{margin-block:0!important}
+body[data-dashboard-page] .dashboard-grid{gap:var(--dashboard-gap);margin-top:0;align-items:start}
+body[data-dashboard-page] .stack{display:grid;gap:var(--dashboard-gap);min-width:0}
+body[data-dashboard-page] .dash-layout .card{padding:var(--dashboard-padding);border-radius:22px}
+body[data-dashboard-page] .card-head{gap:18px;margin-bottom:20px;align-items:flex-start;flex-wrap:wrap}
+body[data-dashboard-page] :is(.card-title,.card h2){line-height:1.45}
+body[data-dashboard-page] .card-sub{margin-top:8px;max-width:76ch}
+body[data-dashboard-page] .dashboard-page-head{gap:20px;align-items:flex-start}
+body[data-dashboard-page] .dashboard-page-head>div:first-child{flex:1;min-width:0}
+body[data-dashboard-page] .dashboard-page-head .status-chip{flex-shrink:0;margin-top:6px;max-width:100%}
+body[data-dashboard-page] .kpi-grid{gap:16px}
+body[data-dashboard-page] .kpi{padding:20px;min-width:0;min-height:142px}
+body[data-dashboard-page] .kpi-label{line-height:1.6;letter-spacing:.04em}
+body[data-dashboard-page] .kpi-sub{line-height:1.6;margin-top:8px}
+body[data-dashboard-page] .dash-topbar{display:grid;grid-template-columns:minmax(160px,1fr) auto;gap:18px 28px;padding:18px 28px;align-items:center}
+body[data-dashboard-page] .dash-topbar-title{flex:1 1 240px;line-height:1.5}
+body[data-dashboard-page] .dash-topbar-title .small{margin-top:4px}
+body[data-dashboard-page] .dash-topbar>.toolbar-group{display:grid;grid-template-columns:auto auto 140px auto auto;align-items:end;gap:12px}
+body[data-dashboard-page] .dash-topbar .ui-field{width:140px;flex:0 1 140px}
+body[data-dashboard-page] .dash-topbar :is(.language-control,.text-size-control){flex:0 1 auto}
+body[data-dashboard-page] .dash-layout .toolbar{display:grid;gap:20px;align-items:start}
+body[data-dashboard-page] .dash-layout .toolbar>.toolbar-group{display:flex;align-items:end;gap:12px;flex-wrap:wrap;width:100%}
+body[data-dashboard-page] .toolbar-group>.ui-field{flex:1 1 180px;max-width:320px}
+body[data-dashboard-page] .toolbar-group>.ui-field:has(input[type=search]){flex:2 1 240px;max-width:480px}
+body[data-dashboard-page] .toolbar-group>.btn{min-height:48px}
+body[data-dashboard-page] .dash-topbar>.toolbar-group>.ui-field{width:140px;max-width:140px}
+body[data-dashboard-page] .table-wrap{margin-top:16px;border-radius:14px;border:1px solid var(--border)}
+body[data-dashboard-page] .table :is(th,td){padding:16px;vertical-align:middle;line-height:1.6}
+body[data-dashboard-page] .table td:first-child{min-width:190px}
+body[data-dashboard-page] .table td .btn{min-height:44px;white-space:nowrap}
+body[data-dashboard-page] .table .badge{white-space:nowrap}
+body[data-dashboard-page] .table th{white-space:nowrap}
+body[data-dashboard-page] .record-pager{margin-top:18px}
+body[data-dashboard-page] .attendance-summary-grid{gap:16px;margin:0}
+body[data-dashboard-page] :is(.exception-row,.branch-row,.reliability-row){padding-block:16px}
+body[data-dashboard-page] .empty-state{padding:24px 16px;line-height:1.7}
+body[data-dashboard-page] .employee-sync{padding:24px;border:1px solid var(--border);border-radius:22px;background:var(--surface)}
+body[data-dashboard-page] :is(.employee-sync-heading,.employee-sync-actions){gap:16px;flex-wrap:wrap}
+body[data-dashboard-page] .employee-sync p{line-height:1.7}
+body[data-dashboard-page] .payroll-head{gap:20px}
+body[data-dashboard-page] .payroll-export-actions{display:flex;gap:12px;flex-wrap:wrap}
+body[data-dashboard-page] .payroll-filter-panel{margin-top:20px;padding:20px}
+body[data-dashboard-page] .payroll-filter-grid{gap:16px;align-items:end}
+body[data-dashboard-page] .payroll-legend{gap:12px 20px;margin:20px 0 16px;line-height:1.6}
+body[data-dashboard-page] .payroll-calendar-wrap{max-height:60vh;overscroll-behavior:contain}
+body[data-dashboard-page] #attendanceDevices>h2{margin:0 0 12px;font-size:20px}
+body[data-dashboard-page] #attendanceDevices>p{max-width:90ch;line-height:1.7;margin:12px 0}
+body[data-dashboard-page] #attendanceDevices input{display:block;max-width:360px;margin:8px 0 16px}
+body[data-dashboard-page] .modal{padding:28px;border-radius:22px}
+body[data-dashboard-page] .modal .grid-2{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:22px}
+body[data-dashboard-page] .modal .field :is(input,select,textarea){width:100%;min-width:0}
+body[data-dashboard-page] .modal-actions{padding-top:20px;margin-top:24px;border-top:1px solid var(--border);flex-wrap:wrap}
+body[data-dashboard-page] .notice-box{margin-top:20px;padding:16px;line-height:1.7}
+body[data-dashboard-page] .drawer-body>.info-grid{gap:12px}
+body[data-dashboard-page] .drawer :is(.info-box,.card){padding:16px}
+body[data-dashboard-page] :is(.sidebar .nav a,.modal .btn,.drawer .icon-btn){min-height:44px}
+body[data-dashboard-page] .account-load-error{display:grid;gap:12px;justify-items:start}
+body[data-dashboard-page] .account-load-error p{margin:0;color:var(--text-2);line-height:1.6}
+/* PTO and shift management use the same spacing without dashboard sidebars. */
+.pto-shell #ptoRoot{display:flex;flex-direction:column;gap:24px}
+.pto-shell #ptoRoot>.card{margin:0;padding:24px;border-radius:22px}
+.pto-shell .pto-heading{align-items:start;gap:24px;margin-bottom:28px}
+.pto-shell .pto-tools{align-items:end;gap:12px}
+.pto-shell .pto-row{gap:16px;align-items:center}
+.pto-shell .pto-row>div:first-child{flex:1 1 240px}
+.pto-shell .pto-year{margin:0;width:140px}
+.pto-shell .pto-grid{margin-top:22px;gap:16px}
+.pto-shell h2{font-size:20px;line-height:1.5;margin:0 0 12px}
+.pto-shell .pto-help{line-height:1.7;margin:12px 0}
+.pto-shell .pto-table{max-height:480px;overflow:auto;border:1px solid var(--border);border-radius:14px;margin-top:16px;overscroll-behavior:contain}
+.pto-shell .pto-table thead{position:sticky;top:0;z-index:1;background:var(--surface)}
+.pto-shell .pto-table :is(th,td){padding:16px;line-height:1.6}
+.pto-shell .pto-request{padding:22px 0}
+.pto-shell .pto-request:last-child{border-bottom:0;padding-bottom:0}
+.pto-shell #ptoStatusFilter{max-width:300px;min-height:48px}
+.pto-shell #ptoEmployeeSearch{max-width:600px;min-height:48px}
+.pto-shell #ptoClearFilters{margin-top:4px}
+.pto-shell :is(#ptoCeoForm,#ptoLinkForm){margin-top:16px}
+.pto-shell .pto-form{max-width:720px}
+.shift-page{padding-top:28px;padding-bottom:64px}
+.shift-page .page-head{margin-bottom:24px;gap:24px}
+.shift-page>.card{padding:24px;border-radius:22px}
+.shift-page .branch-shift-form{padding:24px 18px;gap:20px;border-radius:16px;margin-top:16px}
+.shift-page .branch-shift-form .shift-result{line-height:1.6}
+@media(max-width:1200px){
+ body[data-dashboard-page] .dash-topbar{grid-template-columns:1fr}
+ body[data-dashboard-page] .dash-topbar-title{flex-basis:100%}
+ body[data-dashboard-page] .dash-topbar>.toolbar-group{width:100%}
+ body[data-dashboard-page] .dashboard-page-head{flex-direction:column}
+ body[data-dashboard-page] .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:980px){
+ body[data-dashboard-page]{--dashboard-gap:20px;--dashboard-padding:22px}
+ body[data-dashboard-page] .dash-content{padding:22px 20px calc(116px + env(safe-area-inset-bottom,0px))}
+ body[data-dashboard-page] .dash-topbar{position:relative;top:auto;padding:18px 20px;gap:14px}
+ body[data-dashboard-page] .dash-topbar>.toolbar-group{display:flex;flex-wrap:nowrap}
+ body[data-dashboard-page] .dash-topbar :is(.text-size-control,.language-control,#themeBtn){display:none}
+ body[data-dashboard-page] .dash-topbar>.toolbar-group>.ui-field{flex:1;max-width:300px;width:auto}
+ body[data-dashboard-page] .dash-topbar #refreshBtn{min-height:48px}
+ body[data-dashboard-page] .dash-layout .toolbar>.toolbar-group{display:flex;flex-wrap:wrap}
+ body[data-dashboard-page] .payroll-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+ body[data-dashboard-page]{--dashboard-gap:18px;--dashboard-padding:18px}
+ body[data-dashboard-page] .dash-content{padding:20px 14px calc(116px + env(safe-area-inset-bottom,0px))}
+ body[data-dashboard-page] .dash-layout .card{border-radius:18px}
+ body[data-dashboard-page] .dash-topbar{padding:16px 14px}
+ body[data-dashboard-page] .dash-topbar>.toolbar-group .ui-field{max-width:none}
+ body[data-dashboard-page] .dash-topbar #refreshBtn{flex:0 0 auto;width:auto;min-width:92px}
+ body[data-dashboard-page] .dashboard-page-head h1{font-size:calc(1.65rem * var(--text-scale,1));line-height:1.4}
+ body[data-dashboard-page] .kpi-grid{gap:12px}
+ body[data-dashboard-page] .kpi{padding:16px;min-height:148px}
+ body[data-dashboard-page] .kpi-value{font-size:30px}
+ body[data-dashboard-page] .toolbar-group>.ui-field,body[data-dashboard-page] .toolbar-group>.ui-field:has(input[type=search]){flex:1 1 100%;max-width:none}
+ body[data-dashboard-page] .toolbar-group>.btn{flex:1 1 140px}
+ body[data-dashboard-page] .payroll-filter-grid{grid-template-columns:1fr}
+ body[data-dashboard-page] .payroll-filter-panel{padding:16px}
+ body[data-dashboard-page] .modal{padding:22px 18px}
+ body[data-dashboard-page] .modal .grid-2{grid-template-columns:1fr}
+ body[data-dashboard-page] .modal-actions .btn{flex:1;min-width:100px}
+ body[data-dashboard-page] .table-wrap{margin-top:18px}
+ .pto-shell #ptoRoot{gap:18px}.pto-shell #ptoRoot>.card{padding:18px;border-radius:18px}
+ .pto-shell .pto-tools{display:flex;flex-wrap:wrap;gap:12px}
+ .pto-shell .pto-row{gap:12px}.pto-shell .pto-row>div:first-child{flex-basis:100%}
+ .pto-shell .pto-request-heading>h3{flex:1 1 100%}.pto-shell .pto-grid{gap:12px}
+ .pto-shell .pto-table{max-height:420px}.pto-shell .pto-stat{padding:16px}
+ .shift-page>.card{padding:18px}.shift-page .branch-shift-form{padding:20px 14px;gap:16px}
+ .shift-page .page-head{gap:18px}.shift-page .header-actions{display:flex;flex-wrap:wrap}
+}
+@media(max-width:380px){
+ html[data-text-size=extra] body[data-dashboard-page] .kpi-grid{grid-template-columns:1fr}
+ body[data-dashboard-page] .dashboard-page-head .status-chip{white-space:normal;overflow-wrap:anywhere}
+}
