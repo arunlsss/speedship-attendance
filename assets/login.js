@@ -20,7 +20,7 @@ function destinationAfterLogin(role){
     'executive.html':['executive','admin','super_admin'],
     'pto.html':['hr','admin','executive','super_admin']
   };
-  return allowed[next]?.includes(role)?next:SSS.routeForRole(role);
+  return Object.hasOwn(allowed,next)&&allowed[next].includes(role)?next:SSS.routeForRole(role);
 }
 
 function showState(me){
