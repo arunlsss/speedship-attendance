@@ -5,7 +5,7 @@ import './auth.js';
   logout.hidden=false;
   logout.onclick=async()=>{
     logout.disabled=true;
-    try{await SSS.logoutDashboard();location.replace('login.html');}
+    try{await SSS.logoutDashboard();location.replace('management-login.html');}
     catch(error){SSS.toast(error.message,'error');logout.disabled=false;}
   };
   const dashboardLink=document.getElementById('shiftDashboardLink');

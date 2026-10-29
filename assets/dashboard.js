@@ -23,7 +23,7 @@ import "./auth.js";
   const $ = id => document.getElementById(id);
 
   $("themeBtn").onclick = () => SSS.cycleTheme();
-  $("logoutBtn").onclick = async () => { await SSS.logoutDashboard(); location.href = "login.html"; };
+  $("logoutBtn").onclick = async () => { await SSS.logoutDashboard(); location.href = "management-login.html"; };
   $("refreshBtn").onclick = () => load();
   $("periodSelect").onchange = e => { days = Number(e.target.value); load(); };
   $("mobileMoreBtn").onclick = () => toggleMobileMenu();
@@ -119,11 +119,11 @@ import "./auth.js";
       render();
     } catch(e) {
       if(e.status===401){
-        $("content").innerHTML=`<div class="card"><strong>Session expired</strong><div class="card-sub">Your Firebase session could not be refreshed.</div><div style="margin-top:12px"><a class="btn btn-primary" href="login.html?reason=session">Sign in again</a></div></div>`;
+        $("content").innerHTML=`<div class="card"><strong>Session expired</strong><div class="card-sub">Your Firebase session could not be refreshed.</div><div style="margin-top:12px"><a class="btn btn-primary" href="management-login.html?reason=session">Sign in again</a></div></div>`;
         return;
       }
       if(e.status===403){
-        $("content").innerHTML=`<div class="card"><strong>Dashboard access denied</strong><div class="card-sub">${SSS.esc(e.message)}</div><div style="margin-top:12px"><a class="btn btn-soft" href="login.html">Back to management login</a></div></div>`;
+        $("content").innerHTML=`<div class="card"><strong>Dashboard access denied</strong><div class="card-sub">${SSS.esc(e.message)}</div><div style="margin-top:12px"><a class="btn btn-soft" href="management-login.html">Back to management login</a></div></div>`;
         return;
       }
       $("content").innerHTML=`<div class="card"><strong>Unable to load dashboard</strong><div class="card-sub">${SSS.esc(e.message)}</div></div>`;

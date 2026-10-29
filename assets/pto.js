@@ -11,7 +11,7 @@ document.getElementById('ptoTheme').onclick = () => SSS.cycleTheme();
 const headerLogout=document.getElementById('ptoHeaderLogout');
 headerLogout.onclick=async()=>{
   headerLogout.disabled=true;
-  try { await SSS.logoutDashboard(); location.replace(management?'login.html':'pto.html'); }
+  try { await SSS.logoutDashboard(); location.replace(management?'management-login.html':'pto.html'); }
   catch(error){showError(error);headerLogout.disabled=false;}
 };
 const showError = e => { errorBox.textContent = e.message || String(e); errorBox.hidden = false; };

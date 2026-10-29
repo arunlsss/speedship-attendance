@@ -95,7 +95,7 @@
     if (role === "hr") return "hr.html";
     if (role === "executive") return "executive.html";
     if (role === "admin" || role === "super_admin") return "admin.html";
-    return "login.html";
+    return "management-login.html";
   }
 
   async function loadDashboardUser(force = false) {
@@ -122,7 +122,7 @@
     try {
       const me = await loadDashboardUser(true);
       if (!me.emailVerified || me.status !== "active" || !me.role) {
-        location.href = "login.html";
+        location.href = "management-login.html";
         return null;
       }
       if (roles.length && !roles.includes(me.role)) {
@@ -132,7 +132,7 @@
       return me;
     } catch (e) {
       if (e.status === 401) {
-        location.href = "login.html?reason=session";
+        location.href = "management-login.html?reason=session";
         return null;
       }
       if (e.status === 403) {
