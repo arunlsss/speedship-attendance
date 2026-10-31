@@ -1,9 +1,2 @@
-// Keep management controls hidden when a page is embedded in any frame.
-// The initial style also blocks interaction when framed scripts are sandboxed.
-(() => {
-  if (window.self === window.top) {
-    document.getElementById("frame-guard-style")?.remove();
-  } else {
-    window.stop();
-  }
-})();
+// Only the verified Speedship Management parent can embed staff screens.
+(()=>{if(self===top){document.getElementById('frame-guard-style')?.remove();return;}let c;try{c=JSON.parse(sessionStorage.getItem('sss_workspace_context')||'null');}catch{}const allowed=['https://management.speedshipsolution.com','https://speedship-management.web.app'];if(!c||c.system!=='attendance'||!allowed.includes(c.parent)||c.expires<Date.now()){window.stop();return;}const ancestor=location.ancestorOrigins?.[0];if(ancestor&&ancestor!==c.parent){window.stop();return;}if(ancestor===c.parent)document.getElementById('frame-guard-style')?.remove();else addEventListener('message',e=>{if(e.source===parent&&e.origin===c.parent&&e.data?.channel==='speedship-workspace-v1'&&e.data.nonce===c.nonce)document.getElementById('frame-guard-style')?.remove();});})();
