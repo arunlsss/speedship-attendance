@@ -11,9 +11,22 @@
  function requestDetails(input,options){try{const u=new URL(typeof input==='string'?input:input.url,location.origin);let body={};if(typeof options?.body==='string'){try{body=JSON.parse(options.body);}catch{}}return {url:u,action:body.action||u.searchParams.get('action')||''};}catch{return {};}}
  async function snapshot(data){const m=await model;latest=m.summarize(system,data);send('summary',{summary:latest});}
  window.fetch=async(input,options)=>{
-  const r=await nativeFetch(input,options),{url,action}=requestDetails(input,options);
+  const {url,action}=requestDetails(input,options);
+  const asnSession=system==='asn'&&url?.origin===location.origin&&url.pathname.startsWith('/api/')&&action==='session';
+  let r;
+  try{r=await nativeFetch(input,options);}catch(error){
+   if(asnSession)send('error',{message:'ASN could not verify the management session. Reconnect to try again.'});
+   throw error;
+  }
+  if(asnSession){
+   r.clone().json().then(data=>{
+    if(r.ok&&data.success===true&&data.admin===true)announce();
+    else send('error',{message:'This account could not open ASN management. Check its ASN staff access or reconnect.'});
+   }).catch(()=>send('error',{message:'ASN returned an invalid session response. Reconnect to try again.'}));
+  }
   const capture=system==='finance'?url?.origin===location.origin&&url.pathname.startsWith('/api/finance')&&action==='snapshot':system==='asn'?url?.origin===location.origin&&url.pathname.startsWith('/api/')&&action==='management':system==='attendance'?url?.origin==='https://attendanceapi-wl5ots23eq-as.a.run.app'&&['getPtoManagement','dashboardData'].includes(action):system==='fda'?url?.origin===location.origin&&url.pathname==='/api/portal'&&!url.searchParams.has('id')&&(!options?.method||options.method==='GET'):false;
-  if(capture){if(r.ok){r.clone().json().then(async data=>{if(system==='attendance'&&data.ok===false)return;if(system==='asn'&&data.success!==true)return;await snapshot(data);}).catch(()=>{});}else if([401,403].includes(r.status))send('error',{message:'Your workspace session or permissions changed. Reconnect to continue.'});}
+  const optionalLeave=system==='attendance'&&action==='getPtoManagement'&&location.pathname!=='/pto.html';
+  if(capture){if(r.ok){r.clone().json().then(async data=>{if(system==='attendance'&&data.ok===false)return;if(system==='asn'&&data.success!==true)return;await snapshot(data);}).catch(()=>{});}else if(!optionalLeave&&[401,403].includes(r.status))send('error',{message:'Your workspace session or permissions changed. Reconnect to continue.'});}
   return r;
  };
  function apply(p){
@@ -38,6 +51,15 @@
   try{if(system==='attendance')await window.SSSAuth?.logout();else if(system==='asn')await window.ASNCloud?.logout();else if(window.firebase?.auth)await window.firebase.auth().signOut();else if(system==='fda'){const button=[...document.querySelectorAll('button')].find(b=>/^Sign out$/i.test(b.textContent.trim()));if(button)button.click();}}catch{}
   sessionStorage.removeItem('sss_workspace_context');sessionStorage.removeItem('sss_sso_session');send('signed-out');location.replace('/workspace.html');
  }
+ function openLeaveRecord(id){
+  const open=()=>{const button=[...document.querySelectorAll('[data-details]')].find(b=>b.dataset.details===id);if(!button)return false;button.click();return true;};
+  if(open())return;
+  const observer=new MutationObserver(()=>{
+   if(open()){observer.disconnect();clearTimeout(timeout);}
+  });
+  const timeout=setTimeout(()=>{observer.disconnect();send('review-unavailable');},12000);
+  observer.observe(document.body,{childList:true,subtree:true});
+ }
  function navigate(view,record){
   if(system==='finance'){
    if(record?.kind==='purchase'&&typeof window.openPurchase==='function'){page='purchases';render();window.openPurchase(record.id);}
@@ -45,11 +67,19 @@
    return;
   }
   if(system==='attendance'){
-   if(record){const button=[...document.querySelectorAll('[data-details]')].find(b=>b.dataset.details===record.id);if(button)button.click();else location.replace('/pto.html?view=management');return;}
+   if(record?.kind==='leave'){
+    if(location.pathname==='/pto.html'&&new URLSearchParams(location.search).get('view')==='management')openLeaveRecord(record.id);
+    else location.replace('/pto.html?view=management#'+new URLSearchParams({review:record.id}));
+    return;
+   }
    const dashboard=ctx.role==='hr'||ctx.role==='super_admin'?'/hr.html':ctx.role==='executive'?'/executive.html':'/admin.html';
    const path=({leave:'/pto.html?view=management',dashboard,shifts:'/shifts.html'})[view];if(path)location.replace(path);return;
   }
-  if(system==='asn'&&record&&typeof window.openReview==='function'){const row=typeof records!=='undefined'&&records.find(r=>r.id===record.id);if(row)window.openReview(row,null);return;}
+  if(system==='asn'&&record?.kind==='shipment'&&/^[\w-]{1,128}$/.test(record.id)&&typeof window.openReview==='function'){
+   const row=typeof records!=='undefined'&&records.find(r=>r.id===record.id);
+   window.openReview(row||{id:record.id,fileName:record.id},null);
+   return;
+  }
   if(system==='fda'&&record?.kind==='application'&&/^[\w-]{1,128}$/.test(record.id))location.assign('/admin/applications/'+encodeURIComponent(record.id));
  }
  addEventListener('message',async event=>{
@@ -66,11 +96,20 @@
   if(d.type==='navigate'||d.type==='review')navigate(d.view,d.record);
  });
  function announce(){if(ready)return;ready=true;send('ready');if(latest)send('summary',{summary:latest});}
- addEventListener('DOMContentLoaded',()=>{announce();
+ addEventListener('DOMContentLoaded',()=>{
+  if(system==='asn'){
+   window.ASNCloud?.ready.then(auth=>{
+    if(!auth.currentUser)send('error',{message:'ASN sign-in expired. Reconnect to continue.'});
+   }).catch(()=>send('error',{message:'ASN sign-in could not initialize. Reconnect to try again.'}));
+  }else announce();
+  if(system==='attendance'&&location.pathname==='/pto.html'&&new URLSearchParams(location.search).get('view')==='management'){
+   const review=new URLSearchParams(location.hash.slice(1)).get('review');
+   if(review){history.replaceState(null,'',location.pathname+location.search);openLeaveRecord(review);}
+  }
   // The dashboard itself has no PTO query. Read through Attendance's own authenticated API.
   if(system==='attendance'&&!location.pathname.endsWith('/pto.html')&&['hr','executive','super_admin'].includes(ctx.role)){
-   const timer=setInterval(async()=>{if(ptoRequested||!window.SSSAuth||!window.SSS)return;ptoRequested=true;clearInterval(timer);try{await window.SSSAuth.ready();await window.SSS.request('getPtoManagement',{dashboard:true,query:{year:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric'}).format(new Date())}});}catch(e){send('error',{message:e.message});}},300);setTimeout(()=>clearInterval(timer),20000);
+   const timer=setInterval(async()=>{if(ptoRequested||!window.SSSAuth||!window.SSS)return;ptoRequested=true;clearInterval(timer);try{await window.SSSAuth.ready();await window.SSS.request('getPtoManagement',{dashboard:true,query:{year:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric'}).format(new Date())}});}catch{/* The attendance dashboard can still work without the optional leave summary. */}},300);setTimeout(()=>clearInterval(timer),20000);
   }
  });
- addEventListener('pageshow',()=>{if(document.readyState!=='loading')announce();});
+ addEventListener('pageshow',()=>{if(system!=='asn'&&document.readyState!=='loading')announce();});
 })();
