@@ -7,7 +7,7 @@
  const {system,nonce,uid}=ctx,send=(type,extra={})=>parent.postMessage({channel:'speedship-workspace-v1',system,nonce,uid,type,...extra},ctx.parent);
  document.documentElement.dataset.managementEmbed='true';document.documentElement.dataset.workspaceSystem=system;
  const model=import('/workspace-model.mjs');const nativeFetch=window.fetch.bind(window);
- let latest=null,ptoRequested=false,ready=false;
+ let latest=null,ptoRequested=false,ready=false,attendanceSections=[];
  function requestDetails(input,options){try{const u=new URL(typeof input==='string'?input:input.url,location.origin);let body={};if(typeof options?.body==='string'){try{body=JSON.parse(options.body);}catch{}}return {url:u,action:body.action||u.searchParams.get('action')||''};}catch{return {};}}
  async function snapshot(data){const m=await model;latest=m.summarize(system,data);send('summary',{summary:latest});}
  window.fetch=async(input,options)=>{
@@ -85,7 +85,10 @@
  addEventListener('message',async event=>{
   const d=event.data;if(event.source!==parent||event.origin!==ctx.parent||d?.channel!=='speedship-workspace-v1'||d.system!==system||d.nonce!==nonce)return;
   document.getElementById('frame-guard-style')?.remove();
-  if(d.type==='preferences')apply(d.preferences);
+  if(d.type==='preferences'){
+   apply(d.preferences);
+   if(system==='attendance'&&Array.isArray(d.sections))attendanceSections=d.sections;
+  }
   if(d.type==='logout')await logout();
   if(d.type==='refresh'){
    if(system==='finance'&&typeof window.refreshFinanceStatus==='function')await window.refreshFinanceStatus();
@@ -94,6 +97,17 @@
    else location.reload();
   }
   if(d.type==='navigate'||d.type==='review')navigate(d.view,d.record);
+ });
+ if(system==='attendance')document.addEventListener('click',event=>{
+  if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  const link=event.target.closest?.('a[href]');
+  if(!link||link.target||link.hasAttribute('download'))return;
+  const url=new URL(link.href,location.href);
+  if(url.origin!==location.origin)return;
+  const view=['/hr.html','/admin.html','/executive.html'].includes(url.pathname)?'dashboard':url.pathname==='/pto.html'&&url.searchParams.get('view')==='management'?'leave':url.pathname==='/shifts.html'?'shifts':['/','/index.html'].includes(url.pathname)?'clock':null;
+  if(!view||!attendanceSections.includes(view)||url.pathname===location.pathname)return;
+  event.preventDefault();
+  send('focus-section',{view});
  });
  function announce(){if(ready)return;ready=true;send('ready');if(latest)send('summary',{summary:latest});}
  addEventListener('DOMContentLoaded',()=>{
