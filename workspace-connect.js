@@ -2,7 +2,7 @@ import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-
 import {getAuth,setPersistence,browserSessionPersistence,signInWithCustomToken} from 'https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js';
 import {MODULES,MANAGEMENT_ORIGINS} from './workspace-model.mjs';
 import {configs} from './workspace-config.js';
-const args=new URLSearchParams(location.hash.slice(1)),system=args.get('system'),parentOrigin=args.get('parent'),nonce=args.get('nonce'),uid=args.get('uid'),role=args.get('role');
+const args=new URLSearchParams(location.hash.slice(1)),system=args.get('system'),parentOrigin=args.get('parent'),nonce=args.get('nonce'),uid=args.get('uid'),role=args.get('role'),lang=args.get('lang')==='th'?'th':'en';
 history.replaceState({},'',location.pathname);
 const status=document.getElementById('workspaceStatus');
 const random=()=>Array.from(crypto.getRandomValues(new Uint8Array(32)),v=>v.toString(16).padStart(2,'0')).join('');
@@ -21,8 +21,8 @@ async function start(){
    if(!r.ok)throw Error(result.error||'Unable to connect.');
    const auth=getAuth(initializeApp(configs[system]));await setPersistence(auth,browserSessionPersistence);const signed=await signInWithCustomToken(auth,result.customToken);
    if(signed.user.uid!==uid)throw Error('The signed-in account changed. Reconnect from Management.');
-   sessionStorage.setItem('sss_sso_session',JSON.stringify({uid,audience:'management'}));sessionStorage.setItem('sss_workspace_context',JSON.stringify({system,parent:parentOrigin,nonce,uid,role,expires:Date.now()+8*60*60*1000}));
-   const destination=system==='finance'?'/management/':system==='asn'?'/management.html':system==='fda'?'/admin':role==='admin'?'/admin.html':'/pto.html?view=management';
+   sessionStorage.setItem('sss_sso_session',JSON.stringify({uid,audience:'management'}));sessionStorage.setItem('sss_workspace_context',JSON.stringify({system,parent:parentOrigin,nonce,uid,role,lang,expires:Date.now()+8*60*60*1000}));
+   const destination=system==='finance'?'/management/':system==='asn'?(lang==='en'?'/management-en.html':'/management.html'):system==='fda'?'/admin':role==='admin'?'/admin.html':'/pto.html?view=management';
    location.replace(destination);
   }catch(e){status.textContent=e.message;send('error',{message:e.message});}
  });

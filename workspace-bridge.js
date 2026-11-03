@@ -18,6 +18,17 @@
  };
  function apply(p){
   if(!p||!['light','dark','system'].includes(p.theme)||!['small','medium','large'].includes(p.size))return;
+  const lang=p.lang==='th'?'th':'en';
+  if(system==='asn'){
+   const destination=lang==='en'?'/management-en.html':'/management.html';
+   if(location.pathname!==destination&&['/management.html','/management-en.html'].includes(location.pathname)){
+    sessionStorage.setItem('sss_workspace_context',JSON.stringify({...ctx,lang}));
+    location.replace(destination+location.search+location.hash);
+    return;
+   }
+  }
+  if(system==='attendance'&&window.SSSLanguage?.language()!==lang)window.SSSLanguage?.setLanguage(lang,false);
+  if(system==='finance'&&typeof setDisplayPreference==='function'&&document.documentElement.lang!==lang)setDisplayPreference('language',lang);
   const theme=p.theme==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):p.theme;
   document.documentElement.dataset.theme=theme;document.documentElement.dataset.sssTheme=theme;document.documentElement.dataset.sssSize=p.size;document.documentElement.lang=p.lang==='th'?'th':'en';document.documentElement.style.setProperty('--workspace-text-scale',({small:.94,medium:1,large:1.1})[p.size]);
   // Notify the original appearance controller without transferring records or tokens.
