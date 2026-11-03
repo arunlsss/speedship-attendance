@@ -22,10 +22,16 @@ async function start(){
    const auth=getAuth(initializeApp(configs[system]));await setPersistence(auth,browserSessionPersistence);const signed=await signInWithCustomToken(auth,result.customToken);
    if(signed.user.uid!==uid)throw Error('The signed-in account changed. Reconnect from Management.');
    sessionStorage.setItem('sss_sso_session',JSON.stringify({uid,audience:'management'}));sessionStorage.setItem('sss_workspace_context',JSON.stringify({system,parent:parentOrigin,nonce,uid,role,lang,expires:Date.now()+8*60*60*1000}));
-   const destination=system==='finance'?'/management/':system==='asn'?(lang==='en'?'/management-en.html':'/management.html'):system==='fda'?'/admin':role==='admin'?'/admin.html':'/pto.html?view=management';
+   const attendanceView=args.get('view');
+   const attendanceDashboard=role==='executive'?'/executive.html':role==='admin'?'/admin.html':'/hr.html';
+   const attendanceDestination=attendanceView==='dashboard'?attendanceDashboard:attendanceView==='shifts'&&role!=='executive'?'/shifts.html':role==='admin'?'/admin.html':'/pto.html?view=management';
+   const destination=system==='finance'?'/management/':system==='asn'?(lang==='en'?'/management-en.html':'/management.html'):system==='fda'?'/admin':attendanceDestination;
    location.replace(destination);
   }catch(e){status.textContent=e.message;send('error',{message:e.message});}
  });
  send('challenge',{state,challenge});
 }
-start().catch(e=>{status.textContent=e.message;});
+start().catch(e=>{
+ status.textContent=e.message;
+ if(parent!==window&&MANAGEMENT_ORIGINS.includes(parentOrigin))send('error',{message:e.message});
+});
