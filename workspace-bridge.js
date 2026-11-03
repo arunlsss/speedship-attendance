@@ -104,7 +104,8 @@
   if(!link||link.target||link.hasAttribute('download'))return;
   const url=new URL(link.href,location.href);
   if(url.origin!==location.origin)return;
-  const view=['/hr.html','/admin.html','/executive.html'].includes(url.pathname)?'dashboard':url.pathname==='/pto.html'&&url.searchParams.get('view')==='management'?'leave':url.pathname==='/shifts.html'?'shifts':['/','/index.html'].includes(url.pathname)?'clock':null;
+  const dashboardPage={'/hr.html':'hr','/admin.html':'admin','/executive.html':'executive'}[url.pathname];
+  const view=dashboardPage?(attendanceSections.includes(dashboardPage)?dashboardPage:'dashboard'):url.pathname==='/pto.html'&&url.searchParams.get('view')==='management'?'leave':url.pathname==='/shifts.html'?'shifts':['/','/index.html'].includes(url.pathname)?'clock':null;
   if(!view||!attendanceSections.includes(view)||url.pathname===location.pathname)return;
   event.preventDefault();
   send('focus-section',{view});
