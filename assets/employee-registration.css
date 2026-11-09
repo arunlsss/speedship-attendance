@@ -13,3 +13,17 @@
 
 .registration-bank{grid-column:1/-1}.registration-bank small{color:var(--text-2);font:inherit;font-size:.9em;line-height:1.5}
 .registration-photo{grid-column:1/-1}.registration-photo small{color:var(--text-2);font-size:.9em;line-height:1.5}.registration-photo-preview{width:120px;height:120px;border-radius:16px;object-fit:cover;border:1px solid var(--border)}.employee-sync-actions{display:flex;flex-wrap:wrap;gap:10px}
+
+.employee-registration-dialog {
+  box-sizing: border-box;
+  max-inline-size: calc(100% - max(24px, env(safe-area-inset-left) + env(safe-area-inset-right)));
+  max-block-size: calc(100dvh - max(24px, env(safe-area-inset-top) + env(safe-area-inset-bottom)));
+  overscroll-behavior: contain;
+}
+.employee-registration-dialog :is(label, input, select, .registration-heading > div) { min-inline-size: 0; }
+.employee-registration-dialog :is(input, select) { min-block-size: 44px; max-inline-size: 100%; }
+.employee-registration-dialog .registration-heading button { flex: 0 0 auto; min-inline-size: 44px; }
+@media (max-width: 520px) {
+  .employee-registration-dialog { padding: 16px; }
+  .registration-fields { gap: 12px; margin-block-start: 16px; }
+}

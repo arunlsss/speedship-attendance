@@ -22,75 +22,21 @@ import "./auth.js";
   SSS.applyTheme();
   const $ = id => document.getElementById(id);
 
-  $("themeBtn").onclick = () => SSS.cycleTheme();
-  $("logoutBtn").onclick = async () => { await SSS.logoutDashboard(); location.href = "management-login.html"; };
+  window.SSSAttendanceNavigation?.setViewer(viewer);
+  $("headerLogoutBtn").onclick = async () => { await SSS.logoutDashboard(); location.href = "management-login.html"; };
   $("refreshBtn").onclick = () => load();
   $("periodSelect").onchange = e => { days = Number(e.target.value); load(); };
-  $("mobileMoreBtn").onclick = () => toggleMobileMenu();
-  $("mobileMenuClose").onclick = () => toggleMobileMenu(false);
-  $("mobileMenuBackdrop").onclick = () => toggleMobileMenu(false);
-  $("mobileThemeBtn").onclick = () => SSS.cycleTheme();
-  $("mobileLogoutBtn").onclick = $("logoutBtn").onclick;
-  $("headerLogoutBtn").onclick = $("logoutBtn").onclick;
-  matchMedia("(max-width:980px)").addEventListener("change",e=>{if(!e.matches)toggleMobileMenu(false);});
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") { toggleMobileMenu(false); closeDrawer(); }
-    if (e.key === "Tab" && !$("mobileMenu").hidden) {
-      const controls=Array.from($("mobileMenu").querySelectorAll("button:not(:disabled),a[href]"));
-      const first=controls[0],last=controls[controls.length-1];
-      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
-      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
-    }
-  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
 
   function shellMarkup() {
-    const pages = [
-      { href:"shifts.html",label:"Branch shifts / ตั้งค่ากะ",short:"Shifts",icon:"clock",show:["hr","admin","super_admin"].includes(role) },
-      { href:"hr.html", label:"HR Records", short:"HR", icon:"records", show: role === "hr" || role === "admin" || role === "super_admin" },
-      { href:"admin.html", label: role === "super_admin" ? "Super Admin" : "System Admin", short:"Admin", icon:"admin", show: role === "admin" || role === "super_admin" },
-      { href:"executive.html", label:"C-Level Overview", short:"Overview", icon:"overview", show: role === "executive" || role === "admin" || role === "super_admin" },
-      { href:"pto.html?view=management", label:"PTO Requests & Allowances", short:"PTO", icon:"records", show: ["hr","executive","super_admin"].includes(role) },
-      { href:"index.html", label:"Attendance App", short:"Clock in", icon:"clock", show:true }
-    ].filter(x=>x.show);
-    const nav = pages.map(x=>`<a href="${x.href}" ${page === x.href.replace('.html','') ? 'class="active" aria-current="page"' : ''}>${SSS.esc(x.label)}</a>`).join("");
-    const mobileNav = pages.filter(x=>!x.href.startsWith("pto.html")&&!x.href.startsWith("shifts.html")).map(x=>`<a href="${x.href}" aria-label="${SSS.esc(x.label)}" ${page === x.href.replace('.html','') ? 'class="active" aria-current="page"' : ''}>${navIcon(x.icon)}<span>${x.short}</span></a>`).join("");
     return `<div class="dash-layout">
-      <aside class="sidebar">
-        <div class="brand"><div class="brand-mark">SSS</div><div><div class="brand-title">Speedship</div><div class="brand-sub">Attendance Operations</div></div></div>
-        <nav class="nav" aria-label="Dashboard">${nav}</nav>
-        <div class="sidebar-footer"><div class="small muted">${SSS.esc(viewer.email || "")}<br>Role · <strong>${SSS.esc(role === "super_admin" ? "SUPER ADMIN" : role.toUpperCase())}</strong></div><button class="btn btn-ghost" id="logoutBtn">Sign out</button></div>
-      </aside>
       <main class="dash-main">
-        <header class="dash-topbar"><div class="dash-topbar-title"><strong>${titleForPage()}</strong><div class="small muted">Attendance records · Asia/Bangkok</div></div><div class="toolbar-group"><label class="ui-field"><span>Attendance period</span><select id="periodSelect" aria-label="Attendance period"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="60">60 days</option><option value="90">90 days</option></select></label><button class="btn btn-soft" id="refreshBtn">Refresh</button><button class="btn btn-soft" id="themeBtn">Theme · <span data-theme-label>Auto</span></button><button class="btn btn-ghost" id="headerLogoutBtn" type="button">ออกจากระบบ / Log out</button></div></header>
+        <header class="dash-topbar"><div class="dash-topbar-title"><strong>${titleForPage()}</strong><div class="small muted">Attendance records · Asia/Bangkok</div></div><div class="toolbar-group"><label class="ui-field"><span>Attendance period</span><select id="periodSelect" aria-label="Attendance period"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="60">60 days</option><option value="90">90 days</option></select></label><button class="btn btn-soft" id="refreshBtn">Refresh</button><button class="btn btn-ghost" id="headerLogoutBtn" type="button">ออกจากระบบ / Sign out</button></div></header>
         <div class="dash-content"><div id="content"><div class="card">Loading dashboard…</div></div></div>
       </main>
-      <nav class="mobile-nav" aria-label="Dashboard">${mobileNav}<button type="button" id="mobileMoreBtn" aria-expanded="false" aria-controls="mobileMenu">${navIcon("more")}<span>More</span></button></nav>
-      <div class="mobile-menu-backdrop" id="mobileMenuBackdrop" hidden></div>
-      <section class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Dashboard menu" hidden><div class="mobile-menu-head"><strong>Dashboard menu</strong><button type="button" class="icon-btn" id="mobileMenuClose" aria-label="Close menu">×</button></div><div class="mobile-account"><strong>${SSS.esc(viewer.displayName || viewer.email || "Management")}</strong><span>${SSS.esc(viewer.email || "")}</span><span>${SSS.esc(role === "super_admin" ? "Super Admin" : role === "executive" ? "C-Level" : role.toUpperCase())}</span></div>${["hr","executive","super_admin"].includes(role) ? '<a class="btn btn-soft" href="pto.html?view=management">PTO Requests & Allowances</a>' : ""}${["hr","admin","super_admin"].includes(role) ? '<a class="btn btn-soft" href="shifts.html">ตั้งค่ากะ / Branch shifts</a>' : ""}<button type="button" class="btn btn-soft" id="mobileThemeBtn">Theme · <span data-theme-label>Auto</span></button><button type="button" class="btn btn-ghost" id="mobileLogoutBtn">Sign out</button></section>
       <div class="drawer-backdrop" id="drawerBackdrop"></div><aside class="drawer" id="drawer"><div class="drawer-head"><div><div class="eyebrow">EMPLOYEE RECORD</div><strong id="drawerTitle">Employee</strong></div><button class="icon-btn" id="drawerClose">×</button></div><div class="drawer-body" id="drawerBody"></div></aside>
       <div class="modal-backdrop" id="actionModal"><div class="modal" id="actionModalContent"></div></div>
     </div>`;
-  }
-
-  function navIcon(name) {
-    const shapes = {
-      records:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M9 10h6M9 14h6M9 18h4"/>',
-      admin:'<path d="M12 3l8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/>',
-      overview:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 16v-4M12 16V7M17 16v-6"/>',
-      clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-      more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>'
-    };
-    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[name]}</svg>`;
-  }
-
-  function toggleMobileMenu(open = $("mobileMenu").hidden) {
-    if ($("mobileMenu").hidden === !open) return;
-    $("mobileMenu").hidden = !open;
-    $("mobileMenuBackdrop").hidden = !open;
-    $("mobileMoreBtn").setAttribute("aria-expanded", String(open));
-    document.querySelectorAll(".dash-main,.sidebar,.mobile-nav").forEach(el=>{el.inert=open;});
-    document.body.classList.toggle("mobile-menu-open", open);
-    (open ? $("mobileMenuClose") : $("mobileMoreBtn")).focus({preventScroll:true});
   }
 
   function titleForPage(){ return page === "hr" ? "HR Attendance Records" : page === "admin" ? "Attendance System Admin" : "C-Level Attendance Overview"; }

@@ -95,7 +95,7 @@ const CONFIG = {
 
   const systemThemeMedia = matchMedia("(prefers-color-scheme: dark)");
   systemThemeMedia.addEventListener?.("change", () => {
-    if ((localStorage.getItem(CONFIG.THEME_KEY) || "dark") === "system") applyTheme("system");
+    if (!window.SSSAppearance && (localStorage.getItem(CONFIG.THEME_KEY) || "dark") === "system") applyTheme("system");
   });
 
   function updateClock() {
@@ -226,7 +226,9 @@ const CONFIG = {
     $("selectedName").textContent = state.selectedEmployee.name;
     $("selectedMeta").textContent = `${state.selectedEmployee.nick || "-"} · ${state.selectedEmployee.id}`;
     $("selectedPanel").classList.add("show");
+    const wasPicking = $("employeeList").contains(document.activeElement);
     $("employeePicker").style.display = "none";
+    if (wasPicking) $("changeEmployee").focus({preventScroll:true});
     updateReadiness();
     updateSubmitButton();
   }
@@ -526,7 +528,7 @@ const CONFIG = {
     });
     $("locationSelect").addEventListener("change", e => setLocation(e.target.value));
     $("employeeSearch").addEventListener("input", renderEmployees);
-    $("changeEmployee").addEventListener("click", clearSelectedEmployee);
+    $("changeEmployee").addEventListener("click", () => { clearSelectedEmployee(); $("employeeSearch").focus(); });
     $("inButton").addEventListener("click", () => setLogType("IN"));
     $("outButton").addEventListener("click", () => setLogType("OUT"));
     $("cameraToggle").addEventListener("click", startCamera);
@@ -560,7 +562,7 @@ const CONFIG = {
   }
 
   async function init() {
-    applyTheme(localStorage.getItem(CONFIG.THEME_KEY) || "dark");
+    if (!window.SSSAppearance) applyTheme(localStorage.getItem(CONFIG.THEME_KEY) || "dark");
     bindEvents();
     updateClock();
     setInterval(updateClock, 1000);

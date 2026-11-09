@@ -433,3 +433,36 @@ a.secondary-button:focus-visible, a.icon-button:focus-visible, a.ghost-button:fo
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
+
+/* Keep the employee picker bounded in its own card. */
+#employeeList {
+  max-block-size: clamp(8rem, 30vh, 15rem);
+  max-block-size: clamp(8rem, 30dvh, 15rem);
+  min-inline-size: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  padding: 2px;
+  gap: 6px;
+}
+#employeeList .employee-button { min-block-size: 44px; min-inline-size: 0; }
+#employeeList :is(.employee-name, .employee-sub),
+#selectedPanel :is(#selectedName, #selectedMeta) {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+#selectedPanel > div { min-inline-size: 0; }
+#selectedPanel button { flex: 0 0 auto; min-block-size: 44px; }
+#employeeList .employee-button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.registration-link { min-block-size: 44px; }
+@media (max-width: 620px) {
+  #employeeList .employee-button { padding: 6px 8px; gap: 8px; }
+  #employeeList .avatar { inline-size: 30px; block-size: 30px; }
+  #employeeSearch { min-block-size: 44px; font-size: 1rem; }
+  #employeeList .employee-name { font-size: .875rem; }
+  #employeeList .employee-sub { font-size: .75rem; }
+}
+html[data-density="compact"] #employeeList { gap: 4px; }
+html[data-density="compact"] #employeeList .employee-button { padding-block: 5px; }

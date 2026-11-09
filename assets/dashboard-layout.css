@@ -139,3 +139,7 @@ body[data-dashboard-page] .account-load-error p{margin:0;color:var(--text-2);lin
  html[data-text-size=extra] body[data-dashboard-page] .kpi-grid{grid-template-columns:1fr}
  body[data-dashboard-page] .dashboard-page-head .status-chip{white-space:normal;overflow-wrap:anywhere}
 }
+
+/* Standalone chrome owns the sidebar, and the embedded page has none. */
+body[data-dashboard-page] .dash-layout { grid-template-columns: minmax(0, 1fr); }
+body.attendance-standalone[data-dashboard-page] .dash-topbar { top: var(--attendance-header-height); }

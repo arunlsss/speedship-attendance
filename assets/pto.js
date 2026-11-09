@@ -202,7 +202,13 @@ function loginMarkup(user) {
 }
 try {
   const health=await SSS.request('health');if(!health.capabilities?.ptoRequests)throw new Error('ระบบขอลายังไม่เปิดใช้งาน กรุณาติดต่อ HR / PTO requests will be available after the backend update.');
-  if(management){actor=await SSS.requireDashboard(['hr','executive','super_admin']);if(actor)await load();}
+  if(management){
+    actor=await SSS.requireDashboard(['hr','executive','super_admin']);
+    if(actor){
+      window.SSSAttendanceNavigation?.setViewer(actor);
+      await load();
+    }
+  }
   else {const user=await SSSAuth.ready();if(!user)loginMarkup(null);else{await SSSAuth.idToken(true);try{await load();}catch(e){loginMarkup(user);showError(e);}}}
 }catch(e){root.innerHTML='<section class="card"><p>ยังไม่สามารถเปิดหน้าขอลาได้ / Leave portal is unavailable.</p><a href="index.html" class="btn btn-soft">กลับหน้าลงเวลา / Back to attendance</a></section>';showError(e);}
 

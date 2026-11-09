@@ -45,7 +45,7 @@
   const theme=p.theme==='system'?(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):p.theme;
   document.documentElement.dataset.theme=theme;document.documentElement.dataset.sssTheme=theme;document.documentElement.dataset.sssSize=p.size;document.documentElement.lang=p.lang==='th'?'th':'en';document.documentElement.style.setProperty('--workspace-text-scale',({small:.94,medium:1,large:1.1})[p.size]);
   // Notify the original appearance controller without transferring records or tokens.
-  const value=JSON.stringify({theme,size:p.size});localStorage.setItem('sss-appearance-v1',value);dispatchEvent(new StorageEvent('storage',{key:'sss-appearance-v1',newValue:value}));
+  const value=JSON.stringify({theme,size:p.size,density:p.density==='compact'?'compact':'comfortable'});localStorage.setItem('sss-appearance-v1',value);dispatchEvent(new StorageEvent('storage',{key:'sss-appearance-v1',newValue:value}));
  }
  async function logout(){
   try{if(system==='attendance')await window.SSSAuth?.logout();else if(system==='asn')await window.ASNCloud?.logout();else if(window.firebase?.auth)await window.firebase.auth().signOut();else if(system==='fda'){const button=[...document.querySelectorAll('button')].find(b=>/^Sign out$/i.test(b.textContent.trim()));if(button)button.click();}}catch{}

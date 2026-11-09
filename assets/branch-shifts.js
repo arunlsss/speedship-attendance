@@ -1,6 +1,7 @@
 import './auth.js';
 (async()=>{
   const viewer=await SSS.requireDashboard(['hr','admin','super_admin']);if(!viewer)return;
+  window.SSSAttendanceNavigation?.setViewer(viewer);
   const logout=document.getElementById('shiftLogout');
   logout.hidden=false;
   logout.onclick=async()=>{
@@ -10,8 +11,6 @@ import './auth.js';
   };
   const dashboardLink=document.getElementById('shiftDashboardLink');
   if(dashboardLink)dashboardLink.href=SSS.routeForRole(viewer.role);
-  const managementLink=document.querySelector('.ssp-management');
-  if(managementLink)managementLink.href=SSS.routeForRole(viewer.role);
   const root=document.getElementById('shiftList'),error=document.getElementById('shiftError'),refresh=document.getElementById('refreshShifts');
   const esc=SSS.esc;let busy=false;
   async function load(){
